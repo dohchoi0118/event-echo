@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .tag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: #888; border: 1px solid #ccc; border-radius: 999px; padding: 4px 10px; background: #fff; }
+    .heart { position: absolute; color: #f3c2d6; font-size: 16px; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #fff4f8; overflow: hidden;">
+  <span class="tag">테마 변형 · 젠더 리빌 케이크</span>
+
+  <span class="heart" style="top: 70px; left: 40px;">♥</span>
+  <span class="heart" style="top: 120px; right: 48px; font-size: 22px;">♥</span>
+  <span class="heart" style="top: 60px; right: 120px; font-size: 12px;">♥</span>
+
+  <div style="position: absolute; top: 90px; left: 0; right: 0; display: flex; justify-content: center;">
+    <div style="background: #e372a0; color: #fff; font-size: 14px; font-weight: 700; padding: 8px 22px; border-radius: 4px;">축하합니다</div>
+  </div>
+
+  <div style="position: absolute; top: 150px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+    <div style="width: 220px; height: 200px; border: 1px dashed #e2a8c4; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; color: #b06e91; line-height: 1.5; padding: 12px;">
+      케이크 커팅 연출 →<br>시트 안쪽 크림/과일 색상으로<br>성별 공개 (분홍 = 딸)
+    </div>
+    <div style="width: 90px; height: 100px; border: 1px dashed #e2a8c4; border-radius: 50% 50% 0 0 / 60% 60% 0 0; background: #fff; font-size: 10px; color: #b06e91; display: flex; align-items: center; justify-content: center; text-align: center;">아기 일러스트<br>(핑크 톤)</div>
+  </div>
+
+  <div style="position: absolute; top: 470px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 18px;">
+    <p style="margin: 0; font-size: 18px; font-weight: 700; color: #8a3560;">공주님이 찾아왔어요!</p>
+
+    <div style="display: flex; align-items: center; gap: 10px; border: 1px solid #f2d3e2; border-radius: 10px; padding: 8px 14px; background: #fff;">
+      <div style="width: 28px; height: 28px; border: 1px dashed #e2a8c4; border-radius: 50%; font-size: 8px; color: #b06e91; display: flex; align-items: center; justify-content: center; text-align: center;">양</div>
+      <span style="font-size: 13px; color: #555;">양띠둥이가 찾아왔어요! (예시)</span>
+    </div>
+
+    <div style="font-size: 12px; color: #7a7a7a; border: 1px solid #e2e2e2; border-radius: 999px; padding: 6px 14px; background: #fff;">내 예측: 여아 → 결과: 정답</div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

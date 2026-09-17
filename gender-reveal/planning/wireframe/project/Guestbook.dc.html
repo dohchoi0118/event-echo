@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .tag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: #888; border: 1px solid #ccc; border-radius: 999px; padding: 4px 10px; background: #fff; }
+    label { display: block; font-size: 12px; color: #777; margin-bottom: 6px; }
+    input, textarea { width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; color: #333; background: #fff; }
+    textarea { resize: none; height: 64px; }
+    .entry { border: 1px solid #e6e6e6; border-radius: 10px; padding: 10px 12px; background: #fafafa; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #f7f7f5; overflow: hidden; padding: 64px 24px 24px;">
+  <span class="tag">화면 4/4 · 축하글 남기기</span>
+
+  <p style="margin: 0 0 20px; font-size: 20px; font-weight: 700; color: #2b2b2b;">축하 메시지 남기기</p>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+    <div>
+      <label for="nickname">닉네임</label>
+      <input id="nickname" type="text" placeholder="예: 이모">
+    </div>
+    <div>
+      <label for="message">메시지</label>
+      <textarea id="message" placeholder="축하 메시지를 남겨주세요"></textarea>
+    </div>
+    <button type="button" style="align-self: flex-end; border: 1px solid #333; border-radius: 8px; padding: 8px 18px; background: #2b2b2b; color: #fff; font-size: 13px;">등록</button>
+  </div>
+
+  <p style="margin: 0 0 10px; font-size: 12px; color: #999;">등록된 메시지 (최신순)</p>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="entry">
+      <p style="margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #444;">이모 · 방금 전</p>
+      <p style="margin: 0; font-size: 12px; color: #666;">축하해요! 건강하게만 자라렴</p>
+    </div>
+    <div class="entry">
+      <p style="margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #444;">삼촌 · 3시간 전</p>
+      <p style="margin: 0; font-size: 12px; color: #666;">두 분 다 고생 많으셨어요!</p>
+    </div>
+    <div class="entry">
+      <p style="margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #444;">회사 동료 · 1일 전</p>
+      <p style="margin: 0; font-size: 12px; color: #666;">축하드립니다 :)</p>
+    </div>
+  </div>
+
+  <p style="position: absolute; bottom: 16px; left: 24px; right: 24px; margin: 0; font-size: 10px; color: #bbb; text-align: center;">
+    * 닉네임으로만 구분, 중복 작성 제한 없음 · 부적절한 글은 관리자가 숨김 처리
+  </p>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

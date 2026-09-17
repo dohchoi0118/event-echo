@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .tag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: #888; border: 1px solid #ccc; border-radius: 999px; padding: 4px 10px; background: #fff; max-width: 220px; }
+    .heart { position: absolute; color: #cfd6ff; font-size: 16px; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #f3f5ff; overflow: hidden;">
+  <span class="tag">화면 3/4 · 결과 확인 · 테마: 서프라이즈 박스</span>
+
+  <button type="button" aria-label="배경음악 음소거 해제" style="position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #ccc; background: #fff; display: flex; align-items: center; justify-content: center;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="4 8 8 8 12 4 12 20 8 16 4 16"></polygon>
+      <line x1="16" y1="9" x2="22" y2="15"></line>
+      <line x1="22" y1="9" x2="16" y2="15"></line>
+    </svg>
+  </button>
+
+  <span class="heart" style="top: 70px; left: 40px;">♥</span>
+  <span class="heart" style="top: 120px; right: 48px; font-size: 22px;">♥</span>
+  <span class="heart" style="top: 60px; right: 120px; font-size: 12px;">♥</span>
+  <span class="heart" style="top: 160px; left: 110px; font-size: 12px;">♥</span>
+
+  <div style="position: absolute; top: 90px; left: 0; right: 0; display: flex; justify-content: center;">
+    <div style="background: #6f86e6; color: #fff; font-size: 14px; font-weight: 700; padding: 8px 22px; border-radius: 4px;">축하합니다</div>
+  </div>
+
+  <div style="position: absolute; top: 150px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+    <div style="width: 220px; height: 200px; border: 1px dashed #9aa5d6; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; color: #8891bd; line-height: 1.5; padding: 12px;">
+      상자 오프닝 + 풍선 상승 + 문구 토퍼 연출<br>(서프라이즈 박스)
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="width: 44px; height: 44px; border: 1px dashed #9aa5d6; border-radius: 8px; font-size: 9px; color: #8891bd; display: flex; align-items: center; justify-content: center; text-align: center;">운동화</div>
+      <div style="width: 90px; height: 100px; border: 1px dashed #9aa5d6; border-radius: 50% 50% 0 0 / 60% 60% 0 0; background: #fff; font-size: 10px; color: #8891bd; display: flex; align-items: center; justify-content: center; text-align: center;">아기 일러스트<br>(블루 톤)</div>
+      <div style="width: 44px; height: 44px; border: 1px dashed #9aa5d6; border-radius: 8px; font-size: 9px; color: #8891bd; display: flex; align-items: center; justify-content: center; text-align: center;">자동차</div>
+    </div>
+  </div>
+
+  <div style="position: absolute; top: 470px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 18px;">
+    <p style="margin: 0; font-size: 18px; font-weight: 700; color: #3a4380;">왕자님이 찾아왔어요!</p>
+
+    <div style="display: flex; align-items: center; gap: 10px; border: 1px solid #d6dcf5; border-radius: 10px; padding: 8px 14px; background: #fff;">
+      <div style="width: 28px; height: 28px; border: 1px dashed #9aa5d6; border-radius: 50%; font-size: 8px; color: #8891bd; display: flex; align-items: center; justify-content: center; text-align: center;">말</div>
+      <span style="font-size: 13px; color: #555;">말띠둥이가 찾아왔어요! (예시)</span>
+    </div>
+
+    <div style="font-size: 12px; color: #7a7a7a; border: 1px solid #e2e2e2; border-radius: 999px; padding: 6px 14px; background: #fff;">내 예측: 여아 → 결과: 오답</div>
+  </div>
+
+  <div style="position: absolute; bottom: 32px; left: 0; right: 0; display: flex; justify-content: center;">
+    <a href="Guestbook.dc.html" style="font-size: 13px; color: #555; text-decoration: none; border: 1px solid #ccc; border-radius: 999px; padding: 8px 16px; background: #fff;">다음: 축하글 남기기 ▶</a>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

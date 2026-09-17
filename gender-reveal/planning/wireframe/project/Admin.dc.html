@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .tag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: #888; border: 1px solid #ccc; border-radius: 999px; padding: 4px 10px; background: #fff; z-index: 2; }
+    .nav-item { padding: 10px 16px; font-size: 13px; color: #555; border-radius: 8px; }
+    .nav-item.active { background: #2b2b2b; color: #fff; font-weight: 600; }
+    .card { flex: 1; border: 1px solid #e2e2e2; border-radius: 10px; padding: 16px; background: #fff; }
+    .card .label { font-size: 12px; color: #999; margin: 0 0 6px; }
+    .card .value { font-size: 22px; font-weight: 700; color: #2b2b2b; margin: 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; color: #999; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid #e2e2e2; }
+    td { padding: 10px; border-bottom: 1px solid #f0f0f0; color: #444; }
+    .mini-btn { display: inline-block; border: 1px solid #ccc; border-radius: 6px; padding: 3px 10px; font-size: 11px; color: #666; margin-right: 6px; }
+  </style>
+</helmet>
+<div style="position: relative; width: 1280px; height: 800px; box-sizing: border-box; background: #f7f7f5; display: flex; overflow: hidden; font-size: 13px;">
+  <span class="tag">관리자 대시보드 (소유자 전용, 매직링크 로그인)</span>
+
+  <div style="width: 200px; box-sizing: border-box; padding: 64px 16px 16px; border-right: 1px solid #e6e6e6; background: #fff; display: flex; flex-direction: column; gap: 6px;">
+    <div class="nav-item active">통계</div>
+    <div class="nav-item">방명록 관리</div>
+    <div class="nav-item">페이지 설정</div>
+    <div class="nav-item">보관주기 연장</div>
+  </div>
+
+  <div style="flex: 1; box-sizing: border-box; padding: 24px 32px; overflow: hidden; display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <p style="margin: 0; font-size: 18px; font-weight: 700; color: #2b2b2b;">{태명}의 페이지</p>
+      <div style="display: flex; align-items: center; gap: 14px; font-size: 12px; color: #999;">
+        <span>owner@email.com</span>
+        <span style="border: 1px solid #ccc; border-radius: 6px; padding: 4px 10px; color: #666;">로그아웃</span>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 16px;">
+      <div class="card">
+        <p class="label">방문자 수</p>
+        <p class="value">128</p>
+      </div>
+      <div class="card">
+        <p class="label">맞추기 참여자 수</p>
+        <p class="value">64명</p>
+      </div>
+      <div class="card">
+        <p class="label">예측 비율 (남아 / 여아)</p>
+        <p class="value">32 / 32</p>
+      </div>
+    </div>
+
+    <div>
+      <p style="margin: 0 0 10px; font-size: 14px; font-weight: 700; color: #2b2b2b;">방명록 관리</p>
+      <table>
+        <thead>
+          <tr><th>닉네임</th><th>메시지</th><th>등록일</th><th>상태</th><th>관리</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>이모</td><td>축하해요! 건강하게만 자라렴</td><td>2026-09-16</td><td>노출</td>
+            <td><span class="mini-btn">숨김</span><span class="mini-btn">삭제</span></td>
+          </tr>
+          <tr>
+            <td>삼촌</td><td>두 분 다 고생 많으셨어요!</td><td>2026-09-16</td><td>노출</td>
+            <td><span class="mini-btn">숨김</span><span class="mini-btn">삭제</span></td>
+          </tr>
+          <tr>
+            <td>익명</td><td>(신고 접수된 메시지)</td><td>2026-09-15</td><td>숨김</td>
+            <td><span class="mini-btn">노출 전환</span><span class="mini-btn">삭제</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <p style="margin: 0 0 10px; font-size: 14px; font-weight: 700; color: #2b2b2b;">페이지 설정 / 보관주기</p>
+      <div style="border: 1px solid #e2e2e2; border-radius: 10px; padding: 16px; background: #fff; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 32px; font-size: 12px; color: #666;">
+          <div><span style="color: #999;">공개 예정 일시</span><br>2026-10-01 09:00</div>
+          <div><span style="color: #999;">보관주기 만료일</span><br>2026-10-31 (D-5)</div>
+          <div><span style="color: #999;">연장 사용 여부</span><br>미사용 (1회 가능)</div>
+        </div>
+        <span style="border: 1px solid #333; border-radius: 8px; padding: 8px 16px; font-size: 12px; color: #2b2b2b;">30일 연장하기</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

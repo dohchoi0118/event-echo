@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .tag { position: absolute; top: 16px; left: 16px; font-size: 11px; color: #888; border: 1px solid #ccc; border-radius: 999px; padding: 4px 10px; background: #fff; }
+    .heart { position: absolute; color: #cfd6ff; font-size: 16px; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #f3f5ff; overflow: hidden;">
+  <span class="tag">테마 변형 · 젠더 리빌 풍선</span>
+
+  <span class="heart" style="top: 70px; left: 40px;">♥</span>
+  <span class="heart" style="top: 120px; right: 48px; font-size: 22px;">♥</span>
+  <span class="heart" style="top: 60px; right: 120px; font-size: 12px;">♥</span>
+
+  <div style="position: absolute; top: 90px; left: 0; right: 0; display: flex; justify-content: center;">
+    <div style="background: #6f86e6; color: #fff; font-size: 14px; font-weight: 700; padding: 8px 22px; border-radius: 4px;">축하합니다</div>
+  </div>
+
+  <div style="position: absolute; top: 150px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+    <div style="width: 220px; height: 200px; border: 1px dashed #9aa5d6; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; color: #8891bd; line-height: 1.5; padding: 12px;">
+      큰 풍선이 터지며 안에서<br>색색의 미니 풍선/컨페티가<br>쏟아지는 연출
+    </div>
+    <div style="width: 90px; height: 100px; border: 1px dashed #9aa5d6; border-radius: 50% 50% 0 0 / 60% 60% 0 0; background: #fff; font-size: 10px; color: #8891bd; display: flex; align-items: center; justify-content: center; text-align: center;">아기 일러스트<br>(블루 톤)</div>
+  </div>
+
+  <div style="position: absolute; top: 470px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 18px;">
+    <p style="margin: 0; font-size: 18px; font-weight: 700; color: #3a4380;">왕자님이 찾아왔어요!</p>
+
+    <div style="display: flex; align-items: center; gap: 10px; border: 1px solid #d6dcf5; border-radius: 10px; padding: 8px 14px; background: #fff;">
+      <div style="width: 28px; height: 28px; border: 1px dashed #9aa5d6; border-radius: 50%; font-size: 8px; color: #8891bd; display: flex; align-items: center; justify-content: center; text-align: center;">용</div>
+      <span style="font-size: 13px; color: #555;">용띠둥이가 찾아왔어요! (예시)</span>
+    </div>
+
+    <div style="font-size: 12px; color: #7a7a7a; border: 1px solid #e2e2e2; border-radius: 999px; padding: 6px 14px; background: #fff;">내 예측: 남아 → 결과: 정답</div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

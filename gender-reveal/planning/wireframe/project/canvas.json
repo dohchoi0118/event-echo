@@ -1,0 +1,35 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-09-17T00:00:00Z" },
+  "title": "젠더리빌 와이어프레임",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Expired.dc.html": { "x": -940, "y": 0, "w": 390, "h": 844, "title": "만료 안내 (expired)" },
+    "Secret.dc.html": { "x": -470, "y": 0, "w": 390, "h": 844, "title": "비밀 상태 (secret)" },
+    "Main.dc.html": { "x": 0, "y": 0, "w": 390, "h": 844, "title": "① 인트로", "is_interactive": true },
+    "Select.dc.html": { "x": 470, "y": 0, "w": 390, "h": 844, "title": "② 선택 (성별 맞추기)", "is_interactive": true },
+    "Result_Box.dc.html": { "x": 940, "y": 0, "w": 390, "h": 844, "title": "③ 결과 확인 · 서프라이즈 박스", "is_interactive": true },
+    "Guestbook.dc.html": { "x": 1410, "y": 0, "w": 390, "h": 844, "title": "④ 축하글 남기기" },
+    "Admin.dc.html": { "x": -940, "y": 964, "w": 1280, "h": 800, "title": "관리자 대시보드" },
+    "Result_Cake.dc.html": { "x": 940, "y": 964, "w": 390, "h": 844, "title": "테마 변형 · 케이크" },
+    "Result_Balloon.dc.html": { "x": 1410, "y": 964, "w": 390, "h": 844, "title": "테마 변형 · 풍선" }
+  },
+  "order": [
+    "Expired.dc.html",
+    "Secret.dc.html",
+    "Main.dc.html",
+    "Select.dc.html",
+    "Result_Box.dc.html",
+    "Guestbook.dc.html",
+    "Admin.dc.html",
+    "Result_Cake.dc.html",
+    "Result_Balloon.dc.html"
+  ],
+  "notes": {
+    "t1": { "x": -940, "y": -260, "text": "방문자 화면 흐름 (왼쪽부터: 만료 안내 / 비밀 상태 / ① 인트로 → ② 선택 → ③ 결과 확인 → ④ 축하글)", "kind": "title1", "maxW": 2740 },
+    "t2": { "x": -940, "y": 704, "text": "관리자 대시보드", "kind": "title1", "maxW": 1280 },
+    "t3": { "x": 940, "y": 704, "text": "결과 확인 테마 변형 (케이크 · 풍선)", "kind": "title1", "maxW": 860 }
+  },
+  "designSystems": []
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .tag { position: absolute; top: 16px; left: 16px; font-size: 11px; letter-spacing: 0.02em; color: #888; border: 1px solid #ccc; border-radius: 999px; padding: 4px 10px; background: #fff; }
+    .qmark { position: absolute; color: #c9ccd1; font-weight: 700; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #f7f7f5; overflow: hidden;">
+  <span class="tag">화면 1/4 · 인트로</span>
+
+  <span class="qmark" style="top: 90px; left: 48px; font-size: 34px;">?</span>
+  <span class="qmark" style="top: 140px; right: 56px; font-size: 22px;">?</span>
+  <span class="qmark" style="top: 210px; left: 100px; font-size: 18px;">?</span>
+  <span class="qmark" style="top: 260px; right: 90px; font-size: 30px;">?</span>
+  <span class="qmark" style="bottom: 320px; left: 60px; font-size: 20px;">?</span>
+  <span class="qmark" style="bottom: 260px; right: 60px; font-size: 26px;">?</span>
+
+  <div style="position: absolute; top: 300px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 0 32px;">
+    <div style="width: 88px; height: 88px; border: 1px dashed #b7bac0; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; color: #999; line-height: 1.4; background: #fff;">
+      12지신 캐릭터<br>이미지<br>(출산예정일 입력 시)
+    </div>
+    <div style="text-align: center;">
+      <p style="margin: 0 0 8px; font-size: 15px; color: #9a9a9a; font-style: italic;">두근두근...</p>
+      <p style="margin: 0; font-size: 22px; font-weight: 700; color: #2b2b2b; line-height: 1.4;">{태명}는 딸일까요,<br>아들일까요?</p>
+    </div>
+  </div>
+
+  <div style="position: absolute; bottom: 40px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+    <span style="font-size: 12px; color: #aaa;">N초 후 자동 전환</span>
+    <a href="Select.dc.html" style="font-size: 13px; color: #555; text-decoration: none; border: 1px solid #ccc; border-radius: 999px; padding: 8px 16px; background: #fff;">다음: 선택 화면 ▶</a>
+  </div>
+
+  <div style="position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 10px; color: #bbb;">
+    * 공개 예정 시각 이전 접근 시 → Secret 화면으로 대체
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

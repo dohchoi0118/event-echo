@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE & 에디터
+.idea/                # JetBrains (IntelliJ, PyCharm 등)
+.vscode/              # Visual Studio Code (팀 공유 설정을 제외한 개인 설정)
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

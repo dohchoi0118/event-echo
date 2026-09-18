@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gDressBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFDBE1"/>
+      <stop offset="100%" stop-color="#E37AA6"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="100" cy="184" rx="76" ry="8" fill="#000000" opacity="0.1"/>
+  <path d="M 68 92 L 132 92 L 168 178 L 32 178 Z" fill="url(#gDressBody)" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="62" cy="150" r="6" fill="#FDEDF4" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="100" cy="162" r="6" fill="#FDEDF4" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="138" cy="150" r="6" fill="#FDEDF4" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="74" y="54" width="52" height="46" rx="16" fill="url(#gDressBody)" stroke="#FFFFFF" stroke-width="7"/>
+  <path d="M 74 62 Q 100 48 126 62 L 126 72 Q 100 60 74 72 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 84 96 L 100 86 L 116 96 L 100 106 Z" fill="#FDEDF4" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="100" cy="96" r="5" fill="#E37AA6" stroke="#FFFFFF" stroke-width="1.5"/>
+</svg>

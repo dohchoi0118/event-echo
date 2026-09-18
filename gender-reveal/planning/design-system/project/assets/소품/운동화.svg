@@ -1,0 +1,18 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gShoeBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EEF1FD"/>
+      <stop offset="100%" stop-color="#7C90E8"/>
+    </linearGradient>
+    <linearGradient id="gShoeSole" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5A5F66"/>
+      <stop offset="100%" stop-color="#33373D"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="104" cy="182" rx="82" ry="8" fill="#000000" opacity="0.1"/>
+  <path d="M 32 152 L 32 96 Q 32 82 46 82 L 66 82 L 66 104 L 128 104 Q 158 104 172 122 Q 180 132 176 142 L 176 152 Z" fill="url(#gShoeBody)" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round"/>
+  <rect x="26" y="150" width="156" height="20" rx="10" fill="url(#gShoeSole)" stroke="#FFFFFF" stroke-width="5"/>
+  <path d="M 42 92 L 60 92 M 42 100 L 60 100" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M 76 112 L 104 112 M 76 122 L 112 122" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle cx="160" cy="128" r="6" fill="#F2793A" stroke="#FFFFFF" stroke-width="2.5"/>
+</svg>

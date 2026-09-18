@@ -1,0 +1,24 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gBearBody" cx="35%" cy="24%" r="85%">
+      <stop offset="0%" stop-color="#E2C296"/>
+      <stop offset="100%" stop-color="#C49A6C"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="100" cy="196" rx="60" ry="7" fill="#000000" opacity="0.1"/>
+  <circle cx="55" cy="140" r="18" fill="url(#gBearBody)" stroke="#FFFFFF" stroke-width="6"/>
+  <circle cx="145" cy="140" r="18" fill="url(#gBearBody)" stroke="#FFFFFF" stroke-width="6"/>
+  <ellipse cx="100" cy="150" rx="48" ry="42" fill="url(#gBearBody)" stroke="#FFFFFF" stroke-width="8"/>
+  <ellipse cx="100" cy="154" rx="24" ry="26" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="4"/>
+  <circle cx="68" cy="52" r="17" fill="url(#gBearBody)" stroke="#FFFFFF" stroke-width="6"/>
+  <circle cx="132" cy="52" r="17" fill="url(#gBearBody)" stroke="#FFFFFF" stroke-width="6"/>
+  <circle cx="68" cy="52" r="8" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="132" cy="52" r="8" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="100" cy="82" r="44" fill="url(#gBearBody)" stroke="#FFFFFF" stroke-width="8"/>
+  <ellipse cx="100" cy="90" rx="27" ry="23" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="4"/>
+  <ellipse cx="89" cy="86" rx="5" ry="6.5" fill="#2B2118"/>
+  <ellipse cx="111" cy="86" rx="5" ry="6.5" fill="#2B2118"/>
+  <circle cx="87" cy="83" r="1.4" fill="#FFFFFF"/>
+  <circle cx="109" cy="83" r="1.4" fill="#FFFFFF"/>
+  <ellipse cx="100" cy="98" rx="7" ry="5" fill="#2B2118"/>
+</svg>

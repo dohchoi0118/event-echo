@@ -1,0 +1,37 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-09-18T03:00:00Z" },
+  "title": "젠더리빌 고충실도 화면 디자인",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Expired.dc.html": { "x": -940, "y": 964, "w": 390, "h": 844, "title": "만료 안내 (expired)" },
+    "Secret.dc.html": { "x": -470, "y": 0, "w": 390, "h": 844, "title": "비밀 상태 (secret)" },
+    "Main.dc.html": { "x": 0, "y": 0, "w": 390, "h": 844, "title": "① 인트로", "is_interactive": true },
+    "Select.dc.html": { "x": 470, "y": 0, "w": 390, "h": 844, "title": "② 선택 (성별 맞추기)", "is_interactive": true },
+    "Result_Box.dc.html": { "x": 940, "y": 0, "w": 390, "h": 844, "title": "③ 결과 확인 · 서프라이즈 박스", "is_interactive": true },
+    "Guestbook.dc.html": { "x": 1410, "y": 0, "w": 390, "h": 844, "title": "④ 축하글 남기기" },
+    "Result_Cake.dc.html": { "x": 940, "y": 964, "w": 390, "h": 844, "title": "테마 변형 · 케이크" },
+    "Result_Balloon.dc.html": { "x": 1410, "y": 964, "w": 390, "h": 844, "title": "테마 변형 · 풍선" },
+    "Admin.dc.html": { "x": -940, "y": 0, "w": 1280, "h": 800, "title": "관리자 대시보드" }
+  },
+  "order": [
+    "Admin.dc.html",
+    "Expired.dc.html",
+    "Secret.dc.html",
+    "Main.dc.html",
+    "Select.dc.html",
+    "Result_Box.dc.html",
+    "Guestbook.dc.html",
+    "Result_Cake.dc.html",
+    "Result_Balloon.dc.html"
+  ],
+  "notes": {
+    "t1": { "kind": "title1", "text": "관리자 대시보드", "x": -940, "y": -260, "w": 240, "maxW": 1280 },
+    "t2": { "kind": "title1", "text": "방문자 화면 흐름 — 비밀 상태 / ① 인트로 → ② 선택 → ③ 결과 확인 → ④ 축하글", "x": -470, "y": -260, "w": 240, "maxW": 2210 },
+    "t3": { "kind": "title1", "text": "만료 안내 / 결과 확인 테마 변형 (케이크 · 풍선)", "x": -940, "y": 704, "w": 240, "maxW": 1710 }
+  },
+  "designSystems": [
+    { "title": "젠더리빌 디자인 시스템", "namespace": "genderreveal", "artifact": "https://claude.ai/artifact/2VxooVQJLMgfKfhgqiHTyD", "version": null, "copiedAt": "2026-09-18T03:00:00Z" }
+  ]
+}

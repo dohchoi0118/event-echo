@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>결과 확인 · 서프라이즈 박스</title>
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .heart { position: absolute; color: #C3CEF5; }
+    .ribbon { display: inline-block; background: #6F86E6; color: #FFFFFF; font-family: 'Hi Melody', cursive; font-size: 20px; padding: 10px 28px; border-radius: 6px; }
+    .chip { display: flex; align-items: center; gap: 10px; border: 1px solid #D6DCF5; border-radius: 10px; padding: 8px 14px; background: #FFFFFF; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #EEF1FD; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;">
+
+  <button type="button" aria-label="배경음악 음소거 해제" style="position: absolute; top: 20px; right: 20px; width: 38px; height: 38px; border-radius: 999px; border: 1px solid #D6DCF5; background: #FFFFFF; display: flex; align-items: center; justify-content: center; padding: 0;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6F86E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="4 8 8 8 12 4 12 20 8 16 4 16"></polygon>
+      <line x1="16" y1="9" x2="22" y2="15"></line>
+      <line x1="22" y1="9" x2="16" y2="15"></line>
+    </svg>
+  </button>
+
+  <span class="heart" style="top: 64px; left: 36px; font-size: 16px;">♥</span>
+  <span class="heart" style="top: 110px; right: 52px; font-size: 22px;">♥</span>
+  <span class="heart" style="top: 56px; right: 130px; font-size: 12px;">♥</span>
+  <span class="heart" style="top: 156px; left: 110px; font-size: 12px;">♥</span>
+
+  <div style="position: absolute; top: 56px; left: 0; right: 0; display: flex; justify-content: center;">
+    <span class="ribbon">축하합니다</span>
+  </div>
+
+  <div style="position: absolute; top: 118px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center;">
+    <img src="/_blob/1f5d49a115d3f5162e60b389733ca926" alt="서프라이즈 박스 리빌 연출" style="width: 220px; height: 220px;">
+
+    <div style="display: flex; align-items: flex-end; gap: 10px; margin-top: -12px;">
+      <img src="/_blob/b1ee61d785c35bf981814742c979a764" alt="운동화" style="width: 46px; height: 46px;">
+      <img src="/_blob/635b1c8dec83b2d0109733e33dfaf2fd" alt="아기 남아 캐릭터" style="width: 108px; height: 108px;">
+      <img src="/_blob/7877673ea3c0412eed7e83ed2fa5a65c" alt="자동차" style="width: 46px; height: 46px;">
+    </div>
+  </div>
+
+  <div style="position: absolute; top: 486px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 32px;">
+    <p style="margin: 0; font-family: 'Hi Melody', cursive; font-size: 26px; color: #2E2B27;">왕자님이 찾아왔어요!</p>
+
+    <div class="chip">
+      <img src="/_blob/54260c6fb0b1dfed1720d64f522a1631" alt="말띠 캐릭터" style="width: 30px; height: 30px;">
+      <span style="font-size: 13px; color: #555049;">말띠둥이가 찾아왔어요!</span>
+    </div>
+
+    <div style="font-size: 12px; color: #8C8579; border: 1px solid #E6E0D5; border-radius: 999px; padding: 6px 14px; background: #FFFFFF;">내 예측: 여아 → 결과: 오답</div>
+  </div>
+
+  <div style="position: absolute; bottom: 32px; left: 0; right: 0; display: flex; justify-content: center;">
+    <a href="Guestbook.dc.html" style="font-size: 13px; font-weight: 600; color: #F2793A; text-decoration: none; border: 1px solid #F2793A; border-radius: 999px; padding: 10px 20px; background: #FFFFFF;">다음: 축하글 남기기 ▶</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -10,9 +10,19 @@ commands to run until implementation begins.
 
 All planning-stage documents (requirements, wireframe, work log) live under [planning/](planning/),
 kept separate so future implementation source code (in the repo root or its own `src/`) stays clean.
-It contains [planning/Requirements.md](planning/Requirements.md) and a low-fidelity
-[wireframe](planning/wireframe/README.md) (source copy of a Claude Artifact design canvas; see that
-file for the live link).
+It contains [planning/Requirements.md](planning/Requirements.md), a low-fidelity
+[wireframe](planning/wireframe/README.md), a [design system](planning/design-system/README.md)
+(color/typography/spacing/radius tokens, plus a 24-illustration asset library — 12 zodiac characters +
+baby boy/girl + 6 reveal-theme graphics (surprise box/cake/balloon × boy/girl) + 4 generic props
+(sneaker/car/dress/teddy bear), under `planning/design-system/project/assets/`. Style: soft gradient
+fills + white "sticker" outline + soft ground shadow, matching the actual character art on the
+reference site (see below) — this replaced an earlier bold-black-outline style once the reference
+site's real character image was checked and found not to match it; the zodiac/baby silhouette shapes
+were kept, only the paint treatment changed), and [high-fidelity screen mockups](planning/screens/README.md)
+(9 screens — intro/select/result×3-themes/guestbook/secret/expired/admin — built on the design
+system's tokens and illustration assets)
+— all of these except Requirements.md are source copies of Claude Artifacts (Design Canvas /
+Design System); see each file for its live link.
 
 ## What this subproject is
 
@@ -64,6 +74,12 @@ with no guessing, guestbook, or admin features; those are this project's additio
 Since no framework, language, or package manager has been chosen yet, do not assume any specific
 stack (e.g. React, Next.js) — confirm with the user before scaffolding, since that decision isn't
 recorded anywhere in the repo yet.
+
+When editing SVG illustrations under `planning/design-system/project/assets/`, verify them by
+actually rendering, not just by reading coordinates — a past pass shipped visibly broken art (hidden
+ears, garbled shapes) that coordinate review alone didn't catch. `.claude/launch.json` has a
+`design-system-preview` static server (serves `planning/design-system/`) for exactly this: start it
+and open `http://localhost:8731/project/assets/<group>/<file>.svg` in the Browser pane.
 
 ## Work log
 

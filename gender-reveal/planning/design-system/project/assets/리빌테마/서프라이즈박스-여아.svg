@@ -1,0 +1,29 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gBoxBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FDEDF4"/>
+      <stop offset="100%" stop-color="#EFA6C2"/>
+    </linearGradient>
+    <radialGradient id="gBoxBalloon" cx="35%" cy="28%" r="80%">
+      <stop offset="0%" stop-color="#FDEDF4"/>
+      <stop offset="100%" stop-color="#E37AA6"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="100" cy="188" rx="62" ry="8" fill="#000000" opacity="0.1"/>
+  <circle cx="40" cy="36" r="4" fill="#F2793A"/>
+  <circle cx="160" cy="30" r="5" fill="#E37AA6"/>
+  <rect x="150" y="70" width="8" height="8" fill="#F2793A" transform="rotate(20 154 74)"/>
+  <rect x="30" y="70" width="8" height="8" fill="#E37AA6" transform="rotate(-15 34 74)"/>
+  <path d="M 100 92 L 96 150" stroke="#FFFFFF" stroke-width="5" fill="none"/>
+  <path d="M 100 92 L 96 150" stroke="#F3C1D5" stroke-width="2.5" fill="none"/>
+  <circle cx="100" cy="66" r="26" fill="url(#gBoxBalloon)" stroke="#FFFFFF" stroke-width="6"/>
+  <ellipse cx="91" cy="57" rx="6" ry="9" fill="#FFFFFF" opacity="0.55"/>
+  <path d="M 92 90 L 100 102 L 108 90 Z" fill="#E37AA6" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 150 58 L 150 30" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 150 30 L 176 40 L 150 50 Z" fill="#FDEDF4" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 160 38 Q 163 40 160 42" stroke="#6F86E6" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 45 112 L 100 96 L 155 112 L 140 100 L 60 100 Z" fill="url(#gBoxBody)" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="55" y="120" width="90" height="58" rx="10" fill="url(#gBoxBody)" stroke="#FFFFFF" stroke-width="6"/>
+  <rect x="93" y="120" width="14" height="58" fill="#E37AA6" opacity="0.8"/>
+  <rect x="55" y="142" width="90" height="14" fill="#E37AA6" opacity="0.8"/>
+</svg>

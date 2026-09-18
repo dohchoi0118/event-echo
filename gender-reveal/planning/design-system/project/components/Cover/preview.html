@@ -1,0 +1,47 @@
+<!-- @dsCard height=320 -->
+<div style="width:960px;height:320px;overflow:hidden;">
+<svg width="960" height="320" viewBox="0 0 960 320" xmlns="http://www.w3.org/2000/svg">
+<!--
+  blocks: accent-primary slab (288×192, radius-md, bleeding off the top edge) · accent-boy disc (r64) ·
+    accent-girl disc (r48) · ink square (64×64, radius-sm) grounding the top-right corner
+  arrangement: one coral slab bleeding off the top edge with the two gender-accent discs overlapping its
+    lower edge (they only ever appear once the box is opened), a small ink square anchoring the corner
+  pattern: confetti — small radius-full discs in accent-primary/accent-boy/accent-girl scattered through
+    the block zone, because 젠더리빌 is a celebration reveal (confetti/balloons at the reveal moment) and
+    the brand's rounded Jua display face reads soft & friendly, matching a discs/pills pattern row
+  scales: radius-md (slab), radius-sm (ink square), radius-full (all discs); space-5×9/×6 for the slab
+-->
+<style>
+  .ground{fill:var(--surface-50)}
+  .primary{fill:var(--accent-primary)}
+  .boy{fill:var(--accent-boy)}
+  .girl{fill:var(--accent-girl)}
+  .inkblock{fill:var(--ink)}
+  .title{font-family:var(--font-display);fill:var(--ink)}
+  .tagline{font-family:var(--font-sans);fill:var(--ink-muted)}
+</style>
+
+<rect class="ground" x="0" y="0" width="960" height="320"/>
+
+<rect class="primary" x="592" y="-32" width="288" height="192" rx="14"/>
+<circle class="boy" cx="640" cy="200" r="64"/>
+<circle class="girl" cx="780" cy="220" r="48"/>
+<rect class="inkblock" x="864" y="48" width="64" height="64" rx="8"/>
+
+<circle class="boy" cx="500" cy="30" r="5"/>
+<circle class="primary" cx="520" cy="80" r="7"/>
+<circle class="girl" cx="495" cy="140" r="4"/>
+<circle class="primary" cx="905" cy="120" r="6"/>
+<circle class="boy" cx="925" cy="190" r="4"/>
+<circle class="girl" cx="610" cy="290" r="6"/>
+<circle class="primary" cx="690" cy="50" r="4"/>
+<circle class="boy" cx="830" cy="270" r="6"/>
+<circle class="girl" cx="870" cy="150" r="5"/>
+<circle class="primary" cx="550" cy="270" r="5"/>
+<circle class="girl" cx="900" cy="60" r="5"/>
+<circle class="primary" cx="620" cy="20" r="4"/>
+
+<text class="title" x="48" y="224" font-size="88">젠더리빌</text>
+<text class="tagline" x="48" y="258" font-size="14">성별 공개를 더 다정하게</text>
+</svg>
+</div>

@@ -1,0 +1,23 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gMonkeyBody" cx="35%" cy="28%" r="80%">
+      <stop offset="0%" stop-color="#B98A79"/>
+      <stop offset="100%" stop-color="#8D5B4C"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="100" cy="184" rx="52" ry="8" fill="#000000" opacity="0.12"/>
+  <circle cx="42" cy="116" r="24" fill="url(#gMonkeyBody)" stroke="#FFFFFF" stroke-width="7"/>
+  <circle cx="158" cy="116" r="24" fill="url(#gMonkeyBody)" stroke="#FFFFFF" stroke-width="7"/>
+  <circle cx="42" cy="116" r="12" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="2.5"/>
+  <circle cx="158" cy="116" r="12" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="2.5"/>
+  <circle cx="100" cy="114" r="60" fill="url(#gMonkeyBody)" stroke="#FFFFFF" stroke-width="9"/>
+  <path d="M 62 118 Q 58 158 100 172 Q 142 158 138 118 Q 142 90 100 88 Q 58 90 62 118 Z" fill="#FFFBF3" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"/>
+  <ellipse cx="78" cy="118" rx="6" ry="8" fill="#2B2118"/>
+  <ellipse cx="122" cy="118" rx="6" ry="8" fill="#2B2118"/>
+  <circle cx="76" cy="115" r="1.6" fill="#FFFFFF"/>
+  <circle cx="120" cy="115" r="1.6" fill="#FFFFFF"/>
+  <ellipse cx="100" cy="140" rx="10" ry="7" fill="#F7C9DA" opacity="0.9"/>
+  <path d="M 86 152 Q 100 160 114 152" stroke="#B5584A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="68" cy="140" r="7" fill="#F7C9DA" opacity="0.85"/>
+  <circle cx="132" cy="140" r="7" fill="#F7C9DA" opacity="0.85"/>
+</svg>

@@ -1,0 +1,72 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": { "v": 1, "at": "2026-09-17T00:00:00Z" },
+  "title": "젠더리빌",
+  "namespace": "GenderReveal",
+  "libraries": [],
+  "sections": {},
+  "groups": ["12지신", "캐릭터", "리빌테마", "소품"],
+  "assetGroups": {
+    "12지신": {
+      "name": "12지신",
+      "tile": "m",
+      "order": ["쥐.svg", "소.svg", "호랑이.svg", "토끼.svg", "용.svg", "뱀.svg", "말.svg", "양.svg", "원숭이.svg", "닭.svg", "개.svg", "돼지.svg"],
+      "files": {
+        "쥐.svg": { "name": "쥐.svg", "blob": "677022f5b1972fbf83fef4d9bb90ac42", "size": 2068, "type": "image/svg+xml" },
+        "소.svg": { "name": "소.svg", "blob": "812d21a14f4f7062bde31dac38ffbf68", "size": 2108, "type": "image/svg+xml" },
+        "호랑이.svg": { "name": "호랑이.svg", "blob": "f5e1ac2fe756d44a224715add417ea9d", "size": 2356, "type": "image/svg+xml" },
+        "토끼.svg": { "name": "토끼.svg", "blob": "47ae62a5c00c05ce233fbf68bc11a2c1", "size": 1501, "type": "image/svg+xml" },
+        "용.svg": { "name": "용.svg", "blob": "4535ecb6519526421a19daa22d0583e2", "size": 2322, "type": "image/svg+xml" },
+        "뱀.svg": { "name": "뱀.svg", "blob": "cdcf1910de92ff2c9156da8546f682ef", "size": 1268, "type": "image/svg+xml" },
+        "말.svg": { "name": "말.svg", "blob": "b36dd10b6d540466040cb44d8955a123", "size": 1904, "type": "image/svg+xml" },
+        "양.svg": { "name": "양.svg", "blob": "d1ab50275174ed7c528036077e7be778", "size": 2221, "type": "image/svg+xml" },
+        "원숭이.svg": { "name": "원숭이.svg", "blob": "2f7c2f449c955c98125e1c6b13d33aad", "size": 1671, "type": "image/svg+xml" },
+        "닭.svg": { "name": "닭.svg", "blob": "7dc6ea48609ab90664deed0771415748", "size": 1704, "type": "image/svg+xml" },
+        "개.svg": { "name": "개.svg", "blob": "6dede193a2c8cd5712db515f73bcb280", "size": 1595, "type": "image/svg+xml" },
+        "돼지.svg": { "name": "돼지.svg", "blob": "c6567d018b7c754b805a551740c3333f", "size": 1422, "type": "image/svg+xml" }
+      }
+    },
+    "캐릭터": {
+      "name": "캐릭터",
+      "tile": "m",
+      "order": ["아기-남아.svg", "아기-여아.svg"],
+      "files": {
+        "아기-남아.svg": { "name": "아기-남아.svg", "blob": "c3155234e9286e7638fd75d921dbeef7", "size": 3623, "type": "image/svg+xml" },
+        "아기-여아.svg": { "name": "아기-여아.svg", "blob": "032e3149947b53db294e9bff30e04fac", "size": 3425, "type": "image/svg+xml" }
+      }
+    },
+    "리빌테마": {
+      "name": "리빌테마",
+      "tile": "m",
+      "order": ["서프라이즈박스-남아.svg", "서프라이즈박스-여아.svg", "케이크-남아.svg", "케이크-여아.svg", "풍선-남아.svg", "풍선-여아.svg"],
+      "files": {
+        "서프라이즈박스-남아.svg": { "name": "서프라이즈박스-남아.svg", "blob": "ee8c116384584a92a35f2d34ab56743c", "size": 2133, "type": "image/svg+xml" },
+        "서프라이즈박스-여아.svg": { "name": "서프라이즈박스-여아.svg", "blob": "25749cc6933565803b57f4a060632f10", "size": 2133, "type": "image/svg+xml" },
+        "케이크-남아.svg": { "name": "케이크-남아.svg", "blob": "f002b55fa2dda169993904ae8c2544f5", "size": 2091, "type": "image/svg+xml" },
+        "케이크-여아.svg": { "name": "케이크-여아.svg", "blob": "154bbb079885f768c8e6143207e767a2", "size": 2091, "type": "image/svg+xml" },
+        "풍선-남아.svg": { "name": "풍선-남아.svg", "blob": "518864989948d3f237572de7fef32c37", "size": 2039, "type": "image/svg+xml" },
+        "풍선-여아.svg": { "name": "풍선-여아.svg", "blob": "0acc15096c77cc7b9edcff6cd9945041", "size": 2039, "type": "image/svg+xml" }
+      }
+    },
+    "소품": {
+      "name": "소품",
+      "tile": "m",
+      "order": ["운동화.svg", "자동차.svg", "드레스.svg", "곰인형.svg"],
+      "files": {
+        "운동화.svg": { "name": "운동화.svg", "blob": "cbfbd413703625ff130124806cef4149", "size": 1257, "type": "image/svg+xml" },
+        "자동차.svg": { "name": "자동차.svg", "blob": "82a5d95cb0eb38fb9097a19e8a87376d", "size": 1380, "type": "image/svg+xml" },
+        "드레스.svg": { "name": "드레스.svg", "blob": "221caec2114b299e4020f271a823cef1", "size": 1297, "type": "image/svg+xml" },
+        "곰인형.svg": { "name": "곰인형.svg", "blob": "acb0c944b37e9e1ee059c137727981c0", "size": 1725, "type": "image/svg+xml" }
+      }
+    }
+  },
+  "blobs": {},
+  "docs": { "readme": "project/README.md", "sections": [] },
+  "lastChange": {
+    "by": "Claude",
+    "via": "Claude Code",
+    "at": "2026-09-18T02:00:00Z",
+    "note": "일러스트 자산 24개 전면 재제작 — 참고 사이트(hyeminpark9105.github.io/baby-gender-reveal) 실제 캐릭터 스타일에 맞춰 guide01/02의 굵은 검은 외곽선 규칙을 폐기하고, 부드러운 그라데이션 + 흰색 스티커 외곽선 + 은은한 그림자 스타일로 전환. 12지신 12종·캐릭터 2종은 기존 실루엣(동물별 정확한 형태)을 유지한 채 채색 기법만 교체, 리빌테마 6종·소품 4종도 동일 스타일로 재제작"
+  }
+}

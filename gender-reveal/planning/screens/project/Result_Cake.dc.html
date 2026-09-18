@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>테마 변형 · 케이크</title>
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .heart { position: absolute; color: #F3C4DA; }
+    .ribbon { display: inline-block; background: #E37AA6; color: #FFFFFF; font-family: 'Hi Melody', cursive; font-size: 20px; padding: 10px 28px; border-radius: 6px; }
+    .chip { display: flex; align-items: center; gap: 10px; border: 1px solid #F5D8E5; border-radius: 10px; padding: 8px 14px; background: #FFFFFF; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #FDEDF4; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;">
+
+  <span style="position: absolute; top: 20px; left: 20px; font-size: 11px; color: #B06E91; background: #FFFFFF; border: 1px solid #F5D8E5; border-radius: 999px; padding: 4px 12px;">테마 변형 · 젠더 리빌 케이크</span>
+
+  <span class="heart" style="top: 74px; left: 36px; font-size: 16px;">♥</span>
+  <span class="heart" style="top: 118px; right: 52px; font-size: 22px;">♥</span>
+  <span class="heart" style="top: 60px; right: 130px; font-size: 12px;">♥</span>
+
+  <div style="position: absolute; top: 96px; left: 0; right: 0; display: flex; justify-content: center;">
+    <span class="ribbon">축하합니다</span>
+  </div>
+
+  <div style="position: absolute; top: 158px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center;">
+    <img src="/_blob/6532a6a0ce5c1db8437a1c229be8944b" alt="케이크 리빌 연출" style="width: 220px; height: 220px;">
+
+    <div style="display: flex; align-items: flex-end; gap: 10px; margin-top: -12px;">
+      <img src="/_blob/5c8a344b605a6142edae8df1e6df8191" alt="드레스" style="width: 46px; height: 46px;">
+      <img src="/_blob/a695455c708dbec40a079c4a18bb17b6" alt="아기 여아 캐릭터" style="width: 108px; height: 108px;">
+      <img src="/_blob/c08453925bc0d85faecae04309163192" alt="곰인형" style="width: 46px; height: 46px;">
+    </div>
+  </div>
+
+  <div style="position: absolute; top: 526px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 32px;">
+    <p style="margin: 0; font-family: 'Hi Melody', cursive; font-size: 26px; color: #2E2B27;">공주님이 찾아왔어요!</p>
+
+    <div class="chip">
+      <img src="/_blob/bf0b45853078bb4236decc46bea4aec3" alt="양띠 캐릭터" style="width: 30px; height: 30px;">
+      <span style="font-size: 13px; color: #555049;">양띠둥이가 찾아왔어요!</span>
+    </div>
+
+    <div style="font-size: 12px; color: #8C8579; border: 1px solid #E6E0D5; border-radius: 999px; padding: 6px 14px; background: #FFFFFF;">내 예측: 여아 → 결과: 정답</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

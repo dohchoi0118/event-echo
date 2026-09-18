@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>인트로</title>
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .qmark { position: absolute; font-weight: 700; color: #E6E0D5; font-family: "Noto Sans KR", sans-serif; }
+    .pill-btn { display: inline-flex; align-items: center; gap: 6px; font-family: "Noto Sans KR", sans-serif; font-size: 13px; font-weight: 600; color: #F2793A; text-decoration: none; border: 1px solid #F2793A; border-radius: 999px; padding: 10px 20px; background: #FFFFFF; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #FFFBF6; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;">
+
+  <span class="qmark" style="top: 84px; left: 44px; font-size: 36px;">?</span>
+  <span class="qmark" style="top: 138px; right: 52px; font-size: 22px;">?</span>
+  <span class="qmark" style="top: 208px; left: 96px; font-size: 16px;">?</span>
+  <span class="qmark" style="top: 250px; right: 88px; font-size: 30px;">?</span>
+  <span class="qmark" style="bottom: 330px; left: 58px; font-size: 20px;">?</span>
+  <span class="qmark" style="bottom: 268px; right: 56px; font-size: 26px;">?</span>
+  <span class="qmark" style="top: 40px; left: 190px; font-size: 14px;">?</span>
+
+  <div style="position: absolute; top: 292px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 0 32px;">
+    <div style="width: 96px; height: 96px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E6E0D5; box-shadow: 0 8px 20px rgba(46,43,39,0.06); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+      <img src="/_blob/54260c6fb0b1dfed1720d64f522a1631" alt="말띠 캐릭터" style="width: 78px; height: 78px;">
+    </div>
+
+    <div style="text-align: center;">
+      <p style="margin: 0 0 10px; font-size: 15px; font-style: italic; color: #8C8579;">두근두근...</p>
+      <p style="margin: 0; font-family: 'Hi Melody', cursive; font-size: 32px; line-height: 1.35; color: #2E2B27;">뽀튼이는 딸일까요,<br>아들일까요?</p>
+    </div>
+  </div>
+
+  <div style="position: absolute; bottom: 44px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+    <span style="font-size: 12px; color: #8C8579;">5초 후 자동 전환</span>
+    <a class="pill-btn" href="Select.dc.html">다음: 선택 화면 ▶</a>
+  </div>
+
+  <p style="position: absolute; bottom: 14px; left: 24px; right: 24px; margin: 0; font-size: 10px; color: #C7C0B2; text-align: center;">
+    공개 예정 시각 이전 접근 시 이 화면 대신 '비밀' 상태 화면이 표시됩니다
+  </p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

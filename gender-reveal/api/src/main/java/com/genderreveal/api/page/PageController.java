@@ -2,6 +2,8 @@ package com.genderreveal.api.page;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,5 +26,10 @@ public class PageController {
         Page page = pageService.create(request);
         PageCreateResponse response = PageCreateResponse.from(page);
         return ResponseEntity.created(URI.create("/api/pages/" + page.getSlug())).body(response);
+    }
+
+    @GetMapping("/{slug}")
+    public PagePublicResponse getBySlug(@PathVariable String slug) {
+        return pageService.getPublicView(slug);
     }
 }

@@ -14,4 +14,9 @@ public class PageExceptionHandler {
     public ResponseEntity<Map<String, String>> handleSlugTaken(SlugAlreadyTakenException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
+
+    @ExceptionHandler(PageNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleNotFound(PageNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
 }

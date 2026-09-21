@@ -13,11 +13,14 @@ public class PageService {
 
     private final PageRepository pageRepository;
     private final UniqueSlugAllocator slugAllocator;
+    private final PageStatusCalculator statusCalculator;
     private final Clock clock;
 
-    public PageService(PageRepository pageRepository, UniqueSlugAllocator slugAllocator, Clock clock) {
+    public PageService(PageRepository pageRepository, UniqueSlugAllocator slugAllocator,
+                        PageStatusCalculator statusCalculator, Clock clock) {
         this.pageRepository = pageRepository;
         this.slugAllocator = slugAllocator;
+        this.statusCalculator = statusCalculator;
         this.clock = clock;
     }
 
@@ -32,6 +35,19 @@ public class PageService {
         );
 
         return pageRepository.save(page);
+    }
+
+    public PagePublicResponse getPublicView(String slug) {
+        Page page = pageRepository.findBySlug(slug)
+            .orElseThrow(() -> new PageNotFoundException(slug));
+
+        PageStatus status = statusCalculator.calculate(page, Instant.now(clock));
+
+        return switch (status) {
+            case SECRET -> PagePublicResponse.secretOrExpired("secret", page.getNickname());
+            case EXPIRED -> PagePublicResponse.secretOrExpired("expired", page.getNickname());
+            case OPEN -> PagePublicResponse.open(page);
+        };
     }
 
     private String resolveSlug(String requestedSlug) {

@@ -2,10 +2,13 @@ package com.genderreveal.api.page;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genderreveal.api.auth.OwnerTestSupport;
+import com.genderreveal.api.email.RecordingEmailSender;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +39,14 @@ class PageControllerCreateTest {
 
     @Autowired
     private PageRepository pageRepository;
+
+    @SpyBean
+    private RecordingEmailSender emails;
+
+    @BeforeEach
+    void resetEmails() {
+        emails.clear();
+    }
 
     @Test
     void createsPageAndReturnsGeneratedSlug() throws Exception {
@@ -188,5 +199,49 @@ class PageControllerCreateTest {
 
         assertThat(pageRepository.findBySlug("spoof-attempt-slug").orElseThrow().getOwnerEmail())
             .isEqualTo("attacker@example.com");
+    }
+
+    @Test
+    void sendsPublishedLinkToOwnerEmail() throws Exception {
+        Map<String, Object> body = Map.of(
+            "nickname", "뽀튼이",
+            "actualGender", "boy",
+            "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
+            "theme", "box",
+            "bgmEnabled", true,
+            "slug", "publish-mail-slug"
+        );
+
+        mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("mail-owner@example.com"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isCreated());
+
+        assertThat(emails.sent()).hasSize(1);
+        RecordingEmailSender.SentEmail mail = emails.sent().get(0);
+        assertThat(mail.to()).isEqualTo("mail-owner@example.com");
+        assertThat(mail.body()).contains("http://localhost:8080/g/publish-mail-slug");
+    }
+
+    @Test
+    void emailFailureDoesNotFailPageCreation() throws Exception {
+        org.mockito.Mockito.doThrow(new com.genderreveal.api.email.EmailSendException("boom"))
+            .when(emails).send(org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+        Map<String, Object> body = Map.of(
+            "nickname", "뽀튼이",
+            "actualGender", "boy",
+            "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
+            "theme", "box",
+            "bgmEnabled", true,
+            "slug", "mail-fails-slug"
+        );
+
+        mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isCreated());
     }
 }

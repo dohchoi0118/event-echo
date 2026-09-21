@@ -1,5 +1,10 @@
 package com.genderreveal.api.page;
 
+import com.genderreveal.api.config.AppProperties;
+import com.genderreveal.api.email.EmailSendException;
+import com.genderreveal.api.email.EmailSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +16,23 @@ import java.time.temporal.ChronoUnit;
 public class PageService {
 
     private static final int RETENTION_DAYS = 30;
+    private static final Logger log = LoggerFactory.getLogger(PageService.class);
 
     private final PageRepository pageRepository;
     private final UniqueSlugAllocator slugAllocator;
     private final PageStatusCalculator statusCalculator;
+    private final EmailSender emailSender;
+    private final AppProperties appProperties;
     private final Clock clock;
 
     public PageService(PageRepository pageRepository, UniqueSlugAllocator slugAllocator,
-                        PageStatusCalculator statusCalculator, Clock clock) {
+                        PageStatusCalculator statusCalculator, EmailSender emailSender,
+                        AppProperties appProperties, Clock clock) {
         this.pageRepository = pageRepository;
         this.slugAllocator = slugAllocator;
         this.statusCalculator = statusCalculator;
+        this.emailSender = emailSender;
+        this.appProperties = appProperties;
         this.clock = clock;
     }
 
@@ -37,8 +48,9 @@ public class PageService {
             ownerEmail, now, now.plus(RETENTION_DAYS, ChronoUnit.DAYS)
         );
 
+        Page saved;
         try {
-            return pageRepository.save(page);
+            saved = pageRepository.save(page);
         } catch (DataAccessException ex) {
             // TOCTOU backstop: another request took this slug between resolveSlug() and save().
             // Catches DataAccessException, not the narrower DataIntegrityViolationException, because
@@ -49,6 +61,9 @@ public class PageService {
             // Revisit if that changes.
             throw new SlugAlreadyTakenException(slug);
         }
+
+        sendPublishedLink(saved);
+        return saved;
     }
 
     public PagePublicResponse getPublicView(String slug) {
@@ -81,5 +96,15 @@ public class PageService {
             throw new SlugAlreadyTakenException(requestedSlug);
         }
         return requestedSlug;
+    }
+
+    private void sendPublishedLink(Page page) {
+        String link = appProperties.baseUrl() + "/g/" + page.getSlug();
+        String body = "페이지가 만들어졌어요. 아래 링크를 복사해 가족과 친구들에게 공유해 보세요.\n\n" + link;
+        try {
+            emailSender.send(page.getOwnerEmail(), "젠더리빌 페이지가 발행됐어요", body);
+        } catch (EmailSendException ex) {
+            log.error("Failed to send published-link email for slug {}", page.getSlug(), ex);
+        }
     }
 }

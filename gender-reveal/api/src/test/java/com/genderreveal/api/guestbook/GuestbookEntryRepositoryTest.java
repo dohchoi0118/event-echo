@@ -47,6 +47,26 @@ class GuestbookEntryRepositoryTest {
             .containsExactly("삼촌", "이모");
     }
 
+    @Test
+    void ordersByTrueChronologicalOrderAcrossMixedSubSecondPrecision() {
+        Page page = pageRepository.save(samplePage());
+
+        // Instant.toString() renders these with a DIFFERENT number of fractional digits
+        // (zero vs three) — a purely lexicographic string comparison would sort the
+        // whole-second timestamp as "newest" among same-second entries, which is wrong.
+        Instant wholeSecond = Instant.parse("2026-01-01T00:00:00Z");
+        Instant halfSecondLater = Instant.parse("2026-01-01T00:00:00.500Z");
+
+        guestbookEntryRepository.save(new GuestbookEntry(page.getId(), "먼저", "먼저 왔어요", wholeSecond));
+        guestbookEntryRepository.save(new GuestbookEntry(page.getId(), "나중", "나중에 왔어요", halfSecondLater));
+
+        List<GuestbookEntry> visible = guestbookEntryRepository
+            .findByPageIdAndHiddenFalseOrderByCreatedAtDesc(page.getId());
+
+        assertThat(visible).extracting(GuestbookEntry::getNickname)
+            .containsExactly("나중", "먼저");
+    }
+
     private Page samplePage() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         return new Page(

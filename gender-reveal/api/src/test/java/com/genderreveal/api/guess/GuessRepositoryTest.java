@@ -6,12 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -39,6 +41,26 @@ class GuessRepositoryTest {
         Page page = pageRepository.save(samplePage());
 
         assertThat(guessRepository.existsByPageIdAndGuestCookieId(page.getId(), "nobody")).isFalse();
+    }
+
+    @Test
+    void uniqueConstraintOnPageIdAndGuestCookieIdRejectsDuplicateAtDbLevel() {
+        Page page = pageRepository.save(samplePage());
+
+        guessRepository.save(new Guess(page.getId(), "guest-dup", "boy", Instant.now()));
+        guessRepository.flush();
+
+        Guess duplicate = new Guess(page.getId(), "guest-dup", "girl", Instant.now());
+
+        // Caught broadly as DataAccessException (rather than the narrower
+        // DataIntegrityViolationException) because Hibernate's SQLite community dialect
+        // surfaces this constraint violation without a recognizable SQLState, so Spring's
+        // exception translation falls back to the generic JpaSystemException rather than
+        // classifying it as a DataIntegrityViolationException.
+        assertThatThrownBy(() -> {
+            guessRepository.save(duplicate);
+            guessRepository.flush();
+        }).isInstanceOf(DataAccessException.class);
     }
 
     private Page samplePage() {

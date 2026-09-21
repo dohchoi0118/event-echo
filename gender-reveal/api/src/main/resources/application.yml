@@ -5,7 +5,7 @@ spring:
   application:
     name: gender-reveal-api
   datasource:
-    url: jdbc:sqlite:${GENDER_REVEAL_DB_PATH:./data/gender-reveal.db}
+    url: jdbc:sqlite:${GENDER_REVEAL_DB_PATH:./data/gender-reveal.db}?foreign_keys=on
     driver-class-name: org.sqlite.JDBC
   jpa:
     open-in-view: false

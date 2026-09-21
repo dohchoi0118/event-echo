@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:sqlite:file::memory:?cache=shared
+    url: jdbc:sqlite:file::memory:?cache=shared&foreign_keys=on
     driver-class-name: org.sqlite.JDBC
     hikari:
       maximum-pool-size: 1

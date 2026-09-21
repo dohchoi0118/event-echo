@@ -41,10 +41,29 @@ class SchemaV2Test {
     }
 
     @Test
-    void pageVisitsRejectsOrphanPageAndDuplicateVisitor() {
+    void pageVisitsRejectsOrphanPageId() {
         assertThatThrownBy(() -> jdbcTemplate.update(
-            "INSERT INTO page_visits (page_id, guest_cookie_id, created_at) VALUES (999999, 'g', 't')"))
-            .isInstanceOf(DataAccessException.class);
+            "INSERT INTO page_visits (page_id, guest_cookie_id, created_at) VALUES (999999, 'g', '2026-01-01T00:00:00.000Z')"))
+            .isInstanceOf(DataAccessException.class)
+            .hasMessageContaining("FOREIGN KEY");
+    }
+
+    @Test
+    void pageVisitsRejectsDuplicateVisitor() {
+        // Insert a real page
+        jdbcTemplate.update(
+            "INSERT INTO pages (slug, nickname, actual_gender, reveal_at, message, theme, owner_email, created_at, expires_at) " +
+            "VALUES ('test-slug', 'test-nick', 'boy', '2026-01-01T12:00:00.000Z', NULL, 'box', 'owner@test.com', '2026-01-01T00:00:00.000Z', '2026-02-01T00:00:00.000Z')");
+
+        // Insert first visit
+        jdbcTemplate.update(
+            "INSERT INTO page_visits (page_id, guest_cookie_id, created_at) VALUES (1, 'guest-cookie-1', '2026-01-01T00:00:00.000Z')");
+
+        // Insert duplicate visit from same guest to same page
+        assertThatThrownBy(() -> jdbcTemplate.update(
+            "INSERT INTO page_visits (page_id, guest_cookie_id, created_at) VALUES (1, 'guest-cookie-1', '2026-01-01T01:00:00.000Z')"))
+            .isInstanceOf(DataAccessException.class)
+            .hasMessageContaining("UNIQUE");
     }
 
     private List<String> columns(String table) {

@@ -22,6 +22,6 @@ public class UniqueSlugAllocator {
                 return candidate;
             }
         }
-        throw new IllegalStateException("Failed to allocate a unique slug after " + MAX_ATTEMPTS + " attempts");
+        throw new SlugAllocationExhaustedException("Failed to allocate a unique slug after " + MAX_ATTEMPTS + " attempts");
     }
 }

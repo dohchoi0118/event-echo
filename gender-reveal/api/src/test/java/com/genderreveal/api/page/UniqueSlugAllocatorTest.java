@@ -37,6 +37,6 @@ class UniqueSlugAllocatorTest {
 
         UniqueSlugAllocator allocator = new UniqueSlugAllocator(new SlugGenerator(), pageRepository);
 
-        assertThatThrownBy(allocator::allocate).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(allocator::allocate).isInstanceOf(SlugAllocationExhaustedException.class);
     }
 }

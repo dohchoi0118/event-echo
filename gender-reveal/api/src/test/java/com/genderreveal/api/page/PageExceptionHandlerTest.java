@@ -1,7 +1,6 @@
 package com.genderreveal.api.page;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -14,22 +13,22 @@ class PageExceptionHandlerTest {
     private final PageExceptionHandler handler = new PageExceptionHandler();
 
     @Test
-    void mapsDataIntegrityViolationToConflict() {
-        DataIntegrityViolationException ex = new DataIntegrityViolationException("UNIQUE constraint failed: pages.slug");
-
-        ResponseEntity<Map<String, String>> response = handler.handleSlugConflict(ex);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody()).containsEntry("error", "Slug already taken");
-    }
-
-    @Test
-    void mapsIllegalStateExceptionToServerErrorWithJsonBody() {
-        IllegalStateException ex = new IllegalStateException("Failed to allocate a unique slug after 10 attempts");
+    void mapsSlugAllocationExhaustedToServerError() {
+        SlugAllocationExhaustedException ex = new SlugAllocationExhaustedException("Failed to allocate a unique slug after 10 attempts");
 
         ResponseEntity<Map<String, String>> response = handler.handleSlugAllocationExhausted(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).containsEntry("error", "Failed to allocate a unique slug after 10 attempts");
+    }
+
+    @Test
+    void mapsPageNotOpenToConflict() {
+        PageNotOpenException ex = new PageNotOpenException("test-slug");
+
+        ResponseEntity<Map<String, String>> response = handler.handlePageNotOpen(ex);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody()).containsEntry("error", "Page is not open: test-slug");
     }
 }

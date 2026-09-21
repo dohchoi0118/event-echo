@@ -1,5 +1,6 @@
 package com.genderreveal.api.page;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -36,7 +37,11 @@ public class PageService {
             request.ownerEmail(), now, now.plus(RETENTION_DAYS, ChronoUnit.DAYS)
         );
 
-        return pageRepository.save(page);
+        try {
+            return pageRepository.save(page);
+        } catch (DataIntegrityViolationException ex) {
+            throw new SlugAlreadyTakenException(slug);
+        }
     }
 
     public PagePublicResponse getPublicView(String slug) {

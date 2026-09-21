@@ -1,6 +1,8 @@
 package com.genderreveal.api.page;
 
+import com.genderreveal.api.common.InstantStringConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +30,7 @@ public class Page {
     private String actualGender;
 
     @Column(name = "reveal_at", nullable = false)
+    @Convert(converter = InstantStringConverter.class)
     private Instant revealAt;
 
     @Column(name = "due_date")
@@ -45,9 +48,11 @@ public class Page {
     private String ownerEmail;
 
     @Column(name = "created_at", nullable = false)
+    @Convert(converter = InstantStringConverter.class)
     private Instant createdAt;
 
     @Column(name = "expires_at", nullable = false)
+    @Convert(converter = InstantStringConverter.class)
     private Instant expiresAt;
 
     @Column(nullable = false)

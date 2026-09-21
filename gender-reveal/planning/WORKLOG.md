@@ -229,3 +229,42 @@
   설명과 예시 시나리오, 적용한 디자인 원칙을 정리
 - Design 캔버스 아티팩트 타입 규칙에 따라 발행 후 별도로 렌더링 검증은 하지 않음(해당 아티팩트
   타입 가이드가 "요청받지 않는 한 검증 금지"를 명시)
+## 2026-09-18
+
+### 29. 구현 설계(스펙) 확정 + 백엔드 기반(Plan 1) 구현
+- 브레인스토밍으로 스택 결정: 백엔드 Spring Boot(Java 21, Gradle Kotlin DSL) + SQLite(Flyway 마이그레이션),
+  프론트 Next.js, 메일은 Resend, 앞단은 nginx 동일 출처 리버스 프록시. 저장소는 `api/`(+ 추후 `web/`)의
+  두 프로세스 모노레포로 구성. 스펙: `docs/superpowers/specs/2026-09-18-implementation-design.md`
+- 구현 계획(`docs/superpowers/plans/`)을 서브에이전트 기반(워크트리, 태스크별 리뷰 루프, 최종 전체 리뷰)으로
+  실행하는 방식 채택
+- Plan 1(백엔드 기반) 완료·로컬 머지: 프로젝트 초기화/헬스체크, V1 스키마, Page 엔티티, 상태 계산
+  (secret/open/expired), 슬러그 할당, 페이지 생성/조회 API. Docker 미설치로 Docker/compose 태스크(Task 8)는 보류
+- 최종 리뷰에서 나온 수정: SQLite FK 강제(`foreign_keys=on`), Instant를 고정폭 ISO 문자열로 저장(변환기),
+  revealAt 상한, 미매핑 예외, 만료 상태 테스트용 `Clock` 주입, `Cache-Control: no-store`
+
+## 2026-09-21
+
+### 30. 게스트 참여 API(Plan 2) 구현 + 저장소 구조 논의
+- Plan 2 완료·로컬 머지: 게스트 맞추기(쿠키 `guest_id` 기준 1인 1회, 중복 시 409에 기존 선택 포함), 방명록 조회/작성
+  (숨김 항목 제외, `no-store`)
+- 최종 리뷰 수정: 게스트 쿠키 UUID 검증, 방명록 최신순 정렬을 문자열 시간 정렬에 의존하도록 정리, SQLite가
+  유니크 위반을 `JpaSystemException`(`DataAccessException`)으로 던지는 점을 발견해 레이스 백스톱 catch 타입 수정
+- `api/` 디렉터리 이유(멀티 프로세스 모노레포), 모놀리스/멀티레포 대안 비교, React 이점 포기 범위를 논의한 뒤
+  **"두 프로세스 한 레포" 구조 유지**로 결정
+
+### 31. 소유자 인증 + 관리자 API(Plan 3) 설계 결정
+- **로그인 먼저**: 이메일 매직링크 로그인(=이메일 소유 검증) 후에만 페이지 생성 가능, `ownerEmail`은 세션에서 취득.
+  세션·토큰을 페이지가 아닌 이메일에 붙이도록 V2 마이그레이션
+- **방문자 수 = 익명 쿠키 기준 고유 방문자**(`page_visits`), 방문자는 로그인하지 않음
+- **소유자 대시보드 방명록에 작성자의 맞추기 정답/오답 표시**(`guestbook_entries.guest_cookie_id`, 공개 방명록은 그대로)
+- 계획서: `docs/superpowers/plans/2026-09-21-auth-and-owner-api.md`(12개 태스크), 스펙 11절에 결정 사항 추가.
+  서브에이전트 기반 실행 시작 (진행 상황은 Plan 3 머지 시점의 커밋 이력 참고)
+
+### 32. 프론트엔드(Plan 4) 사전 결정 + 문서 정리
+- Next.js는 **정적 export**(nginx 서빙), 슬러그 화면은 클라이언트 렌더링, 공유 OG 카드는 공통 이미지·제목
+  (슬러그별 닉네임 OG는 불가 — 필요해지면 Node SSR로 전환)
+- **1차 범위에서 제외**: BGM, 비밀 화면 카운트다운, QR 코드
+- 화면 배분: Plan 4는 방문자 화면(`/g/[slug]`), Plan 5는 `/login`(`?error=invalid` 처리)·`/dashboard`(내 페이지
+  목록)·`/dashboard/[slug]`·`/create`. Plan 3의 매직링크 콜백이 `/dashboard`와 `/login?error=invalid`로
+  리다이렉트하므로 Plan 5 전까지 이 경로는 프론트에 없음
+- `CLAUDE.md`를 구현 단계 기준으로 갱신(스택, 백엔드 명령어, 컨벤션, 계획 진행 현황)

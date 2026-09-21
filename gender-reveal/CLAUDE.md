@@ -4,12 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-This directory (`gender-reveal/`) is a subproject of the `event-echo` repo, currently in the
-**planning stage** — there's no source code, build tooling, or tests yet, and no build/lint/test
-commands to run until implementation begins.
+This directory (`gender-reveal/`) is a subproject of the `event-echo` repo. Planning is done and
+**backend implementation is underway** (frontend not started).
+
+- **Backend — [api/](api/)**: Spring Boot 3.3 / Java 21 / Gradle (Kotlin DSL) / Spring Data JPA +
+  Hibernate community SQLite dialect / Flyway / SQLite. Implemented so far: page creation + public
+  view, guess (one per guest), guestbook, and (in progress) owner email magic-link auth + owner API
+  — see the plan checklist below.
+- **Frontend — `web/` (not created yet)**: Next.js with **static export** served by nginx (no Node
+  server), same-origin reverse proxy to the API. Consequences already decided: `/g/[slug]` renders
+  client-side by calling the API, nginx must route `/g/*` to one shell page, and OG share cards are
+  a single generic image/title (nickname can't go in per-slug OG tags). BGM, countdown on the secret
+  screen, and QR codes are **out of scope for the first release**.
+- **Design/implementation docs — [docs/superpowers/](docs/superpowers/)**: the implementation design
+  ([specs/](docs/superpowers/specs/2026-09-18-implementation-design.md), §11 records the owner-auth
+  decisions) and step-by-step plans under [plans/](docs/superpowers/plans/). Plans: 1 backend
+  foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (in progress),
+  4 Next.js frontend + visitor screens + nginx (planned), 5 login + admin dashboard + create form
+  (planned); the Docker / docker-compose task from Plan 1 is deferred until Docker is available.
 
 All planning-stage documents (requirements, wireframe, work log) live under [planning/](planning/),
-kept separate so future implementation source code (in the repo root or its own `src/`) stays clean.
+kept separate from the implementation source (`api/`, future `web/`).
 It contains [planning/Requirements.md](planning/Requirements.md), a low-fidelity
 [wireframe](planning/wireframe/README.md), a [design system](planning/design-system/README.md)
 (color/typography/spacing/radius tokens, plus a 24-illustration asset library — 12 zodiac characters +
@@ -71,9 +86,41 @@ with no guessing, guestbook, or admin features; those are this project's additio
 
 ## Working in this repo
 
-Since no framework, language, or package manager has been chosen yet, do not assume any specific
-stack (e.g. React, Next.js) — confirm with the user before scaffolding, since that decision isn't
-recorded anywhere in the repo yet.
+### Backend commands (run from `api/`)
+
+```bash
+./gradlew test                                              # full suite
+./gradlew test --tests "com.genderreveal.api.page.*"        # one package / class
+./gradlew bootRun                                           # dev server on :8080, DB at ./data/gender-reveal.db
+```
+
+Docker is not installed on the dev machine, so nothing here is verified via docker-compose.
+
+### Backend conventions worth knowing
+
+- **Schema changes only via Flyway** (`src/main/resources/db/migration/V*.sql`); `ddl-auto` is `none`.
+  SQLite runs with `foreign_keys=on` (both the app and test JDBC URLs), so tests that insert
+  child rows must create a real parent `Page` first.
+- **Time comes from an injected `Clock`** (`Instant.now(clock)`), never `Instant.now()` in services.
+  Tests that need to move time import `MutableTestClockConfig` and cast the `Clock` to `MutableTestClock`.
+  Every `Instant` column uses `InstantStringConverter` (fixed-width ISO text, so string ordering equals time ordering).
+- **Page status (`secret`/`open`/`expired`) is computed at read time** by `PageStatusCalculator`, not stored.
+- **SQLite unique-constraint violations surface as `JpaSystemException`** (a `DataAccessException`), *not*
+  `DataIntegrityViolationException` — race backstops (`catch`) must catch `DataAccessException`.
+- **Error handling**: named domain exceptions mapped by per-package `@RestControllerAdvice`; no generic
+  catch-all handlers.
+- **Guests are anonymous**: a `guest_id` UUID cookie (httpOnly, SameSite=Lax) identifies a guest for
+  guessing/visit counts. Owners log in by email magic link and get an `owner_session` cookie; a page
+  can only be created with a session, and other owners' pages return 404, not 403.
+- Known deferred hardening: rate limiting on public write endpoints, guestbook pagination,
+  Secure flag on the guest cookie (revisit with TLS/nginx), unified validation-error JSON shape;
+  the frontend must escape guestbook messages.
+
+### Working style used so far
+
+Implementation follows the superpowers flow: brainstorm → spec → plan → subagent-driven execution in
+a git worktree (per-task review loops, final whole-branch review, merge locally). Do not push to the
+remote unless asked.
 
 When editing SVG illustrations under `planning/design-system/project/assets/`, verify them by
 actually rendering, not just by reading coordinates — a past pass shipped visibly broken art (hidden

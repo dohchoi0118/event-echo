@@ -1,9 +1,13 @@
 package com.genderreveal.api.page;
 
 import com.genderreveal.api.auth.OwnerPrincipal;
+import com.genderreveal.api.common.GuestCookie;
+import com.genderreveal.api.visit.VisitService;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +22,13 @@ import java.net.URI;
 public class PageController {
 
     private final PageService pageService;
+    private final GuestCookie guestCookie;
+    private final VisitService visitService;
 
-    public PageController(PageService pageService) {
+    public PageController(PageService pageService, GuestCookie guestCookie, VisitService visitService) {
         this.pageService = pageService;
+        this.guestCookie = guestCookie;
+        this.visitService = visitService;
     }
 
     @PostMapping
@@ -32,8 +40,16 @@ public class PageController {
     }
 
     @GetMapping("/{slug}")
-    public ResponseEntity<PagePublicResponse> getBySlug(@PathVariable String slug) {
+    public ResponseEntity<PagePublicResponse> getBySlug(
+            @PathVariable String slug,
+            @CookieValue(name = GuestCookie.NAME, required = false) String existingGuestId) {
         PagePublicResponse response = pageService.getPublicView(slug);
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(response);
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok().cacheControl(CacheControl.noStore());
+        if ("open".equals(response.status())) {
+            String guestId = guestCookie.resolve(existingGuestId);
+            visitService.record(slug, guestId);
+            builder.header(HttpHeaders.SET_COOKIE, guestCookie.toSetCookie(guestId));
+        }
+        return builder.body(response);
     }
 }

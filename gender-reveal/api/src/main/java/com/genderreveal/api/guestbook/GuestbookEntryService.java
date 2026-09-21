@@ -33,6 +33,12 @@ public class GuestbookEntryService {
         return guestbookEntryRepository.findByPageIdAndHiddenFalseOrderByCreatedAtDesc(page.getId());
     }
 
+    public GuestbookEntry create(String slug, String nickname, String message) {
+        Page page = requireOpenPage(slug);
+        GuestbookEntry entry = new GuestbookEntry(page.getId(), nickname, message, Instant.now(clock));
+        return guestbookEntryRepository.save(entry);
+    }
+
     private Page requireOpenPage(String slug) {
         Page page = pageRepository.findBySlug(slug)
             .orElseThrow(() -> new PageNotFoundException(slug));

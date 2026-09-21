@@ -60,6 +60,60 @@ class GuestbookEntryControllerTest {
             .andExpect(status().isNotFound());
     }
 
+    @Test
+    void createsEntryAndListsItNewestFirst() throws Exception {
+        String slug = createOpenPage("guestbook-create-slug");
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "축하해요"))))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.nickname").value("이모"));
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "삼촌", "message", "고생하셨어요"))))
+            .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/pages/" + slug + "/guestbook"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].nickname").value("삼촌"))
+            .andExpect(jsonPath("$[1].nickname").value("이모"));
+    }
+
+    @Test
+    void postOnSecretPageIsRejected() throws Exception {
+        Map<String, Object> body = Map.of(
+            "nickname", "뽀튼이",
+            "actualGender", "boy",
+            "revealAt", Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS).toString(),
+            "theme", "box",
+            "bgmEnabled", true,
+            "ownerEmail", "owner@example.com",
+            "slug", "guestbook-secret-slug"
+        );
+        mockMvc.perform(post("/api/pages")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/pages/guestbook-secret-slug/guestbook")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "축하해요"))))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    void rejectsBlankNickname() throws Exception {
+        String slug = createOpenPage("guestbook-blank-slug");
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "", "message", "축하해요"))))
+            .andExpect(status().isBadRequest());
+    }
+
     private String createOpenPage(String slug) throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",

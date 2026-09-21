@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,6 +53,15 @@ class GuestbookEntryControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].nickname").value("visible"));
+    }
+
+    @Test
+    void setsNoStoreCacheControlHeader() throws Exception {
+        String slug = createOpenPage("guestbook-cache-header-slug");
+
+        mockMvc.perform(get("/api/pages/" + slug + "/guestbook"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Cache-Control", "no-store"));
     }
 
     @Test

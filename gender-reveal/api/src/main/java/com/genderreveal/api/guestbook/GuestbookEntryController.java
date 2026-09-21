@@ -1,6 +1,7 @@
 package com.genderreveal.api.guestbook;
 
 import jakarta.validation.Valid;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +24,11 @@ public class GuestbookEntryController {
     }
 
     @GetMapping
-    public List<GuestbookEntryResponse> list(@PathVariable String slug) {
-        return guestbookEntryService.list(slug).stream()
+    public ResponseEntity<List<GuestbookEntryResponse>> list(@PathVariable String slug) {
+        List<GuestbookEntryResponse> entries = guestbookEntryService.list(slug).stream()
             .map(GuestbookEntryResponse::from)
             .toList();
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(entries);
     }
 
     @PostMapping

@@ -25,7 +25,7 @@ class FlywayMigrationTest {
         );
 
         assertThat(tableNames).containsExactlyInAnyOrder(
-            "pages", "guesses", "guestbook_entries", "magic_link_tokens", "owner_sessions"
+            "pages", "guesses", "guestbook_entries", "magic_link_tokens", "owner_sessions", "page_visits"
         );
     }
 }

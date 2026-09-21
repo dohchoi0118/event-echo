@@ -25,7 +25,7 @@ public class PageService {
         this.clock = clock;
     }
 
-    public Page create(PageCreateRequest request) {
+    public Page create(PageCreateRequest request, String ownerEmail) {
         Instant now = Instant.now(clock);
         validateRevealAt(request.revealAt(), now);
 
@@ -34,7 +34,7 @@ public class PageService {
         Page page = new Page(
             slug, request.nickname(), request.actualGender(), request.revealAt(),
             request.dueDate(), request.message(), request.theme(), request.bgmEnabled(),
-            request.ownerEmail(), now, now.plus(RETENTION_DAYS, ChronoUnit.DAYS)
+            ownerEmail, now, now.plus(RETENTION_DAYS, ChronoUnit.DAYS)
         );
 
         try {

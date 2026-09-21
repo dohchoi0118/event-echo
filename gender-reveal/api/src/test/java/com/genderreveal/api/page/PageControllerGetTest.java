@@ -1,6 +1,7 @@
 package com.genderreveal.api.page;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genderreveal.api.auth.OwnerTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +31,9 @@ class PageControllerGetTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private OwnerTestSupport ownerTestSupport;
 
     @Test
     void returnsSecretStatusBeforeRevealAt() throws Exception {
@@ -83,11 +87,11 @@ class PageControllerGetTest {
             "revealAt", revealAt.toString(),
             "theme", "box",
             "bgmEnabled", true,
-            "ownerEmail", "owner@example.com",
             "slug", slug
         );
 
         mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());

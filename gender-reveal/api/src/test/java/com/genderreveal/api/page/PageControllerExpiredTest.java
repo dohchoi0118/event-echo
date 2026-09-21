@@ -1,6 +1,7 @@
 package com.genderreveal.api.page;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genderreveal.api.auth.OwnerTestSupport;
 import com.genderreveal.api.config.MutableTestClock;
 import com.genderreveal.api.config.MutableTestClockConfig;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ class PageControllerExpiredTest {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private OwnerTestSupport ownerTestSupport;
+
+    @Autowired
     private Clock clock;
 
     @Test
@@ -74,11 +78,11 @@ class PageControllerExpiredTest {
             "revealAt", revealAt.toString(),
             "theme", "box",
             "bgmEnabled", true,
-            "ownerEmail", "owner@example.com",
             "slug", slug
         );
 
         mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());

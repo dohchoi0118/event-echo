@@ -43,9 +43,9 @@ class PageServiceRaceTest {
 
         PageCreateRequest request = new PageCreateRequest(
             "뽀튼이", "boy", now.plus(1, ChronoUnit.DAYS), null, "메시지", "box", false,
-            "owner@example.com", "race-slug");
+            "race-slug");
 
-        assertThatThrownBy(() -> pageService.create(request))
+        assertThatThrownBy(() -> pageService.create(request, "owner@example.com"))
             .isInstanceOf(SlugAlreadyTakenException.class);
     }
 }

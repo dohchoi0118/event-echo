@@ -1,6 +1,7 @@
 package com.genderreveal.api.guestbook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genderreveal.api.auth.OwnerTestSupport;
 import com.genderreveal.api.page.Page;
 import com.genderreveal.api.page.PageRepository;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class GuestbookEntryControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private OwnerTestSupport ownerTestSupport;
 
     @Autowired
     private PageRepository pageRepository;
@@ -100,10 +104,10 @@ class GuestbookEntryControllerTest {
             "revealAt", Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,
-            "ownerEmail", "owner@example.com",
             "slug", "guestbook-secret-slug"
         );
         mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());
@@ -131,11 +135,11 @@ class GuestbookEntryControllerTest {
             "revealAt", Instant.now().minus(1, java.time.temporal.ChronoUnit.HOURS).toString(),
             "theme", "box",
             "bgmEnabled", true,
-            "ownerEmail", "owner@example.com",
             "slug", slug
         );
 
         mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());

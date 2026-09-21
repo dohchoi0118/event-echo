@@ -1,5 +1,6 @@
 package com.genderreveal.api.page;
 
+import com.genderreveal.api.auth.OwnerPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,9 @@ public class PageController {
     }
 
     @PostMapping
-    public ResponseEntity<PageCreateResponse> create(@Valid @RequestBody PageCreateRequest request) {
-        Page page = pageService.create(request);
+    public ResponseEntity<PageCreateResponse> create(OwnerPrincipal owner,
+                                                       @Valid @RequestBody PageCreateRequest request) {
+        Page page = pageService.create(request, owner.email());
         PageCreateResponse response = PageCreateResponse.from(page);
         return ResponseEntity.created(URI.create("/api/pages/" + page.getSlug())).body(response);
     }

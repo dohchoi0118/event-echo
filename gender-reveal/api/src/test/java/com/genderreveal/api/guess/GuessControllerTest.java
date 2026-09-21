@@ -1,6 +1,7 @@
 package com.genderreveal.api.guess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genderreveal.api.auth.OwnerTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,6 +34,9 @@ class GuessControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private OwnerTestSupport ownerTestSupport;
 
     @Test
     void firstGuessIssuesCookieAndSucceeds() throws Exception {
@@ -125,11 +129,11 @@ class GuessControllerTest {
             "revealAt", revealAt.toString(),
             "theme", "box",
             "bgmEnabled", true,
-            "ownerEmail", "owner@example.com",
             "slug", slug
         );
 
         mockMvc.perform(post("/api/pages")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());

@@ -115,3 +115,12 @@ gender-reveal/
 
 이 설계를 바탕으로 `writing-plans` 스킬을 통해 구체적인 구현 계획(작업 단위, 순서, 각 단계의
 완료 기준)을 작성한다.
+
+## 11. Plan 3 추가 결정 (2026-09-21)
+
+5·6절을 다음과 같이 바꾼다. 상세는 [Plan 3](../plans/2026-09-21-auth-and-owner-api.md).
+
+- **로그인 먼저, 그다음 페이지 생성.** `POST /api/pages`는 소유자 세션이 필수이고 `ownerEmail`은 세션에서 가져온다(요청 본문 값은 무시).
+- **세션·매직링크 토큰은 이메일에 붙는다.** 로그인 시점에는 페이지가 없으므로 `owner_sessions`/`magic_link_tokens`에서 `page_id`를 제거하고 `owner_email`로 대체(V2 마이그레이션). 대시보드 권한은 "세션 이메일 == 페이지 `ownerEmail`"로 판정하며, 남의 페이지는 404로 응답한다.
+- **방문자 수 = 익명 쿠키 기준 고유 방문자.** `page_visits(page_id, guest_cookie_id)` UNIQUE. 방문자는 로그인하지 않는다.
+- **소유자 대시보드 방명록에 작성자의 맞추기 결과 표시.** `guestbook_entries.guest_cookie_id`(nullable)를 `guesses`와 조인해 소유자 조회에서만 노출한다. 공개 방명록 응답은 그대로다.

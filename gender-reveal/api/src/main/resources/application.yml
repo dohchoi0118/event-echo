@@ -17,3 +17,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  session-cookie-secure: ${APP_SESSION_COOKIE_SECURE:false}
+  resend:
+    api-key: ${RESEND_API_KEY:}
+    from: ${RESEND_FROM:젠더리빌 <onboarding@resend.dev>}
+    api-url: https://api.resend.com/emails

@@ -66,6 +66,40 @@ class PageControllerCreateTest {
     }
 
     @Test
+    void rejectsRevealAtBeyondRetentionWindow() throws Exception {
+        Map<String, Object> body = Map.of(
+            "nickname", "뽀튼이",
+            "actualGender", "boy",
+            "revealAt", Instant.now().plus(40, ChronoUnit.DAYS).toString(),
+            "theme", "box",
+            "bgmEnabled", true,
+            "ownerEmail", "owner@example.com"
+        );
+
+        mockMvc.perform(post("/api/pages")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void acceptsRevealAtFarInThePastAndOpensImmediately() throws Exception {
+        Map<String, Object> body = Map.of(
+            "nickname", "뽀튼이",
+            "actualGender", "boy",
+            "revealAt", Instant.now().minus(40, ChronoUnit.DAYS).toString(),
+            "theme", "box",
+            "bgmEnabled", true,
+            "ownerEmail", "owner@example.com"
+        );
+
+        mockMvc.perform(post("/api/pages")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(body)))
+            .andExpect(status().isCreated());
+    }
+
+    @Test
     void rejectsDuplicateCustomSlug() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",

@@ -25,8 +25,10 @@ public class PageService {
     }
 
     public Page create(PageCreateRequest request) {
-        String slug = resolveSlug(request.slug());
         Instant now = Instant.now(clock);
+        validateRevealAt(request.revealAt(), now);
+
+        String slug = resolveSlug(request.slug());
 
         Page page = new Page(
             slug, request.nickname(), request.actualGender(), request.revealAt(),
@@ -48,6 +50,15 @@ public class PageService {
             case EXPIRED -> PagePublicResponse.secretOrExpired("expired", page.getNickname());
             case OPEN -> PagePublicResponse.open(page);
         };
+    }
+
+    private void validateRevealAt(Instant revealAt, Instant now) {
+        Instant latestAllowedRevealAt = now.plus(RETENTION_DAYS, ChronoUnit.DAYS);
+        if (!revealAt.isBefore(latestAllowedRevealAt)) {
+            throw new InvalidRevealAtException(
+                "revealAt must be strictly before " + RETENTION_DAYS + " days from now, otherwise the page "
+                    + "would expire before it ever opens");
+        }
     }
 
     private String resolveSlug(String requestedSlug) {

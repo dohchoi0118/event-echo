@@ -19,4 +19,9 @@ public class PageExceptionHandler {
     public ResponseEntity<Map<String, String>> handleNotFound(PageNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
+
+    @ExceptionHandler(InvalidRevealAtException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidRevealAt(InvalidRevealAtException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+    }
 }

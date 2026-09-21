@@ -51,6 +51,16 @@ class PageControllerGetTest {
     }
 
     @Test
+    void returnsOpenStatusWhenRevealAtIsFarInThePast() throws Exception {
+        String slug = createPage("ancient-slug", Instant.now().minus(40, ChronoUnit.DAYS));
+
+        mockMvc.perform(get("/api/pages/" + slug))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("open"))
+            .andExpect(jsonPath("$.actualGender").value("boy"));
+    }
+
+    @Test
     void returns404ForUnknownSlug() throws Exception {
         mockMvc.perform(get("/api/pages/does-not-exist"))
             .andExpect(status().isNotFound());

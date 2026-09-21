@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,6 +59,15 @@ class PageControllerGetTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("open"))
             .andExpect(jsonPath("$.actualGender").value("boy"));
+    }
+
+    @Test
+    void setsNoStoreCacheControlHeader() throws Exception {
+        String slug = createPage("cache-header-slug", Instant.now().plus(1, ChronoUnit.DAYS));
+
+        mockMvc.perform(get("/api/pages/" + slug))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Cache-Control", "no-store"));
     }
 
     @Test

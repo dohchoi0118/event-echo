@@ -68,19 +68,28 @@ class OwnerPageControllerTest {
 
     @Test
     void statsCountVisitorsAndGuessesByGender() throws Exception {
-        Page page = savePage("stats-slug", "stats-owner@example.com", -1, 0);
+        Page page1 = savePage("stats-slug", "stats-owner@example.com", -1, 0);
+        Page page2 = savePage("stats-other-slug", "stats-owner@example.com", -1, 1);
         Instant now = Instant.now();
-        visitRepository.save(new PageVisit(page.getId(), "v1", now));
-        visitRepository.save(new PageVisit(page.getId(), "v2", now));
-        visitRepository.save(new PageVisit(page.getId(), "v3", now));
-        guessRepository.save(new Guess(page.getId(), "v1", "boy", now));
-        guessRepository.save(new Guess(page.getId(), "v2", "boy", now));
-        guessRepository.save(new Guess(page.getId(), "v3", "girl", now));
+
+        // Page 1: 4 visitors, 3 guessers (v4 visits but never guesses)
+        visitRepository.save(new PageVisit(page1.getId(), "v1", now));
+        visitRepository.save(new PageVisit(page1.getId(), "v2", now));
+        visitRepository.save(new PageVisit(page1.getId(), "v3", now));
+        visitRepository.save(new PageVisit(page1.getId(), "v4", now));
+        guessRepository.save(new Guess(page1.getId(), "v1", "boy", now));
+        guessRepository.save(new Guess(page1.getId(), "v2", "boy", now));
+        guessRepository.save(new Guess(page1.getId(), "v3", "girl", now));
+
+        // Page 2: 2 visitors, 1 guess (must not be counted in page1 stats)
+        visitRepository.save(new PageVisit(page2.getId(), "v5", now));
+        visitRepository.save(new PageVisit(page2.getId(), "v6", now));
+        guessRepository.save(new Guess(page2.getId(), "v5", "boy", now));
 
         mockMvc.perform(get("/api/owner/pages/stats-slug/stats")
                 .cookie(ownerTestSupport.cookieFor("stats-owner@example.com")))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.visitors").value(3))
+            .andExpect(jsonPath("$.visitors").value(4))
             .andExpect(jsonPath("$.guessers").value(3))
             .andExpect(jsonPath("$.boyGuesses").value(2))
             .andExpect(jsonPath("$.girlGuesses").value(1));

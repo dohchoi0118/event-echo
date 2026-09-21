@@ -2,6 +2,8 @@ package com.genderreveal.api.owner;
 
 import com.genderreveal.api.guess.Guess;
 import com.genderreveal.api.guess.GuessRepository;
+import com.genderreveal.api.guestbook.GuestbookEntry;
+import com.genderreveal.api.guestbook.GuestbookEntryNotFoundException;
 import com.genderreveal.api.guestbook.GuestbookEntryRepository;
 import com.genderreveal.api.page.Page;
 import org.springframework.stereotype.Service;
@@ -36,5 +38,26 @@ public class OwnerGuestbookService {
             .map(entry -> OwnerGuestbookEntryResponse.of(
                 entry, page, entry.getGuestCookieId() == null ? null : guessesByGuest.get(entry.getGuestCookieId())))
             .toList();
+    }
+
+    public void setHidden(String slug, String ownerEmail, Long entryId, boolean hidden) {
+        GuestbookEntry entry = requireEntry(slug, ownerEmail, entryId);
+        if (hidden) {
+            entry.hide();
+        } else {
+            entry.show();
+        }
+        guestbookEntryRepository.save(entry);
+    }
+
+    public void delete(String slug, String ownerEmail, Long entryId) {
+        guestbookEntryRepository.delete(requireEntry(slug, ownerEmail, entryId));
+    }
+
+    private GuestbookEntry requireEntry(String slug, String ownerEmail, Long entryId) {
+        Page page = ownerPageService.requireOwned(slug, ownerEmail);
+        return guestbookEntryRepository.findById(entryId)
+            .filter(entry -> entry.getPageId().equals(page.getId()))
+            .orElseThrow(() -> new GuestbookEntryNotFoundException(entryId));
     }
 }

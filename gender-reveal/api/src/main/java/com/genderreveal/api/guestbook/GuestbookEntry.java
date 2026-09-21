@@ -59,6 +59,10 @@ public class GuestbookEntry {
         this.hidden = true;
     }
 
+    public void show() {
+        this.hidden = false;
+    }
+
     public Long getId() { return id; }
     public Long getPageId() { return pageId; }
     public String getNickname() { return nickname; }

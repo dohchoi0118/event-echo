@@ -1,5 +1,6 @@
 package com.genderreveal.api.owner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genderreveal.api.auth.OwnerTestSupport;
 import com.genderreveal.api.guess.Guess;
 import com.genderreveal.api.guess.GuessRepository;
@@ -17,8 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +35,9 @@ class OwnerGuestbookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private OwnerTestSupport ownerTestSupport;
@@ -93,5 +101,69 @@ class OwnerGuestbookControllerTest {
         mockMvc.perform(get("/api/owner/pages/og-private/guestbook")
                 .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void hideThenShowTogglesPublicVisibility() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Page page = openPage("mod-slug", "mod-owner@example.com", now);
+        GuestbookEntry entry = guestbookEntryRepository.save(new GuestbookEntry(page.getId(), "이모", "축하", now));
+
+        mockMvc.perform(patch("/api/owner/pages/mod-slug/guestbook/" + entry.getId())
+                .cookie(ownerTestSupport.cookieFor("mod-owner@example.com"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("hidden", true))))
+            .andExpect(status().isNoContent());
+        mockMvc.perform(get("/api/pages/mod-slug/guestbook")).andExpect(jsonPath("$.length()").value(0));
+
+        mockMvc.perform(patch("/api/owner/pages/mod-slug/guestbook/" + entry.getId())
+                .cookie(ownerTestSupport.cookieFor("mod-owner@example.com"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("hidden", false))))
+            .andExpect(status().isNoContent());
+        mockMvc.perform(get("/api/pages/mod-slug/guestbook")).andExpect(jsonPath("$.length()").value(1));
+    }
+
+    @Test
+    void deleteRemovesTheEntry() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Page page = openPage("del-slug", "del-owner@example.com", now);
+        GuestbookEntry entry = guestbookEntryRepository.save(new GuestbookEntry(page.getId(), "스팸", "광고", now));
+
+        mockMvc.perform(delete("/api/owner/pages/del-slug/guestbook/" + entry.getId())
+                .cookie(ownerTestSupport.cookieFor("del-owner@example.com")))
+            .andExpect(status().isNoContent());
+
+        assertThat(guestbookEntryRepository.findById(entry.getId())).isEmpty();
+    }
+
+    @Test
+    void entryOfAnotherPageOrOwnerIs404() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Page mine = openPage("mine-slug", "mine-owner@example.com", now);
+        Page other = openPage("other-slug", "other-owner@example.com", now);
+        GuestbookEntry otherEntry = guestbookEntryRepository.save(new GuestbookEntry(other.getId(), "남", "남의 글", now));
+
+        // Right owner, but the entry belongs to a different page.
+        mockMvc.perform(delete("/api/owner/pages/mine-slug/guestbook/" + otherEntry.getId())
+                .cookie(ownerTestSupport.cookieFor("mine-owner@example.com")))
+            .andExpect(status().isNotFound());
+        // Wrong owner.
+        mockMvc.perform(delete("/api/owner/pages/other-slug/guestbook/" + otherEntry.getId())
+                .cookie(ownerTestSupport.cookieFor("mine-owner@example.com")))
+            .andExpect(status().isNotFound());
+        // Unknown entry id.
+        mockMvc.perform(delete("/api/owner/pages/mine-slug/guestbook/999999")
+                .cookie(ownerTestSupport.cookieFor("mine-owner@example.com")))
+            .andExpect(status().isNotFound());
+
+        assertThat(guestbookEntryRepository.findById(otherEntry.getId())).isPresent();
+        assertThat(mine.getId()).isNotNull();
+    }
+
+    private Page openPage(String slug, String ownerEmail, Instant now) {
+        return pageRepository.save(new Page(
+            slug, "뽀튼이", "boy", now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, ownerEmail, now, now.plus(30, ChronoUnit.DAYS)));
     }
 }

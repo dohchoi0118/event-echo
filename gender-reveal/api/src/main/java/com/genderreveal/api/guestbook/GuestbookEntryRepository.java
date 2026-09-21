@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface GuestbookEntryRepository extends JpaRepository<GuestbookEntry, Long> {
     List<GuestbookEntry> findByPageIdAndHiddenFalseOrderByCreatedAtDesc(Long pageId);
+
+    List<GuestbookEntry> findByPageIdOrderByCreatedAtDesc(Long pageId);
 }

@@ -2,6 +2,7 @@ package com.genderreveal.api.guess;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface GuessRepository extends JpaRepository<Guess, Long> {
@@ -12,4 +13,6 @@ public interface GuessRepository extends JpaRepository<Guess, Long> {
     long countByPageId(Long pageId);
 
     long countByPageIdAndGuessedGender(Long pageId, String guessedGender);
+
+    List<Guess> findByPageId(Long pageId);
 }

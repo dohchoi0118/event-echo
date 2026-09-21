@@ -8,12 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -126,6 +130,45 @@ class GuestbookEntryControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(Map.of("nickname", "", "message", "축하해요"))))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void storesGuestCookieIdWhenValidCookieIsSent() throws Exception {
+        String slug = createOpenPage("guestbook-cookie-slug");
+        Page page = pageRepository.findBySlug(slug).orElseThrow();
+        String guestId = UUID.randomUUID().toString();
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .cookie(new MockCookie("guest_id", guestId))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "축하해요"))))
+            .andExpect(status().isCreated());
+
+        assertThat(guestbookEntryRepository.findAll())
+            .filteredOn(e -> e.getPageId().equals(page.getId()))
+            .singleElement()
+            .extracting(GuestbookEntry::getGuestCookieId).isEqualTo(guestId);
+    }
+
+    @Test
+    void storesNullWhenCookieIsMissingOrNotAUuid() throws Exception {
+        String slug = createOpenPage("guestbook-nocookie-slug");
+        Page page = pageRepository.findBySlug(slug).orElseThrow();
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "쿠키 없음"))))
+            .andExpect(status().isCreated());
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .cookie(new MockCookie("guest_id", "not-a-uuid"))
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "삼촌", "message", "쿠키 이상"))))
+            .andExpect(status().isCreated());
+
+        assertThat(guestbookEntryRepository.findAll())
+            .filteredOn(e -> e.getPageId().equals(page.getId()))
+            .extracting(GuestbookEntry::getGuestCookieId)
+            .containsOnlyNulls();
     }
 
     private String createOpenPage(String slug) throws Exception {

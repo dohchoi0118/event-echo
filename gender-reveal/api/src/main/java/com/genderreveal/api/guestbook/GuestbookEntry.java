@@ -35,14 +35,22 @@ public class GuestbookEntry {
     @Convert(converter = InstantStringConverter.class)
     private Instant createdAt;
 
+    @Column(name = "guest_cookie_id")
+    private String guestCookieId;
+
     protected GuestbookEntry() {
         // JPA
     }
 
     public GuestbookEntry(Long pageId, String nickname, String message, Instant createdAt) {
+        this(pageId, nickname, message, null, createdAt);
+    }
+
+    public GuestbookEntry(Long pageId, String nickname, String message, String guestCookieId, Instant createdAt) {
         this.pageId = pageId;
         this.nickname = nickname;
         this.message = message;
+        this.guestCookieId = guestCookieId;
         this.hidden = false;
         this.createdAt = createdAt;
     }
@@ -57,4 +65,5 @@ public class GuestbookEntry {
     public String getMessage() { return message; }
     public boolean isHidden() { return hidden; }
     public Instant getCreatedAt() { return createdAt; }
+    public String getGuestCookieId() { return guestCookieId; }
 }

@@ -33,9 +33,9 @@ public class GuestbookEntryService {
         return guestbookEntryRepository.findByPageIdAndHiddenFalseOrderByCreatedAtDesc(page.getId());
     }
 
-    public GuestbookEntry create(String slug, String nickname, String message) {
+    public GuestbookEntry create(String slug, String nickname, String message, String guestCookieId) {
         Page page = requireOpenPage(slug);
-        GuestbookEntry entry = new GuestbookEntry(page.getId(), nickname, message, Instant.now(clock));
+        GuestbookEntry entry = new GuestbookEntry(page.getId(), nickname, message, guestCookieId, Instant.now(clock));
         return guestbookEntryRepository.save(entry);
     }
 

@@ -40,6 +40,9 @@ public class PageService {
         try {
             return pageRepository.save(page);
         } catch (DataIntegrityViolationException ex) {
+            // Currently only the unique constraint on `slug` is reachable here — all other
+            // columns are either validated upstream or not subject to any DB-level constraint,
+            // so no other constraint on `pages` can trigger this catch. Revisit if that changes.
             throw new SlugAlreadyTakenException(slug);
         }
     }

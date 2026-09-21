@@ -124,3 +124,12 @@ gender-reveal/
 - **세션·매직링크 토큰은 이메일에 붙는다.** 로그인 시점에는 페이지가 없으므로 `owner_sessions`/`magic_link_tokens`에서 `page_id`를 제거하고 `owner_email`로 대체(V2 마이그레이션). 대시보드 권한은 "세션 이메일 == 페이지 `ownerEmail`"로 판정하며, 남의 페이지는 404로 응답한다.
 - **방문자 수 = 익명 쿠키 기준 고유 방문자.** `page_visits(page_id, guest_cookie_id)` UNIQUE. 방문자는 로그인하지 않는다.
 - **소유자 대시보드 방명록에 작성자의 맞추기 결과 표시.** `guestbook_entries.guest_cookie_id`(nullable)를 `guesses`와 조인해 소유자 조회에서만 노출한다. 공개 방명록 응답은 그대로다.
+
+## 12. Plan 4 추가 결정 (2026-09-21)
+
+7절(프론트엔드 구조)을 다음과 같이 바꾼다. 상세는 [Plan 4](../plans/2026-09-21-web-visitor-screens.md).
+
+- **Next.js는 정적 export**(`output: 'export'`)로 nginx가 서빙한다(Node 서버 없음). `/g/[slug]`는 서버 분기 렌더가 아니라 정적 셸(`g.html`) 하나를 nginx가 모든 `/g/*`에 내주고, 브라우저가 URL에서 슬러그를 읽어 동일 출처 `/api`를 호출해 그린다.
+- **공유 OG 카드는 모든 링크가 동일한 이미지·제목.** 슬러그별 OG(닉네임 등)는 정적 export로 불가 — 필요해지면 Node SSR로 전환.
+- **1차 범위 제외:** BGM, 비밀 화면 카운트다운, QR 코드(9절의 보류 항목 중 이 세 가지를 "제외"로 확정).
+- **화면 배분:** Plan 4 = 방문자 화면(`/g/[slug]`), Plan 5 = `/login`, `/dashboard`, `/dashboard/[slug]`, `/create`.

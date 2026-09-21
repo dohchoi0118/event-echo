@@ -50,7 +50,6 @@ CREATE TABLE owner_sessions (
     created_at TEXT NOT NULL
 );
 
-CREATE INDEX idx_guesses_page_id ON guesses(page_id);
 CREATE INDEX idx_guestbook_entries_page_id ON guestbook_entries(page_id);
 CREATE INDEX idx_magic_link_tokens_token_hash ON magic_link_tokens(token_hash);
 CREATE INDEX idx_owner_sessions_token_hash ON owner_sessions(session_token_hash);

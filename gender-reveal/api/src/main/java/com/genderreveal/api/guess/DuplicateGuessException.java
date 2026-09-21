@@ -1,7 +1,15 @@
 package com.genderreveal.api.guess;
 
 public class DuplicateGuessException extends RuntimeException {
-    public DuplicateGuessException(String slug) {
+
+    private final String existingGuessedGender;
+
+    public DuplicateGuessException(String slug, String existingGuessedGender) {
         super("Guest has already guessed on page: " + slug);
+        this.existingGuessedGender = existingGuessedGender;
+    }
+
+    public String getExistingGuessedGender() {
+        return existingGuessedGender;
     }
 }

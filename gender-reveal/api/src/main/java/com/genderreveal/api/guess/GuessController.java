@@ -33,7 +33,7 @@ public class GuessController {
             @CookieValue(name = COOKIE_NAME, required = false) String existingGuestId,
             @Valid @RequestBody GuessCreateRequest request) {
 
-        String guestId = (existingGuestId != null && !existingGuestId.isBlank())
+        String guestId = isValidUuid(existingGuestId)
             ? existingGuestId
             : UUID.randomUUID().toString();
 
@@ -49,5 +49,17 @@ public class GuessController {
         return ResponseEntity.status(HttpStatus.CREATED)
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(GuessResponse.from(guess));
+    }
+
+    private static boolean isValidUuid(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+        try {
+            UUID.fromString(value);
+            return true;
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
     }
 }

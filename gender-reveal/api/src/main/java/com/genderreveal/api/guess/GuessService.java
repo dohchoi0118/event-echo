@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 public class GuessService {
@@ -38,15 +39,22 @@ public class GuessService {
             throw new PageNotOpenException(slug);
         }
 
-        if (guessRepository.existsByPageIdAndGuestCookieId(page.getId(), guestCookieId)) {
-            throw new DuplicateGuessException(slug);
+        Optional<Guess> existing = guessRepository.findByPageIdAndGuestCookieId(page.getId(), guestCookieId);
+        if (existing.isPresent()) {
+            throw new DuplicateGuessException(slug, existing.get().getGuessedGender());
         }
 
         Guess guess = new Guess(page.getId(), guestCookieId, guessedGender, now);
         try {
             return guessRepository.save(guess);
         } catch (DataIntegrityViolationException ex) {
-            throw new DuplicateGuessException(slug);
+            // Currently only the (page_id, guest_cookie_id) unique constraint is reachable here —
+            // guessedGender is pattern-validated to boy|girl before this point, so no other
+            // constraint on `guesses` can trigger this catch. Revisit if that changes.
+            String existingGuessedGender = guessRepository.findByPageIdAndGuestCookieId(page.getId(), guestCookieId)
+                .map(Guess::getGuessedGender)
+                .orElse(null);
+            throw new DuplicateGuessException(slug, existingGuessedGender);
         }
     }
 }

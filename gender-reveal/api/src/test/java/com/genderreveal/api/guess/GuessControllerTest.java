@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,7 +53,7 @@ class GuessControllerTest {
     @Test
     void secondGuessWithSameCookieIsRejected() throws Exception {
         String slug = createOpenPage("guess-dup-slug");
-        MockCookie cookie = new MockCookie("guest_id", "repeat-guest");
+        MockCookie cookie = new MockCookie("guest_id", UUID.randomUUID().toString());
 
         mockMvc.perform(post("/api/pages/" + slug + "/guesses")
                 .cookie(cookie)
@@ -64,7 +65,25 @@ class GuessControllerTest {
                 .cookie(cookie)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(Map.of("guessedGender", "girl"))))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.guessedGender").value("boy"));
+    }
+
+    @Test
+    void malformedCookieValueIsReplacedWithFreshUuid() throws Exception {
+        String slug = createOpenPage("guess-malformed-cookie-slug");
+        MockCookie cookie = new MockCookie("guest_id", "not-a-uuid");
+
+        MvcResult result = mockMvc.perform(post("/api/pages/" + slug + "/guesses")
+                .cookie(cookie)
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("guessedGender", "boy"))))
+            .andExpect(status().isCreated())
+            .andReturn();
+
+        String returnedGuestId = result.getResponse().getCookie("guest_id").getValue();
+        assertThat(returnedGuestId).isNotEqualTo("not-a-uuid");
+        assertThat(UUID.fromString(returnedGuestId)).isNotNull();
     }
 
     @Test
@@ -75,6 +94,16 @@ class GuessControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(Map.of("guessedGender", "boy"))))
             .andExpect(status().isConflict());
+    }
+
+    @Test
+    void rejectsInvalidGuessedGender() throws Exception {
+        String slug = createOpenPage("guess-invalid-gender-slug");
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guesses")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("guessedGender", "other"))))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

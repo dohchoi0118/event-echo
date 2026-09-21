@@ -47,6 +47,9 @@ class MagicLinkCallbackTest {
     @Autowired
     private Clock clock;
 
+    @Autowired
+    private MagicLinkTokenRepository magicLinkTokenRepository;
+
     @BeforeEach
     void resetEmails() {
         emails.clear();
@@ -63,6 +66,10 @@ class MagicLinkCallbackTest {
         assertThat(response.getHeader("Location")).isEqualTo("http://localhost:8080/dashboard");
         String setCookie = response.getHeader("Set-Cookie");
         assertThat(setCookie).startsWith("owner_session=").contains("HttpOnly").contains("SameSite=Lax");
+
+        // Verify magic link token is stored only as hash, not raw token
+        assertThat(magicLinkTokenRepository.findByTokenHash(token)).isEmpty();
+        assertThat(magicLinkTokenRepository.findByTokenHash(TokenHasher.sha256(token))).isPresent();
     }
 
     @Test

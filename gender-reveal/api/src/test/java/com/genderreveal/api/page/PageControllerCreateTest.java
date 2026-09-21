@@ -18,6 +18,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -227,8 +230,7 @@ class PageControllerCreateTest {
     @Test
     void emailFailureDoesNotFailPageCreation() throws Exception {
         org.mockito.Mockito.doThrow(new com.genderreveal.api.email.EmailSendException("boom"))
-            .when(emails).send(org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+            .when(emails).send(anyString(), anyString(), anyString());
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
             "actualGender", "boy",
@@ -243,5 +245,8 @@ class PageControllerCreateTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());
+
+        assertThat(pageRepository.findBySlug("mail-fails-slug")).isPresent();
+        verify(emails).send(eq("owner@example.com"), anyString(), anyString());
     }
 }

@@ -92,4 +92,9 @@ public class Page {
     public Instant getCreatedAt() { return createdAt; }
     public Instant getExpiresAt() { return expiresAt; }
     public boolean isExtended() { return extended; }
+
+    public void extend(Instant newExpiresAt) {
+        this.expiresAt = newExpiresAt;
+        this.extended = true;
+    }
 }

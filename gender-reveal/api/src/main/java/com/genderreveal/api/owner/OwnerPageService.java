@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 public class OwnerPageService {
+
+    private static final int EXTENSION_DAYS = 30;
 
     private final PageRepository pageRepository;
     private final PageVisitRepository visitRepository;
@@ -51,5 +54,17 @@ public class OwnerPageService {
             guessRepository.countByPageId(pageId),
             guessRepository.countByPageIdAndGuessedGender(pageId, "boy"),
             guessRepository.countByPageIdAndGuessedGender(pageId, "girl"));
+    }
+
+    public OwnerPageSummary extend(String slug, String ownerEmail) {
+        Page page = requireOwned(slug, ownerEmail);
+        if (page.isExtended()) {
+            throw new ExtensionAlreadyUsedException(slug);
+        }
+        Instant now = Instant.now(clock);
+        Instant base = page.getExpiresAt().isAfter(now) ? page.getExpiresAt() : now;
+        page.extend(base.plus(EXTENSION_DAYS, ChronoUnit.DAYS));
+        Page saved = pageRepository.save(page);
+        return OwnerPageSummary.of(saved, statusCalculator.calculate(saved, now));
     }
 }

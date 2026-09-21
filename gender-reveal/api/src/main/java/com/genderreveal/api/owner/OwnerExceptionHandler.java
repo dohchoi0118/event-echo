@@ -15,4 +15,9 @@ public class OwnerExceptionHandler {
     public ResponseEntity<Map<String, String>> handleEntryNotFound(GuestbookEntryNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
+
+    @ExceptionHandler(ExtensionAlreadyUsedException.class)
+    public ResponseEntity<Map<String, String>> handleExtensionUsed(ExtensionAlreadyUsedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
 }

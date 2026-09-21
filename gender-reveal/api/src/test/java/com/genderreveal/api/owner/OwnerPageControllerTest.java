@@ -18,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -103,6 +106,57 @@ class OwnerPageControllerTest {
                 .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
             .andExpect(status().isNotFound());
         mockMvc.perform(get("/api/owner/pages/no-such-page/stats")
+                .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void extendAddsThirtyDaysToTheCurrentExpiryOnceOnly() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Page page = pageRepository.save(new Page(
+            "ext-slug", "뽀튼이", "boy", now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "ext-owner@example.com", now, now.plus(5, ChronoUnit.DAYS)));
+
+        mockMvc.perform(post("/api/owner/pages/ext-slug/extend")
+                .cookie(ownerTestSupport.cookieFor("ext-owner@example.com")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.extended").value(true))
+            .andExpect(jsonPath("$.status").value("open"));
+
+        Page reloaded = pageRepository.findById(page.getId()).orElseThrow();
+        assertThat(reloaded.isExtended()).isTrue();
+        assertThat(reloaded.getExpiresAt()).isEqualTo(now.plus(35, ChronoUnit.DAYS));
+
+        mockMvc.perform(post("/api/owner/pages/ext-slug/extend")
+                .cookie(ownerTestSupport.cookieFor("ext-owner@example.com")))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    void extendingAnAlreadyExpiredPageRestartsThirtyDaysFromNow() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Page page = pageRepository.save(new Page(
+            "ext-expired-slug", "뽀튼이", "boy", now.minus(40, ChronoUnit.DAYS),
+            null, "메시지", "box", false, "ext-owner@example.com",
+            now.minus(35, ChronoUnit.DAYS), now.minus(5, ChronoUnit.DAYS)));
+
+        mockMvc.perform(post("/api/owner/pages/ext-expired-slug/extend")
+                .cookie(ownerTestSupport.cookieFor("ext-owner@example.com")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("open"));
+
+        Page reloaded = pageRepository.findById(page.getId()).orElseThrow();
+        assertThat(reloaded.getExpiresAt()).isCloseTo(now.plus(30, ChronoUnit.DAYS), within(30, ChronoUnit.SECONDS));
+    }
+
+    @Test
+    void extendingSomeoneElsesPageIs404() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "ext-private-slug", "뽀튼이", "boy", now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "victim@example.com", now, now.plus(5, ChronoUnit.DAYS)));
+
+        mockMvc.perform(post("/api/owner/pages/ext-private-slug/extend")
                 .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
             .andExpect(status().isNotFound());
     }

@@ -1,6 +1,6 @@
 package com.genderreveal.api.page;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -39,10 +39,14 @@ public class PageService {
 
         try {
             return pageRepository.save(page);
-        } catch (DataIntegrityViolationException ex) {
-            // Currently only the unique constraint on `slug` is reachable here — all other
-            // columns are either validated upstream or not subject to any DB-level constraint,
-            // so no other constraint on `pages` can trigger this catch. Revisit if that changes.
+        } catch (DataAccessException ex) {
+            // TOCTOU backstop: another request took this slug between resolveSlug() and save().
+            // Catches DataAccessException, not the narrower DataIntegrityViolationException, because
+            // the SQLite dialect reports no SQLState, so the UNIQUE(slug) violation surfaces as
+            // JpaSystemException (a DataAccessException but NOT a DataIntegrityViolationException).
+            // This also covers other persistence failures on this single-row insert; all other
+            // columns are validated upstream, so the slug constraint is the only realistic cause.
+            // Revisit if that changes.
             throw new SlugAlreadyTakenException(slug);
         }
     }

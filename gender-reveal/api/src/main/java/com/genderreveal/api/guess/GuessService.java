@@ -6,7 +6,7 @@ import com.genderreveal.api.page.PageNotOpenException;
 import com.genderreveal.api.page.PageRepository;
 import com.genderreveal.api.page.PageStatus;
 import com.genderreveal.api.page.PageStatusCalculator;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -47,10 +47,14 @@ public class GuessService {
         Guess guess = new Guess(page.getId(), guestCookieId, guessedGender, now);
         try {
             return guessRepository.save(guess);
-        } catch (DataIntegrityViolationException ex) {
-            // Currently only the (page_id, guest_cookie_id) unique constraint is reachable here —
-            // guessedGender is pattern-validated to boy|girl before this point, so no other
-            // constraint on `guesses` can trigger this catch. Revisit if that changes.
+        } catch (DataAccessException ex) {
+            // TOCTOU backstop: another request inserted the same (page_id, guest_cookie_id) between
+            // the check above and this save. Catches DataAccessException, not the narrower
+            // DataIntegrityViolationException, because the SQLite dialect reports no SQLState, so
+            // the unique-constraint violation surfaces as JpaSystemException (a DataAccessException
+            // but NOT a DataIntegrityViolationException). This also covers other persistence
+            // failures on this single-row insert; guessedGender is pattern-validated to boy|girl,
+            // so the unique constraint is the only realistic cause. Revisit if that changes.
             String existingGuessedGender = guessRepository.findByPageIdAndGuestCookieId(page.getId(), guestCookieId)
                 .map(Guess::getGuessedGender)
                 .orElse(null);

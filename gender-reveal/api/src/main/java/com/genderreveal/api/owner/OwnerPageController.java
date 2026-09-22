@@ -26,6 +26,12 @@ public class OwnerPageController {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(ownerPageService.list(owner.email()));
     }
 
+    @GetMapping("/{slug}")
+    public ResponseEntity<OwnerPageDetail> detail(OwnerPrincipal owner, @PathVariable String slug) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+            .body(ownerPageService.detail(slug, owner.email()));
+    }
+
     @GetMapping("/{slug}/stats")
     public ResponseEntity<PageStats> stats(OwnerPrincipal owner, @PathVariable String slug) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())

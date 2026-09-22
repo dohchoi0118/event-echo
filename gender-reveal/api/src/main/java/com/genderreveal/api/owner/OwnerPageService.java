@@ -67,4 +67,9 @@ public class OwnerPageService {
         Page saved = pageRepository.save(page);
         return OwnerPageSummary.of(saved, statusCalculator.calculate(saved, now));
     }
+
+    public OwnerPageDetail detail(String slug, String ownerEmail) {
+        Page page = requireOwned(slug, ownerEmail);
+        return OwnerPageDetail.of(page, statusCalculator.calculate(page, Instant.now(clock)));
+    }
 }

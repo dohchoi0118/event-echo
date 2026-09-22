@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -159,6 +160,46 @@ class OwnerPageControllerTest {
         mockMvc.perform(post("/api/owner/pages/ext-private-slug/extend")
                 .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void detailExposesActualGenderAndSettingsToTheOwner() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "detail-slug", "뽀튼이", "girl", now.plus(2, ChronoUnit.HOURS),
+            LocalDate.of(2026, 11, 3), "환영해요", "cake", false,
+            "detail-owner@example.com", now, now.plus(30, ChronoUnit.DAYS)));
+
+        mockMvc.perform(get("/api/owner/pages/detail-slug")
+                .cookie(ownerTestSupport.cookieFor("detail-owner@example.com")))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Cache-Control", "no-store"))
+            .andExpect(jsonPath("$.slug").value("detail-slug"))
+            .andExpect(jsonPath("$.nickname").value("뽀튼이"))
+            .andExpect(jsonPath("$.actualGender").value("girl"))
+            .andExpect(jsonPath("$.dueDate").value("2026-11-03"))
+            .andExpect(jsonPath("$.message").value("환영해요"))
+            .andExpect(jsonPath("$.theme").value("cake"))
+            .andExpect(jsonPath("$.bgmEnabled").value(false))
+            .andExpect(jsonPath("$.status").value("secret"))
+            .andExpect(jsonPath("$.extended").value(false));
+    }
+
+    @Test
+    void detailOfSomeoneElsesPageOrMissingSlugIs404() throws Exception {
+        pageRepository.save(new Page(
+            "detail-private-slug", "뽀튼이", "boy", Instant.now().minus(1, ChronoUnit.HOURS),
+            null, null, "box", false, "victim@example.com",
+            Instant.now(), Instant.now().plus(30, ChronoUnit.DAYS)));
+
+        mockMvc.perform(get("/api/owner/pages/detail-private-slug")
+                .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
+            .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/owner/pages/no-such-slug")
+                .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
+            .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/owner/pages/detail-private-slug"))
+            .andExpect(status().isUnauthorized());
     }
 
     private Page savePage(String slug, String ownerEmail, long revealOffsetHours, long createdOffsetMinutes) {

@@ -90,4 +90,20 @@ describe('ResultScreen', () => {
 
     expect(onNext).toHaveBeenCalledTimes(1);
   });
+
+  it('shows a notice when the guest already participated before', async () => {
+    render(<ResultScreen page={basePage} guess="boy" onNext={() => {}} alreadyGuessed />);
+
+    await reveal('선물상자를 열어보세요');
+
+    expect(screen.getByText('이미 참여하셨어요 · 이전 예측을 보여드려요')).toBeInTheDocument();
+  });
+
+  it('omits the notice for a first-time guess', async () => {
+    render(<ResultScreen page={basePage} guess="boy" onNext={() => {}} />);
+
+    await reveal('선물상자를 열어보세요');
+
+    expect(screen.queryByText('이미 참여하셨어요 · 이전 예측을 보여드려요')).not.toBeInTheDocument();
+  });
 });

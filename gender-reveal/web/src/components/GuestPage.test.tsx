@@ -108,6 +108,7 @@ describe('GuestPage', () => {
     await user.click(await screen.findByRole('button', { name: '선물상자를 열어보세요' }));
 
     expect(await screen.findByText('내 예측: 남아 → 결과: 정답', {}, { timeout: 3000 })).toBeInTheDocument();
+    expect(await screen.findByText('이미 참여하셨어요 · 이전 예측을 보여드려요', {}, { timeout: 3000 })).toBeInTheDocument();
   });
 
   it('shows an error on the select screen when guessing fails', async () => {

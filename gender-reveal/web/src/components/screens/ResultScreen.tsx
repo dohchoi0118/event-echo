@@ -18,11 +18,13 @@ export function ResultScreen({
   page,
   guess,
   onNext,
+  alreadyGuessed = false,
   revealDelayMs = 900,
 }: {
   page: OpenPageView;
   guess: Gender;
   onNext: () => void;
+  alreadyGuessed?: boolean;
   revealDelayMs?: number;
 }) {
   const reduced = usePrefersReducedMotion();
@@ -85,6 +87,9 @@ export function ResultScreen({
       <p className="font-display text-display-lg">{revealHeadline(page.actualGender)}</p>
       {zodiac && <p className="text-body-lg">{`${zodiacLabelKo(zodiac)}둥이가 찾아왔어요!`}</p>}
       {page.message && <p className="text-body text-ink-muted">{page.message}</p>}
+      {alreadyGuessed && (
+        <p className="text-body-sm text-ink-muted">이미 참여하셨어요 · 이전 예측을 보여드려요</p>
+      )}
       <p className="rounded-radius-full bg-surface-100 px-space-3 py-space-1 text-label">
         {guessSummary(guess, page.actualGender)}
       </p>

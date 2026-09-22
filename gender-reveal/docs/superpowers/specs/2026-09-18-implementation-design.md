@@ -133,3 +133,11 @@ gender-reveal/
 - **공유 OG 카드는 모든 링크가 동일한 이미지·제목.** 슬러그별 OG(닉네임 등)는 정적 export로 불가 — 필요해지면 Node SSR로 전환.
 - **1차 범위 제외:** BGM, 비밀 화면 카운트다운, QR 코드(9절의 보류 항목 중 이 세 가지를 "제외"로 확정).
 - **화면 배분:** Plan 4 = 방문자 화면(`/g/[slug]`), Plan 5 = `/login`, `/dashboard`, `/dashboard/[slug]`, `/create`.
+
+## 13. Plan 5 추가 결정 (2026-09-22)
+
+7절의 `/dashboard/[slug]`·`/create` 항목을 다음과 같이 바꾼다. 상세는 [Plan 5](../plans/2026-09-22-owner-dashboard-and-create-form.md).
+
+- **`/dashboard/[slug]`가 아니라 `/dashboard?slug=...`.** 대시보드 URL은 공유되지 않으므로 쿼리 문자열로 슬러그를 받고, 목록/상세를 같은 정적 페이지가 클라이언트에서 분기한다. Plan 4가 `/g/<slug>`를 위해 추가한 nginx 정규식 규칙과 달리, 대시보드에는 nginx 규칙이 필요 없다.
+- **소유자 페이지 상세 조회 API 추가.** `GET /api/owner/pages/{slug}`(`OwnerPageDetail`)가 실제 성별을 포함한 전체 설정을 소유자에게 보여준다(기존 소유자 API는 이를 노출하지 않았다).
+- **공개 예정 일시 수정, 애니메이션 미리보기는 1차 범위에서 제외.** 대시보드는 조회만 제공하고, 작성 폼의 미리보기는 입력값 요약 카드로 대신한다.

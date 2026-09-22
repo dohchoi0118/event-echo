@@ -33,6 +33,7 @@ public class OwnerAuthInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setHeader("Cache-Control", "no-store");
             response.getWriter().write("{\"error\":\"Unauthorized\"}");
             return false;
         }

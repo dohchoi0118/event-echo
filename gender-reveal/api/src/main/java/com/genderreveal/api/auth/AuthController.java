@@ -2,6 +2,7 @@ package com.genderreveal.api.auth;
 
 import com.genderreveal.api.config.AppProperties;
 import jakarta.validation.Valid;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,8 +53,8 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public Map<String, String> me(OwnerPrincipal owner) {
-        return Map.of("email", owner.email());
+    public ResponseEntity<Map<String, String>> me(OwnerPrincipal owner) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(Map.of("email", owner.email()));
     }
 
     @PostMapping("/logout")
@@ -66,6 +67,8 @@ public class AuthController {
     }
 
     private ResponseEntity.BodyBuilder redirect(String path) {
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.baseUrl() + path));
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .location(URI.create(appProperties.baseUrl() + path))
+            .cacheControl(CacheControl.noStore());
     }
 }

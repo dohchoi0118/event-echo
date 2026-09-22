@@ -1,7 +1,6 @@
 package com.genderreveal.api.auth;
 
 import com.genderreveal.api.config.AppProperties;
-import com.genderreveal.api.email.EmailSendException;
 import com.genderreveal.api.email.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ public class MagicLinkService {
             + "\n\n본인이 요청하지 않았다면 이 메일을 무시해 주세요.";
         try {
             emailSender.send(normalized, "젠더리빌 로그인 링크", body);
-        } catch (EmailSendException ex) {
+        } catch (RuntimeException ex) {
             log.error("Failed to send magic link email", ex);
         }
     }

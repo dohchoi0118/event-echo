@@ -9,7 +9,7 @@ This directory (`gender-reveal/`) is a subproject of the `event-echo` repo. Plan
 
 - **Backend — [api/](api/)**: Spring Boot 3.3 / Java 21 / Gradle (Kotlin DSL) / Spring Data JPA +
   Hibernate community SQLite dialect / Flyway / SQLite. Implemented so far: page creation + public
-  view, guess (one per guest), guestbook, and (in progress) owner email magic-link auth + owner API
+  view, guess (one per guest), guestbook, and (done) owner email magic-link auth + owner API
   — see the plan checklist below.
 - **Frontend — `web/` (not created yet)**: Next.js with **static export** served by nginx (no Node
   server), same-origin reverse proxy to the API. Consequences already decided: `/g/[slug]` renders
@@ -19,7 +19,7 @@ This directory (`gender-reveal/`) is a subproject of the `event-echo` repo. Plan
 - **Design/implementation docs — [docs/superpowers/](docs/superpowers/)**: the implementation design
   ([specs/](docs/superpowers/specs/2026-09-18-implementation-design.md), §11 records the owner-auth
   decisions) and step-by-step plans under [plans/](docs/superpowers/plans/). Plans: 1 backend
-  foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (in progress),
+  foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (done),
   4 Next.js frontend + visitor screens + nginx (planned), 5 login + admin dashboard + create form
   (planned); the Docker / docker-compose task from Plan 1 is deferred until Docker is available.
 

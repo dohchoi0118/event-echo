@@ -1,7 +1,6 @@
 package com.genderreveal.api.page;
 
 import com.genderreveal.api.config.AppProperties;
-import com.genderreveal.api.email.EmailSendException;
 import com.genderreveal.api.email.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +102,7 @@ public class PageService {
         String body = "페이지가 만들어졌어요. 아래 링크를 복사해 가족과 친구들에게 공유해 보세요.\n\n" + link;
         try {
             emailSender.send(page.getOwnerEmail(), "젠더리빌 페이지가 발행됐어요", body);
-        } catch (EmailSendException ex) {
+        } catch (RuntimeException ex) {
             log.error("Failed to send published-link email for slug {}", page.getSlug(), ex);
         }
     }

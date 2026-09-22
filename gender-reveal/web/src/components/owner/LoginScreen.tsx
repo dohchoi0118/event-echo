@@ -5,10 +5,12 @@ import type { FormEvent } from 'react';
 import { Button } from '../Button';
 import { Screen } from '../Screen';
 import { requestMagicLink } from '@/lib/api';
+import { useOwnerSession } from '@/hooks/useOwnerSession';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginScreen() {
+  const session = useOwnerSession();
   const [email, setEmail] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
@@ -18,6 +20,21 @@ export function LoginScreen() {
   useEffect(() => {
     setCallbackError(new URLSearchParams(window.location.search).get('error') === 'invalid');
   }, []);
+
+  // Already-logged-in owners land on the dashboard, not the login form. Mirrors the
+  // useEffect+window.location.href pattern the plan uses for the opposite (unauthenticated)
+  // redirect on owner-only screens.
+  useEffect(() => {
+    if (session.status === 'authenticated') {
+      window.location.href = '/dashboard';
+    }
+  }, [session.status]);
+
+  // While the session check is pending, or once it resolves authenticated (redirect effect above
+  // is about to fire), render nothing rather than flashing the login form.
+  if (session.status === 'loading' || session.status === 'authenticated') {
+    return null;
+  }
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();

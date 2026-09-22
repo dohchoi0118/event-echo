@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CreatePageForm } from '@/components/owner/CreatePageForm';
+import { CreatePageFlow } from '@/components/owner/CreatePageFlow';
 import { useOwnerSession } from '@/hooks/useOwnerSession';
 
 export default function Page() {
@@ -19,7 +19,7 @@ export default function Page() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-[480px] flex-col px-space-3 py-space-5">
-      <CreatePageForm onSubmit={() => {}} submitting={false} error={null} />
+      <CreatePageFlow />
     </main>
   );
 }

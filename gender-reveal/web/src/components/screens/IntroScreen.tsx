@@ -16,7 +16,7 @@ export function IntroScreen({
   nickname,
   zodiac,
   onNext,
-  autoAdvanceMs = 5000,
+  autoAdvanceMs,
 }: {
   nickname: string;
   zodiac: ZodiacKey | null;
@@ -26,11 +26,14 @@ export function IntroScreen({
   const reduced = usePrefersReducedMotion();
   const text = `두근두근...\n${topic(nickname)} 딸일까요,\n아들일까요?`;
   const { shown } = useTypewriter(text, { instant: reduced });
+  // Give the guest time to actually read the typed sentence: typing time + a fixed buffer,
+  // so a long nickname doesn't get cut off by a fixed delay.
+  const effectiveAutoAdvanceMs = autoAdvanceMs ?? text.length * 70 + 2000;
 
   useEffect(() => {
-    const id = setTimeout(onNext, autoAdvanceMs);
+    const id = setTimeout(onNext, effectiveAutoAdvanceMs);
     return () => clearTimeout(id);
-  }, [onNext, autoAdvanceMs]);
+  }, [onNext, effectiveAutoAdvanceMs]);
 
   return (
     <Screen>

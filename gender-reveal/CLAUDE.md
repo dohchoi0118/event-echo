@@ -4,23 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-This directory (`gender-reveal/`) is a subproject of the `event-echo` repo. Planning is done and
-**backend implementation is underway** (frontend not started).
+This directory (`gender-reveal/`) is a subproject of the `event-echo` repo. Planning is done;
+backend and the visitor-facing frontend are implemented (owner dashboard/create-form frontend not
+started).
 
 - **Backend — [api/](api/)**: Spring Boot 3.3 / Java 21 / Gradle (Kotlin DSL) / Spring Data JPA +
-  Hibernate community SQLite dialect / Flyway / SQLite. Implemented so far: page creation + public
-  view, guess (one per guest), guestbook, and (done) owner email magic-link auth + owner API
-  — see the plan checklist below.
-- **Frontend — `web/` (not created yet)**: Next.js with **static export** served by nginx (no Node
-  server), same-origin reverse proxy to the API. Consequences already decided: `/g/[slug]` renders
-  client-side by calling the API, nginx must route `/g/*` to one shell page, and OG share cards are
-  a single generic image/title (nickname can't go in per-slug OG tags). BGM, countdown on the secret
-  screen, and QR codes are **out of scope for the first release**.
+  Hibernate community SQLite dialect / Flyway / SQLite. Implemented: page creation + public
+  view, guess (one per guest), guestbook, owner email magic-link auth + owner API.
+- **Frontend — [web/](web/)**: Next.js 15 (App Router) with **static export** (`npm run build` →
+  `out/`, no Node server) served by nginx, same-origin reverse proxy to the API
+  (`web/nginx/gender-reveal.conf`). Implemented: the full visitor flow at `/g/<slug>` (one static
+  shell for every slug, slug read client-side from `window.location.pathname`) — intro, secret,
+  expired, guess selection, 3-theme result reveal, guestbook. `NEXT_PUBLIC_SITE_URL` is required for
+  a production build (`npm run build`) — it fails fast otherwise, to avoid baking `localhost` into
+  the OG share-card URL. Not yet built: owner-facing screens (`/login`, `/dashboard`, `/create` —
+  Plan 5). BGM, countdown on the secret screen, and QR codes are **out of scope for the first
+  release**.
 - **Design/implementation docs — [docs/superpowers/](docs/superpowers/)**: the implementation design
-  ([specs/](docs/superpowers/specs/2026-09-18-implementation-design.md), §11 records the owner-auth
-  decisions) and step-by-step plans under [plans/](docs/superpowers/plans/). Plans: 1 backend
+  ([specs/](docs/superpowers/specs/2026-09-18-implementation-design.md), §11–13 record decisions
+  from Plans 3–5) and step-by-step plans under [plans/](docs/superpowers/plans/). Plans: 1 backend
   foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (done),
-  4 Next.js frontend + visitor screens + nginx (planned), 5 login + admin dashboard + create form
+  4 Next.js frontend + visitor screens + nginx (done), 5 login + admin dashboard + create form
   (planned); the Docker / docker-compose task from Plan 1 is deferred until Docker is available.
 
 All planning-stage documents (requirements, wireframe, work log) live under [planning/](planning/),

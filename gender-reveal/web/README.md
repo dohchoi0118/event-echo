@@ -22,10 +22,13 @@ API 주소를 바꾸려면 `API_ORIGIN=http://host:port npm run dev`.
 
 ```bash
 npm test          # Vitest
-npm run build     # 정적 파일 → out/
-NEXT_PUBLIC_SITE_URL=https://example.com npm run build   # 배포 시 OG 이미지 절대 URL
+NEXT_PUBLIC_SITE_URL=https://example.com npm run build   # 정적 파일 → out/ (OG 이미지 절대 URL에 필요)
 npm run og        # public/og.png 재생성 (일러스트 변경 시)
 ```
+
+`npm run build`는 프로덕션 빌드(`NODE_ENV=production`)라 `NEXT_PUBLIC_SITE_URL`이 없으면 실패한다
+(og:image/twitter:image가 `localhost`로 새는 것을 막기 위한 의도적인 가드 — `src/app/layout.tsx` 참고).
+로컬에서 값을 정하지 않았다면 아무 값이나 넣어 빌드 결과만 확인해도 된다.
 
 ## 배포
 

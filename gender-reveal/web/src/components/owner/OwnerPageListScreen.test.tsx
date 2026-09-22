@@ -47,7 +47,11 @@ describe('OwnerPageListScreen', () => {
     render(<OwnerPageListScreen />);
 
     expect(await screen.findByText('owner@example.com')).toBeInTheDocument();
-    expect(screen.getByText('뽀튼이')).toBeInTheDocument();
+    // The email and the page list come from two separate async state updates (getMe vs.
+    // listOwnerPages) that don't necessarily commit in the same render — retry (findByText)
+    // on the first list-dependent assertion rather than assuming the list is already painted
+    // just because the email is.
+    expect(await screen.findByText('뽀튼이')).toBeInTheDocument();
     expect(screen.getByText('공개 중')).toBeInTheDocument();
     expect(screen.getByText('별튼이')).toBeInTheDocument();
     expect(screen.getByText('공개 대기')).toBeInTheDocument();

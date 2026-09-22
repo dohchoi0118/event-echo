@@ -18,6 +18,13 @@ npm run dev
 http://localhost:3000/g/<slug> 를 연다. 페이지 생성은 소유자 로그인이 필요하다(Plan 5 전까지는 API로 직접 만든다).
 API 주소를 바꾸려면 `API_ORIGIN=http://host:port npm run dev`.
 
+## 소유자 로그인 플로우 (로컬 개발)
+
+1. API가 로그인 메일을 실제로 보내지 않는다(`RESEND_API_KEY` 미설정 시 로그만 남김) — 서버 로그에서
+   `/api/auth/callback?token=...` 링크를 찾아 브라우저로 직접 열면 로그인된다.
+2. 로그인에 성공하면 `owner_session` 쿠키가 발급되고 `/dashboard`로 이동한다.
+3. `/dashboard`, `/create`는 세션이 없으면 자동으로 `/login`으로 돌아간다.
+
 ## 테스트 / 빌드
 
 ```bash

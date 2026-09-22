@@ -20,4 +20,6 @@ public interface MagicLinkTokenRepository extends JpaRepository<MagicLinkToken, 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update MagicLinkToken t set t.used = true where t.id = :id and t.used = false")
     int markUsed(@Param("id") Long id);
+
+    int deleteByExpiresAtBefore(Instant cutoff);
 }

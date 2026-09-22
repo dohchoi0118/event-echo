@@ -151,6 +151,20 @@ class OwnerPageControllerTest {
     }
 
     @Test
+    void concurrentExtendRequestsOnlyOneSucceeds() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "concurrent-extend-slug", "뽀튼이", "boy", now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "concurrent-owner@example.com", now, now.plus(5, ChronoUnit.DAYS)));
+        var cookie = ownerTestSupport.cookieFor("concurrent-owner@example.com");
+
+        mockMvc.perform(post("/api/owner/pages/concurrent-extend-slug/extend").cookie(cookie))
+            .andExpect(status().isOk());
+        mockMvc.perform(post("/api/owner/pages/concurrent-extend-slug/extend").cookie(cookie))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
     void extendingSomeoneElsesPageIs404() throws Exception {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         pageRepository.save(new Page(

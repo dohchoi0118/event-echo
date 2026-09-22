@@ -58,13 +58,15 @@ public class OwnerPageService {
 
     public OwnerPageSummary extend(String slug, String ownerEmail) {
         Page page = requireOwned(slug, ownerEmail);
-        if (page.isExtended()) {
-            throw new ExtensionAlreadyUsedException(slug);
-        }
         Instant now = Instant.now(clock);
         Instant base = page.getExpiresAt().isAfter(now) ? page.getExpiresAt() : now;
-        page.extend(base.plus(EXTENSION_DAYS, ChronoUnit.DAYS));
-        Page saved = pageRepository.save(page);
+        Instant newExpiresAt = base.plus(EXTENSION_DAYS, ChronoUnit.DAYS);
+
+        if (pageRepository.markExtended(page.getId(), newExpiresAt) == 0) {
+            throw new ExtensionAlreadyUsedException(slug);
+        }
+
+        Page saved = pageRepository.findById(page.getId()).orElseThrow(() -> new PageNotFoundException(slug));
         return OwnerPageSummary.of(saved, statusCalculator.calculate(saved, now));
     }
 

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { OwnerPageListScreen } from './OwnerPageListScreen';
 import * as api from '@/lib/api';
@@ -34,9 +34,7 @@ describe('OwnerPageListScreen', () => {
 
     render(<OwnerPageListScreen />);
 
-    await new Promise((r) => setTimeout(r, 0));
-    await new Promise((r) => setTimeout(r, 0));
-    expect(assignedHref).toBe('/login');
+    await waitFor(() => expect(assignedHref).toBe('/login'));
   });
 
   it('shows the owner email and their pages once authenticated', async () => {

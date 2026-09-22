@@ -65,6 +65,19 @@ describe('CreatePageFlow', () => {
     expect(screen.getByLabelText('태명')).toBeInTheDocument();
   });
 
+  it('shows a validation error on the form after a 400', async () => {
+    createPage.mockRejectedValue(new api.ApiError(400, { error: 'Invalid revealAt' }));
+    const user = userEvent.setup();
+    render(<CreatePageFlow />);
+
+    await fillMinimalForm(user);
+    await user.click(screen.getByRole('button', { name: '미리보기' }));
+    await user.click(screen.getByRole('button', { name: '발행하기' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('입력값을 다시 확인해 주세요');
+    expect(screen.getByLabelText('태명')).toBeInTheDocument();
+  });
+
   it('copies the link on the success screen', async () => {
     createPage.mockResolvedValue({ slug: 'ppo-2026' });
     const user = userEvent.setup();

@@ -5,8 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project status
 
 This directory (`gender-reveal/`) is a subproject of the `event-echo` repo. Planning is done;
-backend and the visitor-facing frontend are implemented (owner dashboard/create-form frontend not
-started).
+backend and frontend (visitor flow + owner dashboard/create form) are implemented.
 
 - **Backend — [api/](api/)**: Spring Boot 3.3 / Java 21 / Gradle (Kotlin DSL) / Spring Data JPA +
   Hibernate community SQLite dialect / Flyway / SQLite. Implemented: page creation + public
@@ -15,17 +14,18 @@ started).
   `out/`, no Node server) served by nginx, same-origin reverse proxy to the API
   (`web/nginx/gender-reveal.conf`). Implemented: the full visitor flow at `/g/<slug>` (one static
   shell for every slug, slug read client-side from `window.location.pathname`) — intro, secret,
-  expired, guess selection, 3-theme result reveal, guestbook. `NEXT_PUBLIC_SITE_URL` is required for
-  a production build (`npm run build`) — it fails fast otherwise, to avoid baking `localhost` into
-  the OG share-card URL. Not yet built: owner-facing screens (`/login`, `/dashboard`, `/create` —
-  Plan 5). BGM, countdown on the secret screen, and QR codes are **out of scope for the first
-  release**.
+  expired, guess selection, 3-theme result reveal, guestbook — and the owner-facing flow
+  (`/login`, `/dashboard`, `/create`) — magic-link login, page list/detail with stats and guestbook
+  moderation, one-time page-extend, and page creation with client-side validation, preview and
+  publish. `NEXT_PUBLIC_SITE_URL` is required for a production build (`npm run build`) — it fails
+  fast otherwise, to avoid baking `localhost` into the OG share-card URL. BGM, countdown on the
+  secret screen, and QR codes are **out of scope for the first release**.
 - **Design/implementation docs — [docs/superpowers/](docs/superpowers/)**: the implementation design
   ([specs/](docs/superpowers/specs/2026-09-18-implementation-design.md), §11–13 record decisions
   from Plans 3–5) and step-by-step plans under [plans/](docs/superpowers/plans/). Plans: 1 backend
   foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (done),
-  4 Next.js frontend + visitor screens + nginx (done), 5 login + admin dashboard + create form
-  (planned); the Docker / docker-compose task from Plan 1 is deferred until Docker is available.
+  4 Next.js frontend + visitor screens + nginx (done), 5 login + owner dashboard + create form
+  (done); the Docker / docker-compose task from Plan 1 is deferred until Docker is available.
 
 All planning-stage documents (requirements, wireframe, work log) live under [planning/](planning/),
 kept separate from the implementation source (`api/`, future `web/`).
@@ -132,7 +132,15 @@ Docker is not installed on the dev machine, so nothing here is verified via dock
   pre-reveal); `IntroScreen`'s 5s auto-advance timer cannot be paused/extended by the user (WCAG
   2.2.1 Timing Adjustable) — also, a very long nickname can make the typewriter animation outrun the
   fixed auto-advance delay; `submitGuess`'s `alreadyGuessed` return value is computed but not
-  currently surfaced in the UI (a returning guest sees the same screen as a first-time guest).
+  currently surfaced in the UI (a returning guest sees the same screen as a first-time guest); no
+  error handling on `OwnerPageListScreen`'s list-fetch or logout (silent failure); no error handling
+  on guestbook hide/show/delete or page-extend mutations (failure is a silent no-op); a stale
+  slug-taken error banner on the create form isn't cleared when the user edits and resubmits;
+  `PublishSuccessScreen` reads `window.location.origin` in the component body (safe today only
+  because it's unreachable during prerender — would break `npm run build` if the render path ever
+  changed); the owner dashboard detail screen does 2-3 sequential fetches with no loading indicator;
+  `/dashboard` and `/create` have no `robots: noindex` metadata (unlike `/login`); the new
+  owner-facing GET API functions in `api.ts` aren't tested for sending `cache: 'no-store'`.
 
 ### Working style used so far
 

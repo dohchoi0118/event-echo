@@ -20,9 +20,13 @@ export function CreatePageFlow() {
       const { slug } = await createPage(payload);
       setStage({ kind: 'done', slug });
     } catch (error) {
-      setFormError(
-        error instanceof ApiError && error.status === 409 ? '이미 사용 중인 주소예요' : '잠시 후 다시 시도해 주세요',
-      );
+      let message = '잠시 후 다시 시도해 주세요';
+      if (error instanceof ApiError && error.status === 409) {
+        message = '이미 사용 중인 주소예요';
+      } else if (error instanceof ApiError && error.status === 400) {
+        message = '입력값을 다시 확인해 주세요';
+      }
+      setFormError(message);
       setStage({ kind: 'form' });
     } finally {
       setSubmitting(false);

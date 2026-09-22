@@ -15,7 +15,8 @@ npm install
 npm run dev
 ```
 
-http://localhost:3000/g/<slug> 를 연다. 페이지 생성은 소유자 로그인이 필요하다(Plan 5 전까지는 API로 직접 만든다).
+http://localhost:3000/g/<slug> 를 연다. 페이지 생성은 소유자 로그인이 필요하다 — `/login`으로 로그인한 뒤
+`/create`에서 페이지를 만든다.
 API 주소를 바꾸려면 `API_ORIGIN=http://host:port npm run dev`.
 
 ## 소유자 로그인 플로우 (로컬 개발)

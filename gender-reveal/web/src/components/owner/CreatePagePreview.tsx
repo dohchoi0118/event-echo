@@ -1,6 +1,6 @@
 import { Button } from '../Button';
 import { babySrc } from '@/lib/illustrations';
-import { REVEAL_PROMPT } from '@/lib/result';
+import { genderKo, REVEAL_PROMPT } from '@/lib/result';
 import { zodiacFromDueDate, zodiacLabelKo } from '@/lib/zodiac';
 import type { PageCreatePayload } from '@/lib/types';
 
@@ -26,6 +26,7 @@ export function CreatePagePreview({
       <div className="flex flex-col items-center gap-space-2 rounded-radius-md border border-border bg-surface-100 p-space-4">
         <img src={babySrc(payload.actualGender)} alt="" className="h-24 w-24" />
         <p className="text-body-lg">{payload.nickname}</p>
+        <p className="text-body-sm text-ink-muted">{genderKo(payload.actualGender)}</p>
         {zodiac && <p className="text-body-sm text-ink-muted">{zodiacLabelKo(zodiac)}</p>}
         <p className="text-body">{REVEAL_PROMPT[payload.theme]}</p>
         {payload.message && <p className="text-body text-ink-muted">{payload.message}</p>}

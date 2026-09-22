@@ -58,6 +58,40 @@ describe('CreatePageForm', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it('rejects an invalid custom slug format', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    render(<CreatePageForm onSubmit={onSubmit} submitting={false} error={null} />);
+
+    await user.type(screen.getByLabelText('태명'), '뽀튼이');
+    await user.click(screen.getByRole('radio', { name: '남아' }));
+    await user.type(screen.getByLabelText('공개 예정 일시'), '2026-10-01T09:00');
+    await user.click(screen.getByRole('radio', { name: '케이크' }));
+    await user.type(screen.getByLabelText('커스텀 주소 (선택)'), 'AB');
+    await user.click(screen.getByRole('button', { name: '미리보기' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('커스텀 주소는 영문 소문자·숫자·하이픈 3~32자로 입력해 주세요');
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('rejects a revealAt 30 days or more in the future', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    render(<CreatePageForm onSubmit={onSubmit} submitting={false} error={null} />);
+
+    const farFuture = new Date(Date.now() + 31 * 24 * 60 * 60 * 1000);
+    const localValue = `${farFuture.getFullYear()}-${String(farFuture.getMonth() + 1).padStart(2, '0')}-${String(farFuture.getDate()).padStart(2, '0')}T09:00`;
+
+    await user.type(screen.getByLabelText('태명'), '뽀튼이');
+    await user.click(screen.getByRole('radio', { name: '남아' }));
+    await user.type(screen.getByLabelText('공개 예정 일시'), localValue);
+    await user.click(screen.getByRole('radio', { name: '케이크' }));
+    await user.click(screen.getByRole('button', { name: '미리보기' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('공개 예정 일시는 지금부터 30일 이내로 설정해 주세요');
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
   it('shows a server-provided error', () => {
     render(<CreatePageForm onSubmit={() => {}} submitting={false} error="이미 사용 중인 주소예요" />);
 

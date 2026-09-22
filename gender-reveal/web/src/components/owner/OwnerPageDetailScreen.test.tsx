@@ -7,6 +7,7 @@ vi.mock('@/lib/api', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/api')>();
   return {
     ...actual,
+    getMe: vi.fn(),
     getOwnerPageDetail: vi.fn(),
     getOwnerStats: vi.fn(),
     extendPage: vi.fn(),
@@ -14,10 +15,13 @@ vi.mock('@/lib/api', async (importOriginal) => {
   };
 });
 
+const getMe = vi.mocked(api.getMe);
 const getOwnerPageDetail = vi.mocked(api.getOwnerPageDetail);
 const getOwnerStats = vi.mocked(api.getOwnerStats);
 const extendPage = vi.mocked(api.extendPage);
 const getOwnerGuestbook = vi.mocked(api.getOwnerGuestbook);
+
+let assignedHref = '';
 
 const detail = {
   slug: 'my-slug', nickname: '뽀튼이', actualGender: 'girl' as const, dueDate: '2026-11-03',
@@ -28,12 +32,22 @@ const detail = {
 const stats = { visitors: 128, guessers: 64, boyGuesses: 32, girlGuesses: 32 };
 
 beforeEach(() => {
+  getMe.mockReset();
   getOwnerPageDetail.mockReset();
   getOwnerStats.mockReset();
   extendPage.mockReset();
   getOwnerGuestbook.mockReset();
   getOwnerGuestbook.mockResolvedValue([]);
+  getMe.mockResolvedValue({ email: 'owner@example.com' });
+  assignedHref = '';
+  vi.spyOn(window, 'location', 'get').mockReturnValue({
+    ...window.location,
+    set href(v: string) { assignedHref = v; },
+    get href() { return assignedHref; },
+  } as unknown as Location);
 });
+
+afterEach(() => vi.restoreAllMocks());
 
 describe('slugFromSearch', () => {
   it('reads slug from a query string', () => {
@@ -97,5 +111,24 @@ describe('OwnerPageDetailScreen', () => {
 
     expect(await screen.findByText('사용함')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '30일 연장하기' })).not.toBeInTheDocument();
+  });
+
+  it('redirects to /login when not authenticated', async () => {
+    getMe.mockReset();
+    getMe.mockRejectedValue(new api.ApiError(401, null));
+
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    await waitFor(() => expect(assignedHref).toBe('/login'));
+  });
+
+  it('shows an error message and a link back to /dashboard when the fetch fails', async () => {
+    getOwnerPageDetail.mockRejectedValue(new api.ApiError(404, null));
+    getOwnerStats.mockResolvedValue(stats);
+
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('페이지를 불러오지 못했어요');
+    expect(screen.getByRole('link', { name: '← 내 페이지' })).toHaveAttribute('href', '/dashboard');
   });
 });

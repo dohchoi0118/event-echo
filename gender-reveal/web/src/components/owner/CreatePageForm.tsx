@@ -38,6 +38,17 @@ export function CreatePageForm({
       setValidationError('태명, 성별, 공개 예정 일시, 테마를 입력해 주세요');
       return;
     }
+    const trimmedSlug = slug.trim();
+    if (trimmedSlug && !/^[a-z0-9-]{3,32}$/.test(trimmedSlug)) {
+      setValidationError('커스텀 주소는 영문 소문자·숫자·하이픈 3~32자로 입력해 주세요');
+      return;
+    }
+    const revealAtDate = new Date(revealAt);
+    const maxRevealAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    if (revealAtDate >= maxRevealAt) {
+      setValidationError('공개 예정 일시는 지금부터 30일 이내로 설정해 주세요');
+      return;
+    }
     setValidationError(null);
     onSubmit({
       nickname: nickname.trim(),

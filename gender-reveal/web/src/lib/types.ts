@@ -21,6 +21,59 @@ export type GuestbookEntry = {
   createdAt: string;
 };
 
+export type OwnerPageSummary = {
+  slug: string;
+  nickname: string;
+  status: 'secret' | 'open' | 'expired';
+  revealAt: string;
+  expiresAt: string;
+  extended: boolean;
+  theme: Theme;
+};
+
+export type OwnerPageDetail = {
+  slug: string;
+  nickname: string;
+  actualGender: Gender;
+  dueDate: string | null;
+  message: string | null;
+  theme: Theme;
+  bgmEnabled: boolean;
+  status: 'secret' | 'open' | 'expired';
+  revealAt: string;
+  createdAt: string;
+  expiresAt: string;
+  extended: boolean;
+};
+
+export type PageStats = {
+  visitors: number;
+  guessers: number;
+  boyGuesses: number;
+  girlGuesses: number;
+};
+
+export type OwnerGuestbookEntry = {
+  id: number;
+  nickname: string;
+  message: string;
+  createdAt: string;
+  hidden: boolean;
+  guessedGender?: Gender;
+  guessCorrect?: boolean;
+};
+
+export type PageCreatePayload = {
+  nickname: string;
+  actualGender: Gender;
+  revealAt: string;
+  dueDate: string | null;
+  message: string | null;
+  theme: Theme;
+  bgmEnabled: boolean;
+  slug?: string;
+};
+
 /** Validates the API payload; secret/expired pages must never carry gender-bearing fields into the UI. */
 export function parsePageView(raw: unknown): PageView {
   if (typeof raw !== 'object' || raw === null) throw new Error('Unexpected page payload');

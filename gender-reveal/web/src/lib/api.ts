@@ -1,5 +1,8 @@
 import { parsePageView } from './types';
-import type { Gender, GuestbookEntry, PageView } from './types';
+import type {
+  Gender, GuestbookEntry, OwnerGuestbookEntry, OwnerPageDetail, OwnerPageSummary,
+  PageCreatePayload, PageStats, PageView,
+} from './types';
 
 export class ApiError extends Error {
   constructor(
@@ -26,7 +29,11 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     }
     throw new ApiError(response.status, body);
   }
-  return (await response.json()) as T;
+  // Empty-body success responses (204 No Content from PATCH/DELETE/logout, and 202 Accepted from
+  // the magic-link request) have nothing for response.json() to parse — read as text first and
+  // only parse when non-empty, rather than special-casing status 204 alone.
+  const text = await response.text();
+  return (text ? JSON.parse(text) : undefined) as T;
 }
 
 const pagePath = (slug: string) => `/api/pages/${encodeURIComponent(slug)}`;
@@ -34,8 +41,8 @@ const pagePath = (slug: string) => `/api/pages/${encodeURIComponent(slug)}`;
 function postJson<T>(path: string, payload: unknown): Promise<T> {
   return request<T>(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    headers: payload === undefined ? undefined : { 'Content-Type': 'application/json' },
+    body: payload === undefined ? undefined : JSON.stringify(payload),
   });
 }
 
@@ -76,4 +83,52 @@ export function postGuestbook(
   entry: { nickname: string; message: string },
 ): Promise<GuestbookEntry> {
   return postJson<GuestbookEntry>(`${pagePath(slug)}/guestbook`, entry);
+}
+
+export function requestMagicLink(email: string): Promise<void> {
+  return postJson<void>('/api/auth/magic-link', { email });
+}
+
+export function getMe(): Promise<{ email: string }> {
+  return request<{ email: string }>('/api/auth/me', { cache: 'no-store' });
+}
+
+export function logout(): Promise<void> {
+  return postJson<void>('/api/auth/logout', undefined);
+}
+
+export function listOwnerPages(): Promise<OwnerPageSummary[]> {
+  return request<OwnerPageSummary[]>('/api/owner/pages', { cache: 'no-store' });
+}
+
+export function getOwnerPageDetail(slug: string): Promise<OwnerPageDetail> {
+  return request<OwnerPageDetail>(`/api/owner/pages/${encodeURIComponent(slug)}`, { cache: 'no-store' });
+}
+
+export function getOwnerStats(slug: string): Promise<PageStats> {
+  return request<PageStats>(`/api/owner/pages/${encodeURIComponent(slug)}/stats`, { cache: 'no-store' });
+}
+
+export function extendPage(slug: string): Promise<OwnerPageSummary> {
+  return postJson<OwnerPageSummary>(`/api/owner/pages/${encodeURIComponent(slug)}/extend`, undefined);
+}
+
+export function createPage(payload: PageCreatePayload): Promise<{ slug: string }> {
+  return postJson<{ slug: string }>('/api/pages', payload);
+}
+
+export function getOwnerGuestbook(slug: string): Promise<OwnerGuestbookEntry[]> {
+  return request<OwnerGuestbookEntry[]>(`/api/owner/pages/${encodeURIComponent(slug)}/guestbook`, { cache: 'no-store' });
+}
+
+export function setGuestbookHidden(slug: string, entryId: number, hidden: boolean): Promise<void> {
+  return request<void>(`/api/owner/pages/${encodeURIComponent(slug)}/guestbook/${entryId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hidden }),
+  });
+}
+
+export function deleteGuestbookEntry(slug: string, entryId: number): Promise<void> {
+  return request<void>(`/api/owner/pages/${encodeURIComponent(slug)}/guestbook/${entryId}`, { method: 'DELETE' });
 }

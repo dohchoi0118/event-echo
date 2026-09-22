@@ -2,8 +2,13 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntroScreen } from './IntroScreen';
 
+const originalMatchMedia = window.matchMedia;
+
 beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
-afterEach(() => vi.useRealTimers());
+afterEach(() => {
+  vi.useRealTimers();
+  window.matchMedia = originalMatchMedia;
+});
 
 describe('IntroScreen', () => {
   it('types the question with the right topic particle', () => {
@@ -49,5 +54,18 @@ describe('IntroScreen', () => {
     expect(onNext).not.toHaveBeenCalled();
     act(() => { vi.advanceTimersByTime(1); });
     expect(onNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the full text immediately when prefers-reduced-motion is set', () => {
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: true,
+      media: '(prefers-reduced-motion: reduce)',
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }) as unknown as typeof window.matchMedia;
+
+    render(<IntroScreen nickname="뽀튼이" zodiac={null} onNext={() => {}} />);
+
+    expect(screen.getByTestId('intro-text').textContent).toBe('두근두근...\n뽀튼이는 딸일까요,\n아들일까요?');
   });
 });

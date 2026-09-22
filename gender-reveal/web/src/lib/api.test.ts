@@ -72,6 +72,14 @@ describe('getPage', () => {
 
     await expect(getPage('x')).rejects.toThrow();
   });
+
+  it('wraps a non-JSON 2xx body as a typed ApiError instead of throwing a raw SyntaxError', async () => {
+    fetchMock.mockReturnValue(
+      Promise.resolve(new Response('not json', { status: 200, headers: { 'Content-Type': 'text/plain' } })),
+    );
+
+    await expect(getPage('s')).rejects.toBeInstanceOf(ApiError);
+  });
 });
 
 describe('submitGuess', () => {

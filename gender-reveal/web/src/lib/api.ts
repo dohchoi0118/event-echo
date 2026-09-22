@@ -33,7 +33,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   // the magic-link request) have nothing for response.json() to parse — read as text first and
   // only parse when non-empty, rather than special-casing status 204 alone.
   const text = await response.text();
-  return (text ? JSON.parse(text) : undefined) as T;
+  if (!text) {
+    return undefined as T;
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new ApiError(response.status, null);
+  }
 }
 
 const pagePath = (slug: string) => `/api/pages/${encodeURIComponent(slug)}`;

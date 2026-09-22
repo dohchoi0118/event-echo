@@ -41,7 +41,8 @@ public class GuestbookEntryController {
             @CookieValue(name = GuestCookie.NAME, required = false) String existingGuestId,
             @Valid @RequestBody GuestbookEntryCreateRequest request) {
         String guestId = guestCookie.isValid(existingGuestId) ? existingGuestId : null;
-        GuestbookEntry entry = guestbookEntryService.create(slug, request.nickname(), request.message(), guestId);
+        String rateLimitKey = guestCookie.resolve(existingGuestId);
+        GuestbookEntry entry = guestbookEntryService.create(slug, request.nickname(), request.message(), guestId, rateLimitKey);
         return ResponseEntity.status(HttpStatus.CREATED).body(GuestbookEntryResponse.from(entry));
     }
 }

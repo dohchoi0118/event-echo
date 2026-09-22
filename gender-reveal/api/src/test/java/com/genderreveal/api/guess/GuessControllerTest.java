@@ -20,6 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -116,6 +117,30 @@ class GuessControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(Map.of("guessedGender", "boy"))))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void sixthGuessRequestFromTheSameGuestWithinAMinuteIsRateLimited() throws Exception {
+        String slug = createOpenPage("rate-limit-guess-slug");
+        MockCookie cookie = new MockCookie("guest_id", UUID.randomUUID().toString());
+        // First guess succeeds (201); the other 4 hit DuplicateGuess (409) but each still counts
+        // toward the limit, since the rate check runs before the duplicate check.
+        mockMvc.perform(post("/api/pages/" + slug + "/guesses")
+                .cookie(cookie).contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("guessedGender", "boy"))))
+            .andExpect(status().isCreated());
+        for (int i = 0; i < 4; i++) {
+            mockMvc.perform(post("/api/pages/" + slug + "/guesses")
+                    .cookie(cookie).contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of("guessedGender", "boy"))))
+                .andExpect(status().isConflict());
+        }
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guesses")
+                .cookie(cookie).contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("guessedGender", "boy"))))
+            .andExpect(status().isTooManyRequests())
+            .andExpect(header().string("Retry-After", "60"));
     }
 
     private String createOpenPage(String slug) throws Exception {

@@ -171,6 +171,24 @@ class GuestbookEntryControllerTest {
             .containsOnlyNulls();
     }
 
+    @Test
+    void sixthGuestbookPostFromTheSameGuestWithinAMinuteIsRateLimited() throws Exception {
+        String slug = createOpenPage("rate-limit-guestbook-slug");
+        MockCookie cookie = new MockCookie("guest_id", UUID.randomUUID().toString());
+        for (int i = 0; i < 5; i++) {
+            mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                    .cookie(cookie).contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "축하 " + i))))
+                .andExpect(status().isCreated());
+        }
+
+        mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .cookie(cookie).contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "또"))))
+            .andExpect(status().isTooManyRequests())
+            .andExpect(header().string("Retry-After", "60"));
+    }
+
     private String createOpenPage(String slug) throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",

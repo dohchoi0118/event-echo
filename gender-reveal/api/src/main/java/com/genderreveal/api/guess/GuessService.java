@@ -1,5 +1,7 @@
 package com.genderreveal.api.guess;
 
+import com.genderreveal.api.common.RateLimitExceededException;
+import com.genderreveal.api.common.RateLimiter;
 import com.genderreveal.api.page.Page;
 import com.genderreveal.api.page.PageNotFoundException;
 import com.genderreveal.api.page.PageNotOpenException;
@@ -10,26 +12,35 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
 @Service
 public class GuessService {
 
+    private static final int MAX_GUESSES_PER_MINUTE = 5;
+
     private final GuessRepository guessRepository;
     private final PageRepository pageRepository;
     private final PageStatusCalculator statusCalculator;
     private final Clock clock;
+    private final RateLimiter rateLimiter;
 
     public GuessService(GuessRepository guessRepository, PageRepository pageRepository,
-                         PageStatusCalculator statusCalculator, Clock clock) {
+                         PageStatusCalculator statusCalculator, Clock clock, RateLimiter rateLimiter) {
         this.guessRepository = guessRepository;
         this.pageRepository = pageRepository;
         this.statusCalculator = statusCalculator;
         this.clock = clock;
+        this.rateLimiter = rateLimiter;
     }
 
     public Guess create(String slug, String guestCookieId, String guessedGender) {
+        if (!rateLimiter.allow("guess:" + guestCookieId, MAX_GUESSES_PER_MINUTE, Duration.ofMinutes(1))) {
+            throw new RateLimitExceededException("Too many guesses — try again in a minute");
+        }
+
         Page page = pageRepository.findBySlug(slug)
             .orElseThrow(() -> new PageNotFoundException(slug));
 

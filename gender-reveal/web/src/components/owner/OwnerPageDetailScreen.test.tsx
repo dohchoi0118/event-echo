@@ -5,12 +5,19 @@ import * as api from '@/lib/api';
 
 vi.mock('@/lib/api', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/api')>();
-  return { ...actual, getOwnerPageDetail: vi.fn(), getOwnerStats: vi.fn(), extendPage: vi.fn() };
+  return {
+    ...actual,
+    getOwnerPageDetail: vi.fn(),
+    getOwnerStats: vi.fn(),
+    extendPage: vi.fn(),
+    getOwnerGuestbook: vi.fn(),
+  };
 });
 
 const getOwnerPageDetail = vi.mocked(api.getOwnerPageDetail);
 const getOwnerStats = vi.mocked(api.getOwnerStats);
 const extendPage = vi.mocked(api.extendPage);
+const getOwnerGuestbook = vi.mocked(api.getOwnerGuestbook);
 
 const detail = {
   slug: 'my-slug', nickname: '뽀튼이', actualGender: 'girl' as const, dueDate: '2026-11-03',
@@ -24,6 +31,8 @@ beforeEach(() => {
   getOwnerPageDetail.mockReset();
   getOwnerStats.mockReset();
   extendPage.mockReset();
+  getOwnerGuestbook.mockReset();
+  getOwnerGuestbook.mockResolvedValue([]);
 });
 
 describe('slugFromSearch', () => {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { extendPage, getOwnerPageDetail, getOwnerStats } from '@/lib/api';
 import type { OwnerPageDetail, PageStats } from '@/lib/types';
 import { genderKo } from '@/lib/result';
+import { GuestbookModerationTable } from './GuestbookModerationTable';
 
 export function slugFromSearch(search: string): string | null {
   return new URLSearchParams(search).get('slug');
@@ -72,6 +73,8 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
           </button>
         )}
       </section>
+
+      <GuestbookModerationTable slug={slug} />
     </main>
   );
 }

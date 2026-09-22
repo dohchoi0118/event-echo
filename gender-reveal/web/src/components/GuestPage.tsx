@@ -29,6 +29,7 @@ export function GuestPage() {
   const [guess, setGuess] = useState<Gender | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
+  const [guestbookEnteredAtMs, setGuestbookEnteredAtMs] = useState<number | null>(null);
 
   useEffect(() => {
     setSlug(slugFromPathname(window.location.pathname));
@@ -93,9 +94,18 @@ export function GuestPage() {
     return <SelectScreen onSelect={onSelect} submitting={submitting} error={selectError} />;
   }
   if (stage === 'result') {
-    return <ResultScreen page={view} guess={guess} onNext={() => setStage('guestbook')} />;
+    return (
+      <ResultScreen
+        page={view}
+        guess={guess}
+        onNext={() => {
+          setGuestbookEnteredAtMs(Date.now());
+          setStage('guestbook');
+        }}
+      />
+    );
   }
-  return <GuestbookScreen slug={slug} />;
+  return <GuestbookScreen slug={slug} nowMs={guestbookEnteredAtMs ?? undefined} />;
 }
 
 function NotFound() {

@@ -115,6 +115,20 @@ Docker is not installed on the dev machine, so nothing here is verified via dock
 - Known deferred hardening: rate limiting on public write endpoints, guestbook pagination,
   Secure flag on the guest cookie (revisit with TLS/nginx), unified validation-error JSON shape;
   the frontend must escape guestbook messages.
+- Known deferred hardening (frontend, `web/`): `tokens.test.ts` asserts against literals copied
+  from the plan, not against `planning/design-system/project/tokens.json` itself — no automated
+  cross-check against the design-system source of truth; `api.ts`'s `request()` success path throws
+  an untyped `SyntaxError` on a non-JSON 2xx response body instead of a typed `ApiError` (asymmetric
+  with the error path); `make-og.mjs`'s `.trim()` relies on sharp's default trim threshold against
+  each source SVG's own rendered background rather than an explicit canvas background color — works
+  today, could need adjustment if illustration assets change; the `open`-status page API response
+  includes `actualGender` before a guest submits a guess, so a technically curious guest can read the
+  answer via browser devtools before playing — accepted as a known limitation for this product's
+  scale (frontend does not worsen this: no console logging, no storage writes, nothing renders it
+  pre-reveal); `IntroScreen`'s 5s auto-advance timer cannot be paused/extended by the user (WCAG
+  2.2.1 Timing Adjustable) — also, a very long nickname can make the typewriter animation outrun the
+  fixed auto-advance delay; `submitGuess`'s `alreadyGuessed` return value is computed but not
+  currently surfaced in the UI (a returning guest sees the same screen as a first-time guest).
 
 ### Working style used so far
 

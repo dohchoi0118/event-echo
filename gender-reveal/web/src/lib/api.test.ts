@@ -78,7 +78,7 @@ describe('submitGuess', () => {
 
     expect(result).toEqual({ guessedGender: 'girl', alreadyGuessed: false });
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe('/api/pages/s/guess');
+    expect(url).toBe('/api/pages/s/guesses');
     expect(init.method).toBe('POST');
     expect(JSON.parse(init.body)).toEqual({ guessedGender: 'girl' });
     expect(init.headers).toMatchObject({ 'Content-Type': 'application/json' });

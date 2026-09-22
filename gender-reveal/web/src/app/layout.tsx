@@ -19,6 +19,11 @@ const notoSansKr = Noto_Sans_KR({
 // Static export = one OG card for every shared link, so nothing here may depend on a page
 // (and must never hint at gender or reveal state). NEXT_PUBLIC_SITE_URL must be the public
 // origin at build time so og:image resolves to an absolute URL for crawlers.
+if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_SITE_URL) {
+  throw new Error(
+    'NEXT_PUBLIC_SITE_URL is required in production builds so og:image/twitter:image resolve to an absolute URL.',
+  );
+}
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 const title = '젠더리빌 — 우리 아기는 딸일까요, 아들일까요?';
 const description = '아기의 성별을 맞춰보고 함께 축하해 주세요.';

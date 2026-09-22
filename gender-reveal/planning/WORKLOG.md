@@ -268,3 +268,15 @@
   목록)·`/dashboard/[slug]`·`/create`. Plan 3의 매직링크 콜백이 `/dashboard`와 `/login?error=invalid`로
   리다이렉트하므로 Plan 5 전까지 이 경로는 프론트에 없음
 - `CLAUDE.md`를 구현 단계 기준으로 갱신(스택, 백엔드 명령어, 컨벤션, 계획 진행 현황)
+
+## 2026-09-22
+
+### 33. 프론트엔드(Plan 4) 구현 완료 + 최종 리뷰 수정
+- Plan 4(방문자 화면) 8개 태스크 구현 완료: 스캐폴딩, 일러스트/유틸, API 클라이언트, 인트로/비밀/만료,
+  선택/결과, 축하글, 상태 머신, nginx/OG/README — 서브에이전트 기반 실행
+- 최종 전체 리뷰에서 발견한 크리티컬 수정: 맞추기 API 경로가 계획서 자체의 오기로 `/guess`(단수)로
+  구현되어 있던 것을 실제 백엔드(`GuessController`)와 일치하는 `/guesses`(복수)로 정정
+- 그 외 수정: OG 이미지 절대 URL이 프로덕션 빌드에서 `NEXT_PUBLIC_SITE_URL` 미설정 시 조용히
+  localhost로 폴백하던 것을 프로덕션 빌드 실패로 전환, `GuestbookScreen`이 컴포넌트 내부에서
+  `Date.now()`를 직접 호출하던 것을 `GuestPage`에서 축하글 화면 진입 시점에 캡처해 주입하도록 수정,
+  nginx에 `error_page 404 /404.html` 추가

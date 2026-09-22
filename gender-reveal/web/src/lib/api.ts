@@ -53,7 +53,8 @@ export async function submitGuess(
   gender: Gender,
 ): Promise<{ guessedGender: Gender; alreadyGuessed: boolean }> {
   try {
-    const created = await postJson<{ guessedGender: Gender }>(`${pagePath(slug)}/guess`, { guessedGender: gender });
+    // Backend route is plural: GuessController's @RequestMapping is "/api/pages/{slug}/guesses".
+    const created = await postJson<{ guessedGender: Gender }>(`${pagePath(slug)}/guesses`, { guessedGender: gender });
     return { guessedGender: created.guessedGender, alreadyGuessed: false };
   } catch (error) {
     if (error instanceof ApiError && error.status === 409) {

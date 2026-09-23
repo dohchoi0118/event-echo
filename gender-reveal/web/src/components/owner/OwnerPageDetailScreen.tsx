@@ -69,15 +69,17 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
 
       {!loadError && detail && (
         <>
-          <h1 className="font-display text-display-lg">{detail.nickname}의 페이지</h1>
-          <a
-            href={`/g/${slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-label text-ink-muted underline"
-          >
-            방문자 페이지 보기 (/g/{slug})
-          </a>
+          <div className="flex items-center justify-between gap-space-2">
+            <h1 className="font-display text-display-lg">{detail.nickname}의 페이지</h1>
+            <a
+              href={`/g/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded-radius-full border border-border px-space-3 py-space-1 text-label text-ink-muted"
+            >
+              방문자 페이지 보기
+            </a>
+          </div>
 
           {stats && (
             <section className="grid grid-cols-3 gap-space-2">

@@ -27,17 +27,36 @@ Docker/운영 배포는 아래 [Docker는 아직](#docker는-아직) 참고.
    ```
    SQLite 드라이버가 파일은 만들어도 상위 폴더까지는 안 만들어서, 폴더가 없으면
    `path to './data': '.../data' does not exist` 에러로 부팅이 실패한다.
-4. **실행은 반드시 Gradle 태스크로 한다**: Gradle 도구 창 → `api` → `Tasks` → `application` →
-   `bootRun` 더블클릭(또는 인텔리제이 내장 터미널에서 `cd api && ./gradlew bootRun`). Gradle이
-   실행하는 태스크는 작업 디렉터리를 항상 `api/` 기준으로 올바르게 잡는다.
-   - **`com.genderreveal.api.GenderRevealApiApplication`을 일반 "Application" 실행 구성으로
-     만들어 직접 실행하지 않는다.** 저장소 루트(`event-echo/`)를 통째로 연 상태에서는
-     인텔리제이가 이 구성의 Working directory를 프로젝트 최상위 폴더로 잡아버리는 경우가 있고,
-     Run/Debug Configurations에서 Working directory를 `gender-reveal/api`로 바꿔줘도 반영이
-     안 되는 사례가 있었다. 이 상태로 실행하면 `GENDER_REVEAL_DB_PATH` 기본값
-     (`./data/gender-reveal.db`)이 잘못된 폴더 기준으로 풀리면서
-     `path to './data/gender-reveal.db': '.../data' does not exist` 에러로 부팅이 실패한다.
-     이미 이 방식으로 실행 구성을 만들어 뒀다면 지우고 위 Gradle 태스크로 바꾼다.
+4. 실행 방법은 두 가지가 있다 — 상황에 맞게 고른다.
+
+   **A. Gradle `bootRun` (가장 간단, working directory 문제 없음)**
+
+   Gradle 도구 창 → `api` → `Tasks` → `application` → `bootRun` 더블클릭
+   (또는 인텔리제이 내장 터미널에서 `cd api && ./gradlew bootRun`). Gradle이 실행하는
+   태스크는 작업 디렉터리를 항상 `api/` 기준으로 올바르게 잡는다.
+
+   **B. "Application" 실행 구성 (브레이크포인트 디버깅 등에 편리)**
+
+   `com.genderreveal.api.GenderRevealApiApplication`을 메인 클래스로 지정해 만든 일반
+   Application 실행 구성으로도 당연히 실행할 수 있다. 다만 이 구성의 **Working directory는
+   신뢰하지 않는다** — 저장소를 `event-echo/` 통째로 열어둔 상태(worktree 등 다른 하위
+   폴더가 함께 있는 구조)에서는 인텔리제이가 이 값을 잘못 잡거나(프로젝트 최상위 폴더,
+   심지어 존재하지 않는 옛 worktree 경로 등), Run/Debug Configurations에서 고쳐도 반영이
+   안 되는 사례가 실제로 있었다. Working directory에 의존하는 대신, **환경변수로 DB 경로를
+   절대경로로 못박아서** 이 문제를 원천적으로 피한다:
+
+   1. `Run → Edit Configurations...` → 해당 구성 선택(또는 `+` → `Application`으로 새로
+      만들고 Main class를 `com.genderreveal.api.GenderRevealApiApplication`으로 지정)
+   2. **Environment variables** 필드가 안 보이면 상단의 **"Modify options"**에서
+      `Environment variables`를 체크해 필드를 노출시킨다
+   3. 필드 옆 아이콘 클릭 → `+` → `GENDER_REVEAL_DB_PATH` =
+      `/Users/hanwha/Workspace/event-echo/gender-reveal/api/data/gender-reveal.db` 추가 → OK
+   4. Apply → OK로 저장. 이제 Working directory가 뭐로 잡히든 이 경로를 그대로 쓴다
+      (`application.yml`의 `${GENDER_REVEAL_DB_PATH:./data/gender-reveal.db}`가 환경변수가
+      있으면 그 값을 우선하기 때문).
+   5. 기존에 이 방식의 실행 구성을 이미 만들어 뒀는데 여전히 안 된다면, 수정 대신
+      **삭제 후 새로 생성**한다 — 캐시된 잘못된 값이 수정으로는 안 지워지는 경우가 있었다.
+
 5. `http://localhost:8080`에서 뜬다. 최초 기동 시 Flyway가 SQLite 스키마를 자동
    마이그레이션한다.
 

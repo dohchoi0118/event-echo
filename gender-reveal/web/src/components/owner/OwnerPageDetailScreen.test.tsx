@@ -75,6 +75,16 @@ describe('OwnerPageDetailScreen', () => {
     expect(screen.getByText('32 / 32')).toBeInTheDocument();
   });
 
+  it('links to the visitor-facing page', async () => {
+    getOwnerPageDetail.mockResolvedValue(detail);
+    getOwnerStats.mockResolvedValue(stats);
+
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    expect(await screen.findByText('뽀튼이의 페이지')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /방문자 페이지 보기/ })).toHaveAttribute('href', '/g/my-slug');
+  });
+
   it('shows extend as available and lets the owner extend once', async () => {
     getOwnerPageDetail.mockResolvedValue(detail);
     getOwnerStats.mockResolvedValue(stats);

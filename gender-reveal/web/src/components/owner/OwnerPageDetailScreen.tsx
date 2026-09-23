@@ -70,6 +70,14 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
       {!loadError && detail && (
         <>
           <h1 className="font-display text-display-lg">{detail.nickname}의 페이지</h1>
+          <a
+            href={`/g/${slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-label text-ink-muted underline"
+          >
+            방문자 페이지 보기 (/g/{slug})
+          </a>
 
           {stats && (
             <section className="grid grid-cols-3 gap-space-2">

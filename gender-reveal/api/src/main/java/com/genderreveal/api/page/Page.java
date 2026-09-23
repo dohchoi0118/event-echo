@@ -1,6 +1,7 @@
 package com.genderreveal.api.page;
 
 import com.genderreveal.api.common.InstantStringConverter;
+import com.genderreveal.api.common.LocalDateStringConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -34,6 +35,7 @@ public class Page {
     private Instant revealAt;
 
     @Column(name = "due_date")
+    @Convert(converter = LocalDateStringConverter.class)
     private LocalDate dueDate;
 
     private String message;

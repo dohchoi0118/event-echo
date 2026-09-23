@@ -5,8 +5,8 @@
 구현 계획/설계 문서는 [docs/superpowers/](docs/superpowers/), AI 에이전트용 작업
 가이드는 [CLAUDE.md](CLAUDE.md)를 참고한다.
 
-이 문서는 **로컬 개발 환경을 실제로 띄우는 방법**만 다룬다(인텔리제이 + VS Code 기준).
-Docker/운영 배포는 아래 [Docker는 아직](#docker는-아직) 참고.
+이 문서는 **기술 스펙**과 **로컬 개발 환경을 실제로 띄우는 방법**(인텔리제이 + VS Code 기준)을
+다룬다. Docker/운영 배포는 아래 [Docker는 아직](#docker는-아직) 참고.
 
 ## 사전 준비
 
@@ -15,6 +15,48 @@ Docker/운영 배포는 아래 [Docker는 아직](#docker는-아직) 참고.
 - **Node 20 이상**(또는 18.18+) — `web/`의 Next.js 15가 요구하는 최소 버전.
 - 둘 다 저장소에 각각 wrapper/lockfile이 있어 별도 버전 관리자 설치는 필요 없다
   (`api/gradlew`, `web/package-lock.json`).
+
+## 기술 스펙
+
+### 백엔드 (`api/`)
+
+- **언어/런타임**: Java 21 (Gradle 툴체인이 강제)
+- **프레임워크**: Spring Boot 3.3.4 — `spring-boot-starter-web`, `-data-jpa`, `-validation`
+- **빌드**: Gradle (Kotlin DSL), wrapper 포함
+- **DB**: SQLite (`org.xerial:sqlite-jdbc`) + `hibernate-community-dialects`,
+  마이그레이션은 Flyway 전용(`ddl-auto: none`, `src/main/resources/db/migration/V*.sql`)
+- **이메일**: 개발은 로그 폴백(`LoggingEmailSender`), 운영은 Resend HTTP API를 별도 SDK 없이
+  `java.net.http.HttpClient`로 직접 호출(`ResendEmailSender`)
+- **테스트**: JUnit 5 + AssertJ + Spring Boot Test(`MockMvc`)
+- **핵심 컨벤션**:
+  - 시간은 항상 주입된 `Clock`(`Instant.now(clock)`) — 테스트에서 시간 이동 가능
+  - `Instant`/`LocalDate` 컬럼은 전용 문자열 컨버터(`InstantStringConverter`,
+    `LocalDateStringConverter`)로 ISO 텍스트 저장 — SQLite JDBC 드라이버의 기본
+    epoch-millis 바인딩을 피하기 위함
+  - 도메인 예외 + 패키지별 `@RestControllerAdvice`(제너릭 catch-all 없음)
+  - 게스트는 익명 쿠키(`guest_id`), 소유자는 이메일 매직링크 로그인 + 세션 쿠키(`owner_session`)
+  - 게스트 쿠키 기준 in-memory 슬라이딩 윈도우 레이트리밋(맞추기·방명록 각 분당 5회)
+  - 매일 새벽 4시 만료 매직링크 토큰·소유자 세션 정리 스케줄러(`@Scheduled`)
+- **API 개요**: `POST/GET /api/pages`, `POST /api/pages/{slug}/guesses`,
+  `GET/POST /api/pages/{slug}/guestbook`, `POST /api/auth/magic-link` ·
+  `GET /api/auth/callback` · `GET /api/auth/me` · `POST /api/auth/logout`,
+  `GET/POST /api/owner/pages/**`
+
+### 프론트엔드 (`web/`)
+
+- **언어**: TypeScript, React 19
+- **프레임워크**: Next.js 15 (App Router), **정적 export**(`output: 'export'`) — Node 서버 없이
+  빌드 산출물(`out/`)을 nginx가 서빙
+- **스타일**: Tailwind CSS 3 — 색상·타이포·radius 토큰은
+  `planning/design-system/project/tokens.json`을 소스로 `tailwind.config.ts`에 반영
+  (테스트로 두 파일이 항상 일치하는지 교차검증)
+- **테스트**: Vitest + React Testing Library + jsdom
+- **이미지**: OG 공유 카드 이미지는 `sharp`로 빌드 타임에 생성(`npm run og`)
+- **라우트**: `/g/<slug>`(방문자, 슬러그를 `window.location.pathname`에서 클라이언트가 읽음),
+  `/login`, `/dashboard`(`?slug=` 쿼리로 목록/상세 분기), `/create` — 전부 클라이언트 컴포넌트이며
+  정적 export 제약상 서버 사이드 동적 라우팅은 쓰지 않음
+- **개발 중 API 프록시**: `next.config.ts`의 rewrite로 `/api/*` → `API_ORIGIN`(기본
+  `http://localhost:8080`)
 
 ## 1) 백엔드 — 인텔리제이로 `api/` 실행
 

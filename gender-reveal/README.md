@@ -27,17 +27,17 @@ Docker/운영 배포는 아래 [Docker는 아직](#docker는-아직) 참고.
    ```
    SQLite 드라이버가 파일은 만들어도 상위 폴더까지는 안 만들어서, 폴더가 없으면
    `path to './data': '.../data' does not exist` 에러로 부팅이 실패한다.
-4. 실행 방법 중 하나:
-   - Gradle 도구 창 → `api` → `Tasks` → `application` → `bootRun` 더블클릭
-   - 또는 `com.genderreveal.api.GenderRevealApiApplication`을 일반 Application 실행
-     구성으로 만들어 실행(우클릭 → Run)
-   - 또는 인텔리제이 내장 터미널에서 `cd api && ./gradlew bootRun`
-   - **Application 실행 구성을 쓴다면 Working directory를 꼭 확인**한다. 저장소 루트
-     (`event-echo/`)를 통째로 열었을 때 인텔리제이가 이 값을 프로젝트 최상위 폴더로 잡는
-     경우가 있는데, `GENDER_REVEAL_DB_PATH` 기본값(`./data/gender-reveal.db`)이 그 기준
-     폴더에서 풀리면서 `path to './data/gender-reveal.db': '.../data' does not exist` 에러가
-     난다 — Run/Debug Configurations에서 Working directory를 `gender-reveal/api`로 명시
-     지정(또는 `$MODULE_WORKING_DIR$`)하고, 3번의 `data/` 폴더도 그 경로 기준으로 만든다.
+4. **실행은 반드시 Gradle 태스크로 한다**: Gradle 도구 창 → `api` → `Tasks` → `application` →
+   `bootRun` 더블클릭(또는 인텔리제이 내장 터미널에서 `cd api && ./gradlew bootRun`). Gradle이
+   실행하는 태스크는 작업 디렉터리를 항상 `api/` 기준으로 올바르게 잡는다.
+   - **`com.genderreveal.api.GenderRevealApiApplication`을 일반 "Application" 실행 구성으로
+     만들어 직접 실행하지 않는다.** 저장소 루트(`event-echo/`)를 통째로 연 상태에서는
+     인텔리제이가 이 구성의 Working directory를 프로젝트 최상위 폴더로 잡아버리는 경우가 있고,
+     Run/Debug Configurations에서 Working directory를 `gender-reveal/api`로 바꿔줘도 반영이
+     안 되는 사례가 있었다. 이 상태로 실행하면 `GENDER_REVEAL_DB_PATH` 기본값
+     (`./data/gender-reveal.db`)이 잘못된 폴더 기준으로 풀리면서
+     `path to './data/gender-reveal.db': '.../data' does not exist` 에러로 부팅이 실패한다.
+     이미 이 방식으로 실행 구성을 만들어 뒀다면 지우고 위 Gradle 태스크로 바꾼다.
 5. `http://localhost:8080`에서 뜬다. 최초 기동 시 Flyway가 SQLite 스키마를 자동
    마이그레이션한다.
 

@@ -25,7 +25,9 @@ backend and frontend (visitor flow + owner dashboard/create form) are implemente
   from Plans 3–5) and step-by-step plans under [plans/](docs/superpowers/plans/). Plans: 1 backend
   foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (done),
   4 Next.js frontend + visitor screens + nginx (done), 5 login + owner dashboard + create form
-  (done); the Docker / docker-compose task from Plan 1 is deferred until Docker is available.
+  (done), 6 hardening — rate limiting, validation-error format, cleanup scheduler, accessibility
+  timer, already-guessed notice, typed API errors (done); the Docker / docker-compose task from
+  Plan 1 is deferred until Docker is available.
 
 All planning-stage documents (requirements, wireframe, work log) live under [planning/](planning/),
 kept separate from the implementation source (`api/`, future `web/`).

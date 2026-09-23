@@ -92,6 +92,10 @@ with no guessing, guestbook, or admin features; those are this project's additio
 
 ## Working in this repo
 
+IDE-oriented dev setup (IntelliJ for `api/`, VS Code for `web/`, env vars, first-run gotchas,
+local magic-link login) is documented for humans in [README.md](README.md) — keep that in sync
+when dev-run steps change.
+
 ### Backend commands (run from `api/`)
 
 ```bash

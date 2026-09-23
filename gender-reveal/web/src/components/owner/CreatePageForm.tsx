@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../Button';
+import { revealSrc } from '@/lib/illustrations';
 import type { Gender, PageCreatePayload, Theme } from '@/lib/types';
 
 const THEMES: { value: Theme; label: string }[] = [
@@ -64,6 +65,7 @@ export function CreatePageForm({
 
   return (
     <form onSubmit={submit} className="flex w-full flex-col gap-space-3">
+      <a href="/dashboard" className="text-label text-ink-muted">← 내 페이지</a>
       <h1 className="font-display text-display-lg">페이지 만들기</h1>
 
       <label className="flex flex-col gap-space-1 text-label">
@@ -112,12 +114,27 @@ export function CreatePageForm({
       <fieldset className="flex flex-col gap-space-1">
         <legend className="text-label">리빌 테마</legend>
         <div className="flex gap-space-2">
-          {THEMES.map((t) => (
-            <label key={t.value} className="flex items-center gap-space-1">
-              <input type="radio" name="theme" checked={theme === t.value} onChange={() => setTheme(t.value)} />
-              {t.label}
-            </label>
-          ))}
+          {THEMES.map((t) => {
+            const selected = theme === t.value;
+            return (
+              <label
+                key={t.value}
+                className={`flex flex-1 cursor-pointer flex-col items-center gap-space-1 rounded-radius-md border p-space-2 text-body-sm ${
+                  selected ? 'border-accent-primary bg-surface-100' : 'border-border bg-surface-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="theme"
+                  checked={selected}
+                  onChange={() => setTheme(t.value)}
+                  className="sr-only"
+                />
+                <img src={revealSrc(t.value, actualGender ?? 'boy')} alt="" className="h-16 w-16" />
+                {t.label}
+              </label>
+            );
+          })}
         </div>
       </fieldset>
 

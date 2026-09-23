@@ -3,6 +3,12 @@ import userEvent from '@testing-library/user-event';
 import { CreatePageForm } from './CreatePageForm';
 
 describe('CreatePageForm', () => {
+  it('links back to the dashboard', () => {
+    render(<CreatePageForm onSubmit={vi.fn()} submitting={false} error={null} />);
+
+    expect(screen.getByRole('link', { name: '← 내 페이지' })).toHaveAttribute('href', '/dashboard');
+  });
+
   it('collects the required fields and calls onSubmit with a PageCreatePayload', async () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();

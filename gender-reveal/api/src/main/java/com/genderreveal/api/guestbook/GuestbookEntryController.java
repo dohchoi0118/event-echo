@@ -3,6 +3,7 @@ package com.genderreveal.api.guestbook;
 import com.genderreveal.api.common.GuestCookie;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -43,6 +44,8 @@ public class GuestbookEntryController {
         String guestId = guestCookie.isValid(existingGuestId) ? existingGuestId : null;
         String rateLimitKey = guestCookie.resolve(existingGuestId);
         GuestbookEntry entry = guestbookEntryService.create(slug, request.nickname(), request.message(), guestId, rateLimitKey);
-        return ResponseEntity.status(HttpStatus.CREATED).body(GuestbookEntryResponse.from(entry));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .header(HttpHeaders.SET_COOKIE, guestCookie.toSetCookie(rateLimitKey))
+            .body(GuestbookEntryResponse.from(entry));
     }
 }

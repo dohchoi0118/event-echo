@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -169,6 +171,22 @@ class GuestbookEntryControllerTest {
             .filteredOn(e -> e.getPageId().equals(page.getId()))
             .extracting(GuestbookEntry::getGuestCookieId)
             .containsOnlyNulls();
+    }
+
+    @Test
+    void firstPostWithNoCookieIssuesGuestCookie() throws Exception {
+        String slug = createOpenPage("guestbook-issues-cookie-slug");
+
+        MvcResult result = mockMvc.perform(post("/api/pages/" + slug + "/guestbook")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of("nickname", "이모", "message", "축하해요"))))
+            .andExpect(status().isCreated())
+            .andExpect(cookie().exists("guest_id"))
+            .andReturn();
+
+        String guestId = result.getResponse().getCookie("guest_id").getValue();
+        assertThat(guestId).isNotBlank();
+        assertThat(UUID.fromString(guestId)).isNotNull();
     }
 
     @Test

@@ -304,3 +304,36 @@
 - `CLAUDE.md`의 "Known deferred hardening" 목록에서 이번에 처리한 6개 항목(레이트리밋, 검증
   오류 형식, 토큰 교차검증, `ApiError` 타입화, 인트로 타이머, `alreadyGuessed` 미노출) 제거
 - 로컬 main에 fast-forward 병합 완료(`17693c7`), 원격 push는 미실행(사용자 요청 시 진행)
+
+## 2026-09-23
+
+### 36. 개발 서버 실기동 검증, 실사용 버그 수정, 개발환경 문서화
+- 백엔드(`./gradlew bootRun`)·프론트(`npm run dev`) 실행해 로그인~페이지 생성~방문자 화면까지
+  실제 브라우저로 검증. 인텔리제이에서 "Application" 실행 구성의 Working directory가 저장소
+  구조(다른 worktree 폴더 포함) 때문에 잘못 잡히는 문제를 겪어, `GENDER_REVEAL_DB_PATH`를
+  환경변수로 절대경로 지정하는 방식으로 회피(Gradle `bootRun` 태스크 사용도 대안으로 안내)
+- 실사용 중 발견한 버그 수정: 페이지 `dueDate`(`LocalDate`) 컬럼에 문자열 컨버터가 빠져
+  SQLite JDBC 드라이버가 epoch-millis로 저장 → 재조회 시 파싱 실패(500)하던 것을
+  `LocalDateStringConverter` 추가로 수정. `@Transactional` 테스트가 같은 트랜잭션 내 캐시로
+  응답을 받아 이 문제를 못 잡았던 것도 확인
+- `gender-reveal/README.md` 신설 — 인텔리제이/VS Code 기준 개발 환경 구동 방법, 기술 스펙
+  섹션(백엔드/프론트 스택·컨벤션) 추가. `.gitignore`의 `.idea/`·`.vscode/` 줄이 인라인 주석
+  때문에 실제로는 한 번도 무시되지 않았던 버그도 발견해 수정
+- UI 개선: 페이지 작성 폼에 대시보드 복귀 링크, 리빌 테마를 이미지 선택 카드로 변경; 소유자
+  상세 페이지에 방문자 페이지(`/g/<slug>`) 바로가기 버튼 추가
+- 자산: 디자인시스템 12지신 PNG 중 빠져 있던 개 파일 추가, 나머지 11개 포함 12개 전부
+  프론트(`web/public/illustrations/zodiac/*.svg`)에 `<image>` 데이터 URI로 반영(코드/테스트
+  변경 없이). OG 이미지 `og:image:width/height`가 1200x630으로 하드코딩돼 실제 파일
+  (1376x768)과 다르던 것을 실제 PNG 헤더에서 읽어오도록 수정
+
+## 2026-09-28
+
+### 37. Docker/docker-compose 구성 추가
+- 개발 머신에 Docker가 새로 설치되어, Plan 1 Task 8(nginx/web 추가 전 버전으로 방치돼 있던
+  Docker 계획)을 현재 구조에 맞게 다시 작성: `api/Dockerfile`(멀티스테이지 Gradle 빌드),
+  `web/Dockerfile`(정적 export를 nginx가 서빙 + 기존 `web/nginx/gender-reveal.conf`로
+  `/api/*` 프록시), `docker-compose.yml`(두 서비스 + `api` 데이터 볼륨)
+- 실제로 `docker compose build && docker compose up -d`까지 실행해 매직링크 로그인 →
+  페이지 생성 → 방문자 페이지 → 예측 화면까지 nginx 오리진(`http://localhost`) 기준으로
+  전체 플로우 검증. `README.md`에 "Docker로 한 번에 띄우기" 절 추가, `CLAUDE.md`의 Docker
+  보류 문구 갱신

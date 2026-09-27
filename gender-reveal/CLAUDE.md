@@ -26,8 +26,10 @@ backend and frontend (visitor flow + owner dashboard/create form) are implemente
   foundation (done), 2 guess + guestbook API (done), 3 owner auth + admin API (done),
   4 Next.js frontend + visitor screens + nginx (done), 5 login + owner dashboard + create form
   (done), 6 hardening — rate limiting, validation-error format, cleanup scheduler, accessibility
-  timer, already-guessed notice, typed API errors (done); the Docker / docker-compose task from
-  Plan 1 is deferred until Docker is available.
+  timer, already-guessed notice, typed API errors (done). Docker/docker-compose (`api/Dockerfile`,
+  `web/Dockerfile`, `docker-compose.yml`) added once Docker became available on the dev machine —
+  see [README.md](README.md) §4; verified end-to-end (login → create page → visitor page → guess)
+  through the nginx-fronted stack.
 
 All planning-stage documents (requirements, wireframe, work log) live under [planning/](planning/),
 kept separate from the implementation source (`api/`, future `web/`).
@@ -104,7 +106,9 @@ when dev-run steps change.
 ./gradlew bootRun                                           # dev server on :8080, DB at ./data/gender-reveal.db
 ```
 
-Docker is not installed on the dev machine, so nothing here is verified via docker-compose.
+Docker is now available on the dev machine. `docker compose build && docker compose up -d`
+from `gender-reveal/` builds and runs the full stack (nginx-fronted `web` + `api`); see
+[README.md](README.md) §4 for details and env vars.
 
 ### Backend conventions worth knowing
 

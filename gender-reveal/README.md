@@ -5,8 +5,8 @@
 구현 계획/설계 문서는 [docs/superpowers/](docs/superpowers/), AI 에이전트용 작업
 가이드는 [CLAUDE.md](CLAUDE.md)를 참고한다.
 
-이 문서는 **기술 스펙**과 **로컬 개발 환경을 실제로 띄우는 방법**(인텔리제이 + VS Code 기준)을
-다룬다. Docker/운영 배포는 아래 [Docker는 아직](#docker는-아직) 참고.
+이 문서는 **기술 스펙**과 **개발 환경을 실제로 띄우는 방법**(인텔리제이 + VS Code 기준,
+또는 [Docker로 한 번에](#4-docker로-한-번에-띄우기))을 다룬다.
 
 ## 사전 준비
 
@@ -15,6 +15,8 @@
 - **Node 20 이상**(또는 18.18+) — `web/`의 Next.js 15가 요구하는 최소 버전.
 - 둘 다 저장소에 각각 wrapper/lockfile이 있어 별도 버전 관리자 설치는 필요 없다
   (`api/gradlew`, `web/package-lock.json`).
+- (선택) **Docker + Docker Compose** — [Docker로 한 번에 띄우기](#4-docker로-한-번에-띄우기)를
+  쓸 경우에만 필요, JDK/Node를 직접 설치하지 않아도 된다.
 
 ## 기술 스펙
 
@@ -131,6 +133,32 @@
    **한 번만** 연다(토큰은 15분·1회용).
 3. 로그인되면 `/dashboard`로 이동한다. "새 페이지 만들기"로 페이지 생성 플로우까지 확인 가능.
 
+## 4) Docker로 한 번에 띄우기
+
+`docker-compose.yml`이 `api`(Spring Boot)와 `web`(정적 export를 서빙 + `/api/*`를 `api`로
+프록시하는 nginx) 두 컨테이너를 띄운다 — 인텔리제이/VS Code 없이 실제 운영과 가장 비슷한
+형태로 전체 스택을 확인하고 싶을 때 쓴다.
+
+```bash
+cd gender-reveal
+docker compose build
+docker compose up -d
+```
+
+- `http://localhost`에서 뜬다(nginx가 80번을 서빙, `api`는 디버깅용으로 `8080`도 같이
+  노출됨 — `curl http://localhost:8080/api/health`로 직접 확인 가능).
+- 매직링크 로그인은 개발 모드와 동일하게 `RESEND_API_KEY`를 안 주면 실제 메일 발송 없이
+  컨테이너 로그에만 링크가 남는다: `docker compose logs api | grep callback`.
+- `RESEND_API_KEY=<key> docker compose up -d`로 실제 메일 발송을 켤 수 있다.
+- API 데이터는 `api-data` named volume에 남아서 `docker compose down`(볼륨은 안 지워짐,
+  `down -v`를 줘야 지워짐) 후에도 유지된다.
+- 종료: `docker compose down`
+
+**빌드 시점 설정**: `web`은 빌드할 때 `NEXT_PUBLIC_SITE_URL`(현재 `docker-compose.yml`에
+`http://localhost`로 고정)을 받아 정적 export에 굽는다 — 실제 배포 도메인으로 바꾸려면
+`docker-compose.yml`의 `web.build.args.NEXT_PUBLIC_SITE_URL`과 `api.environment`의
+`APP_BASE_URL`을 같은 값으로 맞춰야 한다(둘 다 같은 오리진이어야 쿠키가 CORS 없이 동작함).
+
 ## 테스트
 
 ```bash
@@ -142,9 +170,3 @@ cd web && npm test          # 프론트 전체 테스트(Vitest)
 
 빌드(`npm run build`)가 프로덕션 전용으로 `NEXT_PUBLIC_SITE_URL`을 요구하는 이유, OG 이미지
 재생성, nginx 배포 설정 등은 [web/README.md](web/README.md)에 더 자세히 있다.
-
-## Docker는 아직
-
-nginx + api + web을 docker-compose로 한 번에 띄우는 것은 아직 준비돼 있지 않다(Plan 1의
-Task 8이 nginx/web 추가 전 버전인 채로 남아 있음 — 개발 머신에 Docker가 없어서 검증도 안 됨).
-지금은 위 방식대로 두 서버를 각각 띄워서 확인한다.

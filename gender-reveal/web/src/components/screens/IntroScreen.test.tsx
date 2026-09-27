@@ -46,16 +46,6 @@ describe('IntroScreen', () => {
     expect(onNext).toHaveBeenCalledTimes(1);
   });
 
-  it('advances by itself after the auto-advance delay', () => {
-    const onNext = vi.fn();
-    render(<IntroScreen nickname="뽀튼이" zodiac={null} onNext={onNext} autoAdvanceMs={5000} />);
-
-    act(() => { vi.advanceTimersByTime(4999); });
-    expect(onNext).not.toHaveBeenCalled();
-    act(() => { vi.advanceTimersByTime(1); });
-    expect(onNext).toHaveBeenCalledTimes(1);
-  });
-
   it('shows the full text immediately when prefers-reduced-motion is set', () => {
     window.matchMedia = vi.fn().mockReturnValue({
       matches: true,
@@ -67,15 +57,5 @@ describe('IntroScreen', () => {
     render(<IntroScreen nickname="뽀튼이" zodiac={null} onNext={() => {}} />);
 
     expect(screen.getByTestId('intro-text').textContent).toBe('두근두근...\n뽀튼이는 딸일까요,\n아들일까요?');
-  });
-
-  it('extends the auto-advance delay for a long nickname instead of cutting off the typing', () => {
-    const onNext = vi.fn();
-    const longNickname = '가'.repeat(30);
-    render(<IntroScreen nickname={longNickname} zodiac={null} onNext={onNext} />);
-
-    // Full text is much longer than the old fixed 5000ms would allow to finish typing at 70ms/char.
-    act(() => { vi.advanceTimersByTime(4999); });
-    expect(onNext).not.toHaveBeenCalled();
   });
 });

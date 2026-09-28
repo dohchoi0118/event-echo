@@ -10,7 +10,15 @@ import type { GuestbookEntry } from '@/lib/types';
 const inputClass =
   'w-full rounded-radius-sm border border-border bg-surface-100 px-space-2 py-space-2 text-body outline-none focus:border-accent-primary';
 
-export function GuestbookScreen({ slug, nowMs }: { slug: string; nowMs?: number }) {
+export function GuestbookScreen({
+  slug,
+  nowMs,
+  onFinish,
+}: {
+  slug: string;
+  nowMs?: number;
+  onFinish: () => void;
+}) {
   const [entries, setEntries] = useState<GuestbookEntry[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [nickname, setNickname] = useState('');
@@ -100,6 +108,8 @@ export function GuestbookScreen({ slug, nowMs }: { slug: string; nowMs?: number 
       <p className="text-center text-body-sm text-ink-muted">
         닉네임으로만 구분되며 여러 번 남길 수 있어요 · 부적절한 글은 관리자가 숨길 수 있어요
       </p>
+
+      <Button onClick={onFinish}>축하 인사 마치기</Button>
     </main>
   );
 }

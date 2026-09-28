@@ -25,7 +25,7 @@ describe('GuestbookScreen', () => {
   it('lists existing messages with relative times', async () => {
     getGuestbook.mockResolvedValue([entry('이모', '축하해요!', 10_000), entry('삼촌', '고생 많으셨어요', 3 * 3_600_000)]);
 
-    render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
 
     expect(await screen.findByText('이모 · 방금 전')).toBeInTheDocument();
     expect(screen.getByText('축하해요!')).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('GuestbookScreen', () => {
   it('shows an empty state', async () => {
     getGuestbook.mockResolvedValue([]);
 
-    render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
 
     expect(await screen.findByText('아직 등록된 메시지가 없어요')).toBeInTheDocument();
   });
@@ -44,7 +44,7 @@ describe('GuestbookScreen', () => {
   it('renders message text literally, never as HTML', async () => {
     getGuestbook.mockResolvedValue([entry('<b>해커</b>', '<img src=x onerror=alert(1)>', 1000)]);
 
-    const { container } = render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    const { container } = render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
 
     expect(await screen.findByText('<img src=x onerror=alert(1)>')).toBeInTheDocument();
     expect(container.querySelector('img[src="x"]')).toBeNull();
@@ -56,7 +56,7 @@ describe('GuestbookScreen', () => {
     getGuestbook.mockResolvedValueOnce([]);
     postGuestbook.mockResolvedValue(entry('이모', '축하해요', 0));
     getGuestbook.mockResolvedValueOnce([entry('이모', '축하해요', 0)]);
-    render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
     await screen.findByText('아직 등록된 메시지가 없어요');
 
     await user.type(screen.getByLabelText('닉네임'), '  이모 ');
@@ -72,7 +72,7 @@ describe('GuestbookScreen', () => {
   it('refuses to submit blank fields', async () => {
     const user = userEvent.setup();
     getGuestbook.mockResolvedValue([]);
-    render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
     await screen.findByText('아직 등록된 메시지가 없어요');
 
     await user.click(screen.getByRole('button', { name: '등록' }));
@@ -85,7 +85,7 @@ describe('GuestbookScreen', () => {
     const user = userEvent.setup();
     getGuestbook.mockResolvedValue([]);
     postGuestbook.mockRejectedValue(new api.ApiError(500, null));
-    render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
     await screen.findByText('아직 등록된 메시지가 없어요');
 
     await user.type(screen.getByLabelText('닉네임'), '이모');
@@ -98,8 +98,20 @@ describe('GuestbookScreen', () => {
   it('shows a load error without crashing', async () => {
     getGuestbook.mockRejectedValue(new api.ApiError(500, null));
 
-    render(<GuestbookScreen slug="s" nowMs={NOW} />);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={() => {}} />);
 
     expect(await screen.findByText('메시지를 불러오지 못했어요')).toBeInTheDocument();
+  });
+
+  it('calls onFinish when the guest is done', async () => {
+    const user = userEvent.setup();
+    const onFinish = vi.fn();
+    getGuestbook.mockResolvedValue([]);
+    render(<GuestbookScreen slug="s" nowMs={NOW} onFinish={onFinish} />);
+    await screen.findByText('아직 등록된 메시지가 없어요');
+
+    await user.click(screen.getByRole('button', { name: '축하 인사 마치기' }));
+
+    expect(onFinish).toHaveBeenCalledTimes(1);
   });
 });

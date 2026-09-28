@@ -77,7 +77,7 @@ describe('GuestPage', () => {
     expect(await screen.findByText('Coming Soon')).toBeInTheDocument();
   });
 
-  it('walks intro → select → result → guestbook', async () => {
+  it('walks intro → select → result → guestbook → thanks', async () => {
     const user = userEvent.setup();
     getPage.mockResolvedValue(openPage);
     submitGuess.mockResolvedValue({ guessedGender: 'girl', alreadyGuessed: false });
@@ -95,6 +95,9 @@ describe('GuestPage', () => {
     await user.click(screen.getByRole('button', { name: '다음: 축하글 남기기 ▶' }));
     expect(await screen.findByText('축하 메시지 남기기')).toBeInTheDocument();
     expect(getGuestbook).toHaveBeenCalledWith('my-slug');
+
+    await user.click(screen.getByRole('button', { name: '축하 인사 마치기' }));
+    expect(await screen.findByText('함께 축하해주셔서 감사해요')).toBeInTheDocument();
   });
 
   it('uses the earlier guess when the guest already participated', async () => {

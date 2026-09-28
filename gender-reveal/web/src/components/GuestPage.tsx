@@ -9,12 +9,13 @@ import { IntroScreen } from './screens/IntroScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { SecretScreen } from './screens/SecretScreen';
 import { SelectScreen } from './screens/SelectScreen';
+import { ThankYouScreen } from './screens/ThankYouScreen';
 import { ApiError, getPage, submitGuess } from '@/lib/api';
 import type { Gender, PageView } from '@/lib/types';
 import { zodiacFromDueDate } from '@/lib/zodiac';
 
 type Load = { kind: 'loading' } | { kind: 'notfound' } | { kind: 'error' } | { kind: 'ready'; view: PageView };
-type Stage = 'intro' | 'select' | 'result' | 'guestbook';
+type Stage = 'intro' | 'select' | 'result' | 'guestbook' | 'thanks';
 
 /** The static shell is served for every /g/<slug>; the slug only exists in the browser URL. */
 export function slugFromPathname(pathname: string): string | null {
@@ -108,7 +109,16 @@ export function GuestPage() {
       />
     );
   }
-  return <GuestbookScreen slug={slug} nowMs={guestbookEnteredAtMs ?? undefined} />;
+  if (stage === 'guestbook') {
+    return (
+      <GuestbookScreen
+        slug={slug}
+        nowMs={guestbookEnteredAtMs ?? undefined}
+        onFinish={() => setStage('thanks')}
+      />
+    );
+  }
+  return <ThankYouScreen />;
 }
 
 function NotFound() {

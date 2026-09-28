@@ -5,9 +5,9 @@ import { Button } from '../Button';
 import { PreReveal } from '../PreReveal';
 import { Screen } from '../Screen';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
-import { revealSrc } from '@/lib/illustrations';
-import { genderKo, guessSummary, REVEAL_PROMPT, revealHeadline } from '@/lib/result';
-import type { Gender, OpenPageView } from '@/lib/types';
+import { babySrc, revealSrc } from '@/lib/illustrations';
+import { genderKo, REVEAL_PROMPT, revealHeadline } from '@/lib/result';
+import type { OpenPageView } from '@/lib/types';
 import { zodiacFromDueDate, zodiacLabelKo } from '@/lib/zodiac';
 
 type Stage = 'ready' | 'revealing' | 'revealed';
@@ -16,15 +16,11 @@ const HEARTS = [10, 24, 38, 52, 66, 80];
 
 export function ResultScreen({
   page,
-  guess,
   onNext,
-  alreadyGuessed = false,
   revealDelayMs = 900,
 }: {
   page: OpenPageView;
-  guess: Gender;
   onNext: () => void;
-  alreadyGuessed?: boolean;
   revealDelayMs?: number;
 }) {
   const reduced = usePrefersReducedMotion();
@@ -78,21 +74,23 @@ export function ResultScreen({
           </span>
         ))}
       </div>
-      <img
-        src={revealSrc(page.theme, page.actualGender)}
-        alt={`젠더 리빌 결과: ${genderKo(page.actualGender)}`}
-        className="h-56 w-56 motion-safe:animate-pop-in"
-      />
+      <div className="relative flex items-center justify-center">
+        <img
+          src={babySrc(page.actualGender)}
+          alt={`젠더 리빌 결과: ${genderKo(page.actualGender)}`}
+          className="h-56 w-56 motion-safe:animate-pop-in"
+        />
+        <img
+          src={revealSrc(page.theme, page.actualGender)}
+          alt=""
+          aria-hidden
+          className="absolute -bottom-2 -right-4 h-20 w-20 motion-safe:animate-pop-in"
+        />
+      </div>
       <p className={`font-display text-display-md ${accent}`}>축하합니다</p>
       <p className="font-display text-display-lg">{revealHeadline(page.actualGender)}</p>
       {zodiac && <p className="text-body-lg">{`${zodiacLabelKo(zodiac)}둥이가 찾아왔어요!`}</p>}
       {page.message && <p className="text-body text-ink-muted">{page.message}</p>}
-      {alreadyGuessed && (
-        <p className="text-body-sm text-ink-muted">이미 참여하셨어요 · 이전 예측을 보여드려요</p>
-      )}
-      <p className="rounded-radius-full bg-surface-100 px-space-3 py-space-1 text-label">
-        {guessSummary(guess, page.actualGender)}
-      </p>
       <Button onClick={onNext}>Next</Button>
     </Screen>
   );

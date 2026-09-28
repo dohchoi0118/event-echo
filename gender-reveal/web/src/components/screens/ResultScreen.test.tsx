@@ -18,7 +18,7 @@ async function reveal(theme: string) {
 
 describe('ResultScreen', () => {
   it('hides the result until the guest opens the box', async () => {
-    render(<ResultScreen page={basePage} guess="girl" onNext={() => {}} />);
+    render(<ResultScreen page={basePage} onNext={() => {}} />);
 
     expect(screen.queryByText('왕자님이 찾아왔어요!')).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: /남아/ })).not.toBeInTheDocument();
@@ -28,31 +28,39 @@ describe('ResultScreen', () => {
 
     expect(screen.getByText('축하합니다')).toBeInTheDocument();
     expect(screen.getByText('왕자님이 찾아왔어요!')).toBeInTheDocument();
-    expect(screen.getByText('내 예측: 여아 → 결과: 오답')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: '젠더 리빌 결과: 남아' })).toHaveAttribute(
-      'src', '/illustrations/reveal/box-boy.svg',
+      'src', '/illustrations/baby/boy.svg',
     );
   });
 
+  it('shows the theme prop small and beside the baby image', async () => {
+    render(<ResultScreen page={basePage} onNext={() => {}} />);
+
+    await reveal('선물상자를 열어보세요');
+
+    const propImage = document.querySelector('img[src="/illustrations/reveal/box-boy.svg"]');
+    expect(propImage).not.toBeNull();
+    expect(propImage).toHaveAttribute('aria-hidden');
+  });
+
   it('uses the cake scene and princess copy for a girl', async () => {
-    render(<ResultScreen page={{ ...basePage, actualGender: 'girl', theme: 'cake' }} guess="girl" onNext={() => {}} />);
+    render(<ResultScreen page={{ ...basePage, actualGender: 'girl', theme: 'cake' }} onNext={() => {}} />);
 
     await reveal('케이크를 잘라보세요');
 
     expect(screen.getByText('공주님이 찾아왔어요!')).toBeInTheDocument();
-    expect(screen.getByText('내 예측: 여아 → 결과: 정답')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: '젠더 리빌 결과: 여아' })).toHaveAttribute(
-      'src', '/illustrations/reveal/cake-girl.svg',
+      'src', '/illustrations/baby/girl.svg',
     );
   });
 
   it('uses the balloon scene', async () => {
-    render(<ResultScreen page={{ ...basePage, theme: 'balloon' }} guess="boy" onNext={() => {}} />);
+    render(<ResultScreen page={{ ...basePage, theme: 'balloon' }} onNext={() => {}} />);
 
     await reveal('풍선을 터뜨려보세요');
 
     expect(screen.getByRole('img', { name: '젠더 리빌 결과: 남아' })).toHaveAttribute(
-      'src', '/illustrations/reveal/balloon-boy.svg',
+      'src', '/illustrations/baby/boy.svg',
     );
   });
 
@@ -60,7 +68,6 @@ describe('ResultScreen', () => {
     render(
       <ResultScreen
         page={{ ...basePage, dueDate: '2026-11-03', message: '건강하게 만나요' }}
-        guess="boy"
         onNext={() => {}}
       />,
     );
@@ -72,7 +79,7 @@ describe('ResultScreen', () => {
   });
 
   it('omits the zodiac line without a due date', async () => {
-    render(<ResultScreen page={basePage} guess="boy" onNext={() => {}} />);
+    render(<ResultScreen page={basePage} onNext={() => {}} />);
 
     await reveal('선물상자를 열어보세요');
 
@@ -82,28 +89,12 @@ describe('ResultScreen', () => {
   it('offers the guestbook only after the reveal', async () => {
     const onNext = vi.fn();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<ResultScreen page={basePage} guess="boy" onNext={onNext} />);
+    render(<ResultScreen page={basePage} onNext={onNext} />);
 
     expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
     await reveal('선물상자를 열어보세요');
     await user.click(screen.getByRole('button', { name: 'Next' }));
 
     expect(onNext).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows a notice when the guest already participated before', async () => {
-    render(<ResultScreen page={basePage} guess="boy" onNext={() => {}} alreadyGuessed />);
-
-    await reveal('선물상자를 열어보세요');
-
-    expect(screen.getByText('이미 참여하셨어요 · 이전 예측을 보여드려요')).toBeInTheDocument();
-  });
-
-  it('omits the notice for a first-time guess', async () => {
-    render(<ResultScreen page={basePage} guess="boy" onNext={() => {}} />);
-
-    await reveal('선물상자를 열어보세요');
-
-    expect(screen.queryByText('이미 참여하셨어요 · 이전 예측을 보여드려요')).not.toBeInTheDocument();
   });
 });

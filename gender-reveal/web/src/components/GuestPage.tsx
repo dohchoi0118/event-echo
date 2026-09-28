@@ -27,7 +27,6 @@ export function GuestPage() {
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
   const [stage, setStage] = useState<Stage>('intro');
   const [guess, setGuess] = useState<Gender | null>(null);
-  const [alreadyGuessed, setAlreadyGuessed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
   const [thanksEnteredAtMs, setThanksEnteredAtMs] = useState<number | null>(null);
@@ -58,7 +57,6 @@ export function GuestPage() {
     try {
       const result = await submitGuess(slug, gender);
       setGuess(result.guessedGender);
-      setAlreadyGuessed(result.alreadyGuessed);
       setStage('result');
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
@@ -99,8 +97,6 @@ export function GuestPage() {
     return (
       <ResultScreen
         page={view}
-        guess={guess}
-        alreadyGuessed={alreadyGuessed}
         onNext={() => {
           setThanksEnteredAtMs(Date.now());
           setStage('thanks');

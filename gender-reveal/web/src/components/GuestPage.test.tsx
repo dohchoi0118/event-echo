@@ -90,26 +90,11 @@ describe('GuestPage', () => {
 
     await user.click(await screen.findByRole('button', { name: '선물상자를 열어보세요' }));
     expect(await screen.findByText('왕자님이 찾아왔어요!', {}, { timeout: 3000 })).toBeInTheDocument();
-    expect(screen.getByText('내 예측: 여아 → 결과: 오답')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(await screen.findByText('함께 축하해주셔서 감사해요')).toBeInTheDocument();
     expect(await screen.findByText('축하 메시지 남기기')).toBeInTheDocument();
     expect(getGuestbook).toHaveBeenCalledWith('my-slug');
-  });
-
-  it('uses the earlier guess when the guest already participated', async () => {
-    const user = userEvent.setup();
-    getPage.mockResolvedValue(openPage);
-    submitGuess.mockResolvedValue({ guessedGender: 'boy', alreadyGuessed: true });
-
-    render(<GuestPage />);
-    await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
-    await user.click(await screen.findByRole('button', { name: '여자 아기' }));
-    await user.click(await screen.findByRole('button', { name: '선물상자를 열어보세요' }));
-
-    expect(await screen.findByText('내 예측: 남아 → 결과: 정답', {}, { timeout: 3000 })).toBeInTheDocument();
-    expect(await screen.findByText('이미 참여하셨어요 · 이전 예측을 보여드려요', {}, { timeout: 3000 })).toBeInTheDocument();
   });
 
   it('shows an error on the select screen when guessing fails', async () => {

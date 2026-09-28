@@ -1,6 +1,6 @@
 package com.genderreveal.api.owner;
 
-import com.genderreveal.api.auth.OwnerPrincipal;
+import com.genderreveal.api.auth.session.OwnerPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;

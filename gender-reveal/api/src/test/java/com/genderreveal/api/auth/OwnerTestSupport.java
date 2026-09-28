@@ -1,5 +1,7 @@
 package com.genderreveal.api.auth;
 
+import com.genderreveal.api.auth.session.OwnerSessionCookie;
+import com.genderreveal.api.auth.session.OwnerSessionService;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.magiclink;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,5 +1,10 @@
 package com.genderreveal.api.auth;
 
+import com.genderreveal.api.auth.magiclink.MagicLinkRequest;
+import com.genderreveal.api.auth.magiclink.MagicLinkService;
+import com.genderreveal.api.auth.session.OwnerPrincipal;
+import com.genderreveal.api.auth.session.OwnerSessionCookie;
+import com.genderreveal.api.auth.session.OwnerSessionService;
 import com.genderreveal.api.config.AppProperties;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;

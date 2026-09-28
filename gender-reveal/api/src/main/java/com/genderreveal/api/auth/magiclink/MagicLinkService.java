@@ -1,5 +1,7 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.magiclink;
 
+import com.genderreveal.api.auth.TokenGenerator;
+import com.genderreveal.api.auth.TokenHasher;
 import com.genderreveal.api.config.AppProperties;
 import com.genderreveal.api.email.EmailSender;
 import org.slf4j.Logger;

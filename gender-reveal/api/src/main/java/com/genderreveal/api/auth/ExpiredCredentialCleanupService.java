@@ -1,5 +1,7 @@
 package com.genderreveal.api.auth;
 
+import com.genderreveal.api.auth.magiclink.MagicLinkTokenRepository;
+import com.genderreveal.api.auth.session.OwnerSessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

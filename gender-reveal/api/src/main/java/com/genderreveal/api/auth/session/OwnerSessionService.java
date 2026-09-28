@@ -1,5 +1,8 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.session;
 
+import com.genderreveal.api.auth.TokenGenerator;
+import com.genderreveal.api.auth.TokenHasher;
+import com.genderreveal.api.auth.magiclink.MagicLinkService;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;

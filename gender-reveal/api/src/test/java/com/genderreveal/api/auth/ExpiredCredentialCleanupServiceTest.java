@@ -1,5 +1,9 @@
 package com.genderreveal.api.auth;
 
+import com.genderreveal.api.auth.magiclink.MagicLinkToken;
+import com.genderreveal.api.auth.magiclink.MagicLinkTokenRepository;
+import com.genderreveal.api.auth.session.OwnerSession;
+import com.genderreveal.api.auth.session.OwnerSessionRepository;
 import com.genderreveal.api.config.MutableTestClockConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

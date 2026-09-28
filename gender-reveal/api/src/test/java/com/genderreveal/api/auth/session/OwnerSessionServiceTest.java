@@ -1,5 +1,6 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.session;
 
+import com.genderreveal.api.auth.TokenHasher;
 import com.genderreveal.api.config.MutableTestClock;
 import com.genderreveal.api.config.MutableTestClockConfig;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.session;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

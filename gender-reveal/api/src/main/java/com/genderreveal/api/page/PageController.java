@@ -1,6 +1,6 @@
 package com.genderreveal.api.page;
 
-import com.genderreveal.api.auth.OwnerPrincipal;
+import com.genderreveal.api.auth.session.OwnerPrincipal;
 import com.genderreveal.api.common.GuestCookie;
 import com.genderreveal.api.visit.VisitService;
 import jakarta.validation.Valid;

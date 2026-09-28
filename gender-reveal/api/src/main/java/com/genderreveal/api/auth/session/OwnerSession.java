@@ -1,4 +1,4 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.session;
 
 import com.genderreveal.api.common.InstantStringConverter;
 import jakarta.persistence.Column;

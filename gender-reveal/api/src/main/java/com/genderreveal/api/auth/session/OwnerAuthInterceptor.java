@@ -1,4 +1,4 @@
-package com.genderreveal.api.auth;
+package com.genderreveal.api.auth.session;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

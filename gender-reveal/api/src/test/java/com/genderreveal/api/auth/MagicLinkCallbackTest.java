@@ -1,6 +1,7 @@
 package com.genderreveal.api.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genderreveal.api.auth.magiclink.MagicLinkTokenRepository;
 import com.genderreveal.api.config.MutableTestClock;
 import com.genderreveal.api.config.MutableTestClockConfig;
 import com.genderreveal.api.email.RecordingEmailSender;

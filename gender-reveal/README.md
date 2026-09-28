@@ -22,6 +22,8 @@
 
 ### 백엔드 (`api/`)
 
+도메인 패키지 구조와 다이어그램은 [api/README.md](api/README.md) 참고.
+
 - **언어/런타임**: Java 21 (Gradle 툴체인이 강제)
 - **프레임워크**: Spring Boot 3.3.4 — `spring-boot-starter-web`, `-data-jpa`, `-validation`
 - **빌드**: Gradle (Kotlin DSL), wrapper 포함
@@ -166,7 +168,8 @@ cd api && ./gradlew test    # 백엔드 전체 테스트
 cd web && npm test          # 프론트 전체 테스트(Vitest)
 ```
 
-## 자세한 프론트 개발 노트
+## 더 자세한 문서
 
-빌드(`npm run build`)가 프로덕션 전용으로 `NEXT_PUBLIC_SITE_URL`을 요구하는 이유, OG 이미지
-재생성, nginx 배포 설정 등은 [web/README.md](web/README.md)에 더 자세히 있다.
+- 백엔드 도메인 패키지 구조, 패키지 의존 관계·엔티티 다이어그램: [api/README.md](api/README.md)
+- 빌드(`npm run build`)가 프로덕션 전용으로 `NEXT_PUBLIC_SITE_URL`을 요구하는 이유, OG 이미지
+  재생성, nginx 배포 설정 등: [web/README.md](web/README.md)

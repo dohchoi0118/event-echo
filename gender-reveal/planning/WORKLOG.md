@@ -360,3 +360,26 @@
 - 결과 화면 → 다음 버튼 문구를 "다음: 축하글 남기기 ▶"에서 "Next"로 단순화
 - `ThankYouScreen`에 "닫기" 버튼 추가(`window.close()`) — 사용자가 직접 연 탭이 아니면
   브라우저 정책상 안 닫힐 수 있는 알려진 제약 있음
+
+### 41. 실제 성별을 페이지 생성과 분리, 소유자에게도 마스킹 처리
+- 요구사항: 페이지 작성 폼에서 실제 성별 입력을 없애고, 발행 후 대시보드의 별도
+  "성별 선택하기" 화면에서 설정하도록 변경. 그 값은 소유자 자신에게도 클릭 전까지
+  가려짐(복권 스크래치 카드 방식) — 목표는 제3자(의사)가 대신 선택해서, 페이지를
+  만든 부모조차 미리 알지 못하게 하는 것. 애매한 부분은 재질문으로 확정: 성별선택
+  화면은 소유자 로그인 + 버튼으로 접근(별도 비밀 토큰 링크 아님), 생성 폼 자체엔
+  입력 UI를 안 두고 마스킹은 대시보드 상세와 선택 화면 제출 직후 둘 다 적용, 성별
+  미설정 상태에서는 공개 예정 시각이 지나도 계속 "비밀" 유지
+- 백엔드: `pages.actual_gender`를 NOT NULL에서 nullable로 변경(SQLite ALTER COLUMN
+  불가라 테이블 재생성 마이그레이션 필요 — 처음엔 실제 데이터가 있는 docker 볼륨에서
+  DROP TABLE 시 FK 제약으로 실패, `PRAGMA foreign_keys=OFF/ON`으로 감싸 해결하고
+  Flyway가 비트랜잭션(PRAGMA)/트랜잭션(DDL) 혼용을 막던 것도 `spring.flyway.mixed:
+  true`로 해결); `POST /api/pages`에서 `actualGender` 필드 제거; 새
+  `POST /api/owner/pages/{slug}/actual-gender` 엔드포인트; `PageStatusCalculator`가
+  성별 미설정 시 계속 secret 유지하도록 변경
+- 프론트: `CreatePageForm`에서 성별 필드 제거(미리보기는 물음표 placeholder로 대체),
+  재사용 가능한 `ScratchReveal` 컴포넌트, 새 `GenderSelectScreen`(`/gender-select`),
+  `OwnerPageDetailScreen`의 실제 성별 행을 미설정 시 "선택하기" 링크로, 설정 시
+  `ScratchReveal`로 변경
+- 실제 데이터가 있는 docker-compose 볼륨에 마이그레이션 적용해 무손실 확인, 전체
+  플로우(생성→대시보드 마스킹→성별선택→마스킹 해제) 브라우저로 검증.
+  `planning/Requirements.md`도 이 변경에 맞춰 갱신

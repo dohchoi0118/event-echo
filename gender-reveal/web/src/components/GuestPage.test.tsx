@@ -77,7 +77,7 @@ describe('GuestPage', () => {
     expect(await screen.findByText('Coming Soon')).toBeInTheDocument();
   });
 
-  it('shows the invitation screen first, with the due date, before the typing intro', async () => {
+  it('shows the intro (invitation cover) screen first, with the due date, before the question screen', async () => {
     const user = userEvent.setup();
     getPage.mockResolvedValue(openPage);
 
@@ -92,7 +92,7 @@ describe('GuestPage', () => {
     expect(await screen.findByTestId('intro-text')).toBeInTheDocument();
   });
 
-  it('walks invitation → intro → select → result → thanks (message + closing merged)', async () => {
+  it('walks intro → question → select → result → thanks (message + closing merged)', async () => {
     const user = userEvent.setup();
     getPage.mockResolvedValue(openPage);
     submitGuess.mockResolvedValue({ guessedGender: 'girl', alreadyGuessed: false });

@@ -1,0 +1,61 @@
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { QuestionScreen } from './QuestionScreen';
+
+const originalMatchMedia = window.matchMedia;
+
+beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
+afterEach(() => {
+  vi.useRealTimers();
+  window.matchMedia = originalMatchMedia;
+});
+
+describe('QuestionScreen', () => {
+  it('types the question with the right topic particle', () => {
+    render(<QuestionScreen nickname="뽀튼이" zodiac={null} onNext={() => {}} />);
+
+    act(() => { vi.advanceTimersByTime(3000); });
+
+    const text = screen.getByTestId('intro-text');
+    expect(text.textContent).toBe('두근두근...\n뽀튼이는 딸일까요,\n아들일까요?');
+  });
+
+  it('uses 은 after a final consonant', () => {
+    render(<QuestionScreen nickname="별" zodiac={null} onNext={() => {}} />);
+
+    act(() => { vi.advanceTimersByTime(3000); });
+
+    expect(screen.getByTestId('intro-text').textContent).toContain('별은 딸일까요,');
+  });
+
+  it('shows the zodiac character only when a zodiac is given', () => {
+    const { rerender } = render(<QuestionScreen nickname="뽀튼이" zodiac={null} onNext={() => {}} />);
+    expect(screen.queryByRole('img', { name: '말띠' })).not.toBeInTheDocument();
+
+    rerender(<QuestionScreen nickname="뽀튼이" zodiac="horse" onNext={() => {}} />);
+    expect(screen.getByRole('img', { name: '말띠' })).toHaveAttribute('src', '/illustrations/zodiac/horse.svg');
+  });
+
+  it('advances when the continue button is pressed', async () => {
+    const onNext = vi.fn();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<QuestionScreen nickname="뽀튼이" zodiac={null} onNext={onNext} />);
+
+    await user.click(screen.getByRole('button', { name: '탭해서 계속하기' }));
+
+    expect(onNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the full text immediately when prefers-reduced-motion is set', () => {
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: true,
+      media: '(prefers-reduced-motion: reduce)',
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }) as unknown as typeof window.matchMedia;
+
+    render(<QuestionScreen nickname="뽀튼이" zodiac={null} onNext={() => {}} />);
+
+    expect(screen.getByTestId('intro-text').textContent).toBe('두근두근...\n뽀튼이는 딸일까요,\n아들일까요?');
+  });
+});

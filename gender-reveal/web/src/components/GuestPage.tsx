@@ -5,7 +5,7 @@ import { Button } from './Button';
 import { Screen } from './Screen';
 import { ExpiredScreen } from './screens/ExpiredScreen';
 import { IntroScreen } from './screens/IntroScreen';
-import { InvitationScreen } from './screens/InvitationScreen';
+import { QuestionScreen } from './screens/QuestionScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { SecretScreen } from './screens/SecretScreen';
 import { SelectScreen } from './screens/SelectScreen';
@@ -15,7 +15,7 @@ import type { Gender, PageView } from '@/lib/types';
 import { zodiacFromDueDate } from '@/lib/zodiac';
 
 type Load = { kind: 'loading' } | { kind: 'notfound' } | { kind: 'error' } | { kind: 'ready'; view: PageView };
-type Stage = 'invitation' | 'intro' | 'select' | 'result' | 'thanks';
+type Stage = 'intro' | 'question' | 'select' | 'result' | 'thanks';
 
 /** The static shell is served for every /g/<slug>; the slug only exists in the browser URL. */
 export function slugFromPathname(pathname: string): string | null {
@@ -26,7 +26,7 @@ export function slugFromPathname(pathname: string): string | null {
 export function GuestPage() {
   const [slug, setSlug] = useState<string | null | undefined>(undefined);
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
-  const [stage, setStage] = useState<Stage>('invitation');
+  const [stage, setStage] = useState<Stage>('intro');
   const [guess, setGuess] = useState<Gender | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export function GuestPage() {
     if (slug) void loadPage(slug);
   }, [slug, loadPage]);
 
-  const goToIntro = useCallback(() => setStage('intro'), []);
+  const goToQuestion = useCallback(() => setStage('question'), []);
   const goToSelect = useCallback(() => setStage('select'), []);
 
   const onSelect = async (gender: Gender) => {
@@ -63,7 +63,7 @@ export function GuestPage() {
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         setStage('intro');
-        await loadPage(slug); // the page is no longer open (e.g. it expired meanwhile)
+        await loadPage(slug); // the page is no longer open (e.g. it expired meanwhile) — restart at the invitation cover
       } else {
         setSelectError('잠시 후 다시 시도해 주세요');
       }
@@ -89,11 +89,11 @@ export function GuestPage() {
   if (view.status === 'secret') return <SecretScreen nickname={view.nickname} />;
   if (view.status === 'expired') return <ExpiredScreen />;
 
-  if (stage === 'invitation') {
-    return <InvitationScreen dueDate={view.dueDate} onNext={goToIntro} />;
-  }
   if (stage === 'intro') {
-    return <IntroScreen nickname={view.nickname} zodiac={zodiacFromDueDate(view.dueDate)} onNext={goToSelect} />;
+    return <IntroScreen dueDate={view.dueDate} onNext={goToQuestion} />;
+  }
+  if (stage === 'question') {
+    return <QuestionScreen nickname={view.nickname} zodiac={zodiacFromDueDate(view.dueDate)} onNext={goToSelect} />;
   }
   if (stage === 'select' || !guess) {
     return <SelectScreen onSelect={onSelect} submitting={submitting} error={selectError} />;

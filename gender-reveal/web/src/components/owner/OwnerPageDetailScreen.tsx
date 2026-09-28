@@ -100,7 +100,12 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
                   선택하기
                 </a>
               ) : (
-                <ScratchReveal>{genderKo(detail.actualGender)}</ScratchReveal>
+                <span className="flex items-center gap-space-2">
+                  <ScratchReveal>{genderKo(detail.actualGender)}</ScratchReveal>
+                  <a href={`/gender-select?slug=${slug}`} className="text-label text-ink-muted underline">
+                    수정하기
+                  </a>
+                </span>
               )}
             />
             <Row label="공개 예정 일시" value={new Date(detail.revealAt).toLocaleString('ko-KR')} />

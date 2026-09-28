@@ -79,6 +79,16 @@ describe('OwnerPageDetailScreen', () => {
     expect(screen.getByText('여아')).toBeInTheDocument();
   });
 
+  it('offers an edit link for the actual gender once it has been set', async () => {
+    getOwnerPageDetail.mockResolvedValue(detail);
+    getOwnerStats.mockResolvedValue(stats);
+
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    await screen.findByText('뽀튼이의 페이지');
+    expect(screen.getByRole('link', { name: '수정하기' })).toHaveAttribute('href', '/gender-select?slug=my-slug');
+  });
+
   it('offers a link to set the actual gender when it has not been set yet', async () => {
     getOwnerPageDetail.mockResolvedValue({ ...detail, actualGender: null, status: 'secret' as const });
     getOwnerStats.mockResolvedValue(stats);

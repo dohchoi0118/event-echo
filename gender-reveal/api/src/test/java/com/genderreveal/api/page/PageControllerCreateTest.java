@@ -226,6 +226,7 @@ class PageControllerCreateTest {
         assertThat(mail.to()).isEqualTo("mail-owner@example.com");
         assertThat(mail.body()).contains("http://localhost:8080/g/publish-mail-slug");
         assertThat(mail.html()).contains("http://localhost:8080/g/publish-mail-slug");
+        assertThat(mail.html()).contains("http://localhost:8080/og.png");
     }
 
     @Test

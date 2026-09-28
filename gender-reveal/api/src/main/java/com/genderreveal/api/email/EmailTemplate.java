@@ -32,6 +32,11 @@ public final class EmailTemplate {
             + escape(text) + "</p>";
     }
 
+    public static String image(String src, String alt) {
+        return "<img src=\"" + escapeAttribute(src) + "\" alt=\"" + escapeAttribute(alt) + "\" "
+            + "style=\"display:block;width:100%;max-width:416px;margin:0 auto 16px;border-radius:12px;\">";
+    }
+
     public static String button(String href, String label) {
         return "<a href=\"" + escapeAttribute(href) + "\" style=\"display:inline-block;padding:12px 24px;"
             + "border-radius:999px;background-color:#F2793A;color:#FFFFFF;text-decoration:none;"

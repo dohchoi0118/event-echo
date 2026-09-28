@@ -84,9 +84,9 @@ describe('ResultScreen', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<ResultScreen page={basePage} guess="boy" onNext={onNext} />);
 
-    expect(screen.queryByRole('button', { name: '다음: 축하글 남기기 ▶' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
     await reveal('선물상자를 열어보세요');
-    await user.click(screen.getByRole('button', { name: '다음: 축하글 남기기 ▶' }));
+    await user.click(screen.getByRole('button', { name: 'Next' }));
 
     expect(onNext).toHaveBeenCalledTimes(1);
   });

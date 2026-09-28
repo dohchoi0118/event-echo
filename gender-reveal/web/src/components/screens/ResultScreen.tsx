@@ -93,7 +93,7 @@ export function ResultScreen({
       <p className="rounded-radius-full bg-surface-100 px-space-3 py-space-1 text-label">
         {guessSummary(guess, page.actualGender)}
       </p>
-      <Button onClick={onNext}>다음: 축하글 남기기 ▶</Button>
+      <Button onClick={onNext}>Next</Button>
     </Screen>
   );
 }

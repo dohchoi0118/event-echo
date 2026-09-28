@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button } from './Button';
 import { Screen } from './Screen';
 import { ExpiredScreen } from './screens/ExpiredScreen';
-import { GuestbookScreen } from './screens/GuestbookScreen';
 import { IntroScreen } from './screens/IntroScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { SecretScreen } from './screens/SecretScreen';
@@ -15,7 +14,7 @@ import type { Gender, PageView } from '@/lib/types';
 import { zodiacFromDueDate } from '@/lib/zodiac';
 
 type Load = { kind: 'loading' } | { kind: 'notfound' } | { kind: 'error' } | { kind: 'ready'; view: PageView };
-type Stage = 'intro' | 'select' | 'result' | 'guestbook' | 'thanks';
+type Stage = 'intro' | 'select' | 'result' | 'thanks';
 
 /** The static shell is served for every /g/<slug>; the slug only exists in the browser URL. */
 export function slugFromPathname(pathname: string): string | null {
@@ -31,7 +30,7 @@ export function GuestPage() {
   const [alreadyGuessed, setAlreadyGuessed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
-  const [guestbookEnteredAtMs, setGuestbookEnteredAtMs] = useState<number | null>(null);
+  const [thanksEnteredAtMs, setThanksEnteredAtMs] = useState<number | null>(null);
 
   useEffect(() => {
     setSlug(slugFromPathname(window.location.pathname));
@@ -103,22 +102,13 @@ export function GuestPage() {
         guess={guess}
         alreadyGuessed={alreadyGuessed}
         onNext={() => {
-          setGuestbookEnteredAtMs(Date.now());
-          setStage('guestbook');
+          setThanksEnteredAtMs(Date.now());
+          setStage('thanks');
         }}
       />
     );
   }
-  if (stage === 'guestbook') {
-    return (
-      <GuestbookScreen
-        slug={slug}
-        nowMs={guestbookEnteredAtMs ?? undefined}
-        onFinish={() => setStage('thanks')}
-      />
-    );
-  }
-  return <ThankYouScreen />;
+  return <ThankYouScreen slug={slug} nowMs={thanksEnteredAtMs ?? undefined} />;
 }
 
 function NotFound() {

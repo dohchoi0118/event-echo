@@ -83,7 +83,6 @@ class PageControllerGetTest {
     private String createPage(String slug, Instant revealAt) throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", revealAt.toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -95,6 +94,14 @@ class PageControllerGetTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());
+
+        // Actual gender is set separately (e.g. by the doctor), never on the create form itself —
+        // set it here so the open-status assertions in this file still exercise a real open page.
+        mockMvc.perform(post("/api/owner/pages/" + slug + "/actual-gender")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
+                .contentType("application/json")
+                .content("{\"actualGender\":\"boy\"}"))
+            .andExpect(status().isOk());
 
         return slug;
     }

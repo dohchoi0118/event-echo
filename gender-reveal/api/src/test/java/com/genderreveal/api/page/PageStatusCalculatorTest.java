@@ -43,9 +43,29 @@ class PageStatusCalculatorTest {
         assertThat(calculator.calculate(page, now)).isEqualTo(PageStatus.EXPIRED);
     }
 
+    @Test
+    void secretAfterRevealAtWhenActualGenderNotYetSet() {
+        Instant now = Instant.now();
+        Page page = pageWith(now.minus(1, ChronoUnit.HOURS), now.plus(30, ChronoUnit.DAYS), null);
+
+        assertThat(calculator.calculate(page, now)).isEqualTo(PageStatus.SECRET);
+    }
+
+    @Test
+    void expiredTakesPrecedenceEvenWithoutActualGenderSet() {
+        Instant now = Instant.now();
+        Page page = pageWith(now.minus(31, ChronoUnit.DAYS), now.minus(1, ChronoUnit.SECONDS), null);
+
+        assertThat(calculator.calculate(page, now)).isEqualTo(PageStatus.EXPIRED);
+    }
+
     private Page pageWith(Instant revealAt, Instant expiresAt) {
+        return pageWith(revealAt, expiresAt, "boy");
+    }
+
+    private Page pageWith(Instant revealAt, Instant expiresAt, String actualGender) {
         return new Page(
-            "slug", "닉네임", "boy", revealAt, null, "메시지", "box", false,
+            "slug", "닉네임", actualGender, revealAt, null, "메시지", "box", false,
             "owner@example.com", Instant.now(), expiresAt
         );
     }

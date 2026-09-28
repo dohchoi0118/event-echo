@@ -1,11 +1,13 @@
 package com.genderreveal.api.owner;
 
 import com.genderreveal.api.auth.OwnerPrincipal;
+import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,5 +44,12 @@ public class OwnerPageController {
     public ResponseEntity<OwnerPageSummary> extend(OwnerPrincipal owner, @PathVariable String slug) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
             .body(ownerPageService.extend(slug, owner.email()));
+    }
+
+    @PostMapping("/{slug}/actual-gender")
+    public ResponseEntity<OwnerPageDetail> setActualGender(
+            OwnerPrincipal owner, @PathVariable String slug, @Valid @RequestBody ActualGenderRequest request) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+            .body(ownerPageService.setActualGender(slug, owner.email(), request.actualGender()));
     }
 }

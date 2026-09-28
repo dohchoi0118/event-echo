@@ -74,4 +74,13 @@ public class OwnerPageService {
         Page page = requireOwned(slug, ownerEmail);
         return OwnerPageDetail.of(page, statusCalculator.calculate(page, Instant.now(clock)));
     }
+
+    /** Sets the actual gender separately from page creation (e.g. by the doctor), not by the
+     *  page owner filling out the create form — see PageStatusCalculator for how this gates OPEN. */
+    public OwnerPageDetail setActualGender(String slug, String ownerEmail, String actualGender) {
+        Page page = requireOwned(slug, ownerEmail);
+        page.setActualGender(actualGender);
+        Page saved = pageRepository.save(page);
+        return OwnerPageDetail.of(saved, statusCalculator.calculate(saved, Instant.now(clock)));
+    }
 }

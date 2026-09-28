@@ -106,7 +106,6 @@ class GuestbookEntryControllerTest {
     void postOnSecretPageIsRejected() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -210,7 +209,6 @@ class GuestbookEntryControllerTest {
     private String createOpenPage(String slug) throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().minus(1, java.time.temporal.ChronoUnit.HOURS).toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -222,6 +220,14 @@ class GuestbookEntryControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
             .andExpect(status().isCreated());
+
+        // Actual gender is set separately (e.g. by the doctor); set it here so this genuinely
+        // reaches OPEN status.
+        mockMvc.perform(post("/api/owner/pages/" + slug + "/actual-gender")
+                .cookie(ownerTestSupport.cookieFor("owner@example.com"))
+                .contentType("application/json")
+                .content("{\"actualGender\":\"boy\"}"))
+            .andExpect(status().isOk());
 
         return slug;
     }

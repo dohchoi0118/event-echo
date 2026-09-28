@@ -77,7 +77,6 @@ class PageControllerExpiredTest {
     private String createPage(String slug, Instant revealAt) throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", revealAt.toString(),
             "theme", "box",
             "bgmEnabled", true,

@@ -27,7 +27,9 @@ public class Page {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(name = "actual_gender", nullable = false)
+    /** Null until an owner-authenticated third party (e.g. the doctor) sets it via a dedicated
+     *  step, separate from page creation, so the actual gender is never entered on the create form. */
+    @Column(name = "actual_gender")
     private String actualGender;
 
     @Column(name = "reveal_at", nullable = false)
@@ -98,5 +100,9 @@ public class Page {
     public void extend(Instant newExpiresAt) {
         this.expiresAt = newExpiresAt;
         this.extended = true;
+    }
+
+    public void setActualGender(String actualGender) {
+        this.actualGender = actualGender;
     }
 }

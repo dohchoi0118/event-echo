@@ -42,7 +42,7 @@ class PageServiceRaceTest {
         doReturn(false).when(pageRepository).existsBySlug(anyString());
 
         PageCreateRequest request = new PageCreateRequest(
-            "뽀튼이", "boy", now.plus(1, ChronoUnit.DAYS), null, "메시지", "box", false,
+            "뽀튼이", now.plus(1, ChronoUnit.DAYS), null, "메시지", "box", false,
             "race-slug");
 
         assertThatThrownBy(() -> pageService.create(request, "owner@example.com"))

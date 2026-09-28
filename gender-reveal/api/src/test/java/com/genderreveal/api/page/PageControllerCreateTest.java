@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +56,6 @@ class PageControllerCreateTest {
     void createsPageAndReturnsGeneratedSlug() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true
@@ -71,27 +71,33 @@ class PageControllerCreateTest {
     }
 
     @Test
-    void rejectsInvalidGender() throws Exception {
+    void createsPageWithoutActualGenderAndItStaysSecretEvenPastRevealAt() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "unknown",
-            "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
+            "revealAt", Instant.now().minus(1, ChronoUnit.HOURS).toString(),
             "theme", "box",
-            "bgmEnabled", true
+            "bgmEnabled", true,
+            "slug", "no-gender-yet-slug"
         );
 
         mockMvc.perform(post("/api/pages")
                 .cookie(ownerTestSupport.cookieFor("owner@example.com"))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(body)))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isCreated());
+
+        assertThat(pageRepository.findBySlug("no-gender-yet-slug").orElseThrow().getActualGender()).isNull();
+
+        mockMvc.perform(get("/api/pages/no-gender-yet-slug"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("secret"))
+            .andExpect(jsonPath("$.actualGender").doesNotExist());
     }
 
     @Test
     void rejectsRevealAtBeyondRetentionWindow() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(40, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true
@@ -108,7 +114,6 @@ class PageControllerCreateTest {
     void acceptsRevealAtFarInThePastAndOpensImmediately() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().minus(40, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true
@@ -125,7 +130,6 @@ class PageControllerCreateTest {
     void rejectsDuplicateCustomSlug() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -149,7 +153,6 @@ class PageControllerCreateTest {
     void createWithoutSessionIs401() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true
@@ -165,7 +168,6 @@ class PageControllerCreateTest {
     void ownerEmailComesFromSession() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -186,7 +188,6 @@ class PageControllerCreateTest {
     void ownerEmailInRequestBodyIsIgnored() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -208,7 +209,6 @@ class PageControllerCreateTest {
     void sendsPublishedLinkToOwnerEmail() throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,
@@ -233,7 +233,6 @@ class PageControllerCreateTest {
             .when(emails).send(anyString(), anyString(), anyString());
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
-            "actualGender", "boy",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
             "theme", "box",
             "bgmEnabled", true,

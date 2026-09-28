@@ -62,17 +62,31 @@ describe('slugFromSearch', () => {
 });
 
 describe('OwnerPageDetailScreen', () => {
-  it('shows the header, actual gender and stats', async () => {
+  it('shows the header and stats, with the actual gender masked until clicked', async () => {
     getOwnerPageDetail.mockResolvedValue(detail);
     getOwnerStats.mockResolvedValue(stats);
+    const user = userEvent.setup();
 
     render(<OwnerPageDetailScreen slug="my-slug" />);
 
     expect(await screen.findByText('뽀튼이의 페이지')).toBeInTheDocument();
-    expect(screen.getByText('여아')).toBeInTheDocument();
     expect(screen.getByText('128')).toBeInTheDocument();
     expect(screen.getByText('64명')).toBeInTheDocument();
     expect(screen.getByText('32 / 32')).toBeInTheDocument();
+
+    expect(screen.queryByText('여아')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '클릭해서 보기' }));
+    expect(screen.getByText('여아')).toBeInTheDocument();
+  });
+
+  it('offers a link to set the actual gender when it has not been set yet', async () => {
+    getOwnerPageDetail.mockResolvedValue({ ...detail, actualGender: null, status: 'secret' as const });
+    getOwnerStats.mockResolvedValue(stats);
+
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    await screen.findByText('뽀튼이의 페이지');
+    expect(screen.getByRole('link', { name: '선택하기' })).toHaveAttribute('href', '/gender-select?slug=my-slug');
   });
 
   it('links to the visitor-facing page', async () => {

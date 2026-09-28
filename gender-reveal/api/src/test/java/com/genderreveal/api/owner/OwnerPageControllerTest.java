@@ -200,6 +200,67 @@ class OwnerPageControllerTest {
     }
 
     @Test
+    void ownerSetsActualGenderSeparatelyFromCreation() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "gender-select-slug", "뽀튼이", null, now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "gender-owner@example.com", now, now.plus(30, ChronoUnit.DAYS)));
+
+        mockMvc.perform(get("/api/owner/pages/gender-select-slug")
+                .cookie(ownerTestSupport.cookieFor("gender-owner@example.com")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.actualGender").doesNotExist())
+            .andExpect(jsonPath("$.status").value("secret"));
+
+        mockMvc.perform(post("/api/owner/pages/gender-select-slug/actual-gender")
+                .cookie(ownerTestSupport.cookieFor("gender-owner@example.com"))
+                .contentType("application/json")
+                .content("{\"actualGender\":\"girl\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.actualGender").value("girl"))
+            .andExpect(jsonPath("$.status").value("open"));
+
+        Page reloaded = pageRepository.findBySlug("gender-select-slug").orElseThrow();
+        assertThat(reloaded.getActualGender()).isEqualTo("girl");
+    }
+
+    @Test
+    void rejectsInvalidActualGenderValue() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "gender-invalid-slug", "뽀튼이", null, now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "gender-owner2@example.com", now, now.plus(30, ChronoUnit.DAYS)));
+
+        mockMvc.perform(post("/api/owner/pages/gender-invalid-slug/actual-gender")
+                .cookie(ownerTestSupport.cookieFor("gender-owner2@example.com"))
+                .contentType("application/json")
+                .content("{\"actualGender\":\"unknown\"}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void settingActualGenderOnSomeoneElsesPageIs404() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "gender-private-slug", "뽀튼이", null, now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "victim@example.com", now, now.plus(30, ChronoUnit.DAYS)));
+
+        mockMvc.perform(post("/api/owner/pages/gender-private-slug/actual-gender")
+                .cookie(ownerTestSupport.cookieFor("intruder@example.com"))
+                .contentType("application/json")
+                .content("{\"actualGender\":\"boy\"}"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void settingActualGenderWithoutSessionIs401() throws Exception {
+        mockMvc.perform(post("/api/owner/pages/any-slug/actual-gender")
+                .contentType("application/json")
+                .content("{\"actualGender\":\"boy\"}"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void detailOfSomeoneElsesPageOrMissingSlugIs404() throws Exception {
         pageRepository.save(new Page(
             "detail-private-slug", "뽀튼이", "boy", Instant.now().minus(1, ChronoUnit.HOURS),

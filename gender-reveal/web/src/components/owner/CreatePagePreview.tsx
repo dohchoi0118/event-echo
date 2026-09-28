@@ -1,6 +1,5 @@
 import { Button } from '../Button';
-import { babySrc } from '@/lib/illustrations';
-import { genderKo, REVEAL_PROMPT } from '@/lib/result';
+import { REVEAL_PROMPT } from '@/lib/result';
 import { zodiacFromDueDate, zodiacLabelKo } from '@/lib/zodiac';
 import type { PageCreatePayload } from '@/lib/types';
 
@@ -24,9 +23,11 @@ export function CreatePagePreview({
       </button>
       <h1 className="font-display text-display-lg">이렇게 만들어져요</h1>
       <div className="flex flex-col items-center gap-space-2 rounded-radius-md border border-border bg-surface-100 p-space-4">
-        <img src={babySrc(payload.actualGender)} alt="" className="h-24 w-24" />
+        <div aria-hidden className="flex h-24 w-24 items-center justify-center rounded-full bg-surface-200 font-display text-display-lg text-ink-muted">
+          ?
+        </div>
         <p className="text-body-lg">{payload.nickname}</p>
-        <p className="text-body-sm text-ink-muted">{genderKo(payload.actualGender)}</p>
+        <p className="text-body-sm text-ink-muted">실제 성별은 발행 후 별도로 설정해요</p>
         {zodiac && <p className="text-body-sm text-ink-muted">{zodiacLabelKo(zodiac)}</p>}
         <p className="text-body">{REVEAL_PROMPT[payload.theme]}</p>
         {payload.message && <p className="text-body text-ink-muted">{payload.message}</p>}

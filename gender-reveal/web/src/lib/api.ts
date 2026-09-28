@@ -120,6 +120,11 @@ export function extendPage(slug: string): Promise<OwnerPageSummary> {
   return postJson<OwnerPageSummary>(`/api/owner/pages/${encodeURIComponent(slug)}/extend`, undefined);
 }
 
+/** Set separately from page creation — e.g. by the doctor, not the page owner filling out a form. */
+export function setActualGender(slug: string, actualGender: Gender): Promise<OwnerPageDetail> {
+  return postJson<OwnerPageDetail>(`/api/owner/pages/${encodeURIComponent(slug)}/actual-gender`, { actualGender });
+}
+
 export function createPage(payload: PageCreatePayload): Promise<{ slug: string }> {
   return postJson<{ slug: string }>('/api/pages', payload);
 }

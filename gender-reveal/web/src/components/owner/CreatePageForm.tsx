@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../Button';
 import { revealSrc } from '@/lib/illustrations';
-import type { Gender, PageCreatePayload, Theme } from '@/lib/types';
+import type { PageCreatePayload, Theme } from '@/lib/types';
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: 'box', label: '서프라이즈 박스' },
@@ -25,7 +25,6 @@ export function CreatePageForm({
   error: string | null;
 }) {
   const [nickname, setNickname] = useState('');
-  const [actualGender, setActualGender] = useState<Gender | null>(null);
   const [revealAt, setRevealAt] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [message, setMessage] = useState('');
@@ -35,8 +34,8 @@ export function CreatePageForm({
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (!nickname.trim() || !actualGender || !revealAt || !theme) {
-      setValidationError('태명, 성별, 공개 예정 일시, 테마를 입력해 주세요');
+    if (!nickname.trim() || !revealAt || !theme) {
+      setValidationError('태명, 공개 예정 일시, 테마를 입력해 주세요');
       return;
     }
     const trimmedSlug = slug.trim();
@@ -53,7 +52,6 @@ export function CreatePageForm({
     setValidationError(null);
     onSubmit({
       nickname: nickname.trim(),
-      actualGender,
       revealAt: new Date(revealAt).toISOString(),
       dueDate: dueDate || null,
       message: message.trim() || null,
@@ -73,19 +71,9 @@ export function CreatePageForm({
         <input className={inputClass} value={nickname} onChange={(e) => setNickname(e.target.value)} />
       </label>
 
-      <fieldset className="flex flex-col gap-space-1">
-        <legend className="text-label">실제 성별</legend>
-        <div className="flex gap-space-3">
-          <label className="flex items-center gap-space-1">
-            <input type="radio" name="actualGender" checked={actualGender === 'boy'} onChange={() => setActualGender('boy')} />
-            남아
-          </label>
-          <label className="flex items-center gap-space-1">
-            <input type="radio" name="actualGender" checked={actualGender === 'girl'} onChange={() => setActualGender('girl')} />
-            여아
-          </label>
-        </div>
-      </fieldset>
+      <p className="rounded-radius-md bg-surface-200 px-space-3 py-space-2 text-body-sm text-ink-muted">
+        실제 성별은 여기서 입력하지 않아요 — 발행 후 대시보드에서 별도로 설정해요.
+      </p>
 
       <div className="flex flex-col gap-space-1">
         <label htmlFor="revealAt" className="text-label">
@@ -130,7 +118,7 @@ export function CreatePageForm({
                   onChange={() => setTheme(t.value)}
                   className="sr-only"
                 />
-                <img src={revealSrc(t.value, actualGender ?? 'boy')} alt="" className="h-16 w-16" />
+                <img src={revealSrc(t.value, 'boy')} alt="" className="h-16 w-16" />
                 {t.label}
               </label>
             );

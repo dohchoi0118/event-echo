@@ -41,8 +41,11 @@ public class PageService {
 
         String slug = resolveSlug(request.slug());
 
+        // actualGender starts null — set later via a separate owner-authenticated step (e.g. by
+        // the doctor), never on this create form. See PageStatusCalculator: status stays SECRET
+        // until it's set, regardless of revealAt.
         Page page = new Page(
-            slug, request.nickname(), request.actualGender(), request.revealAt(),
+            slug, request.nickname(), null, request.revealAt(),
             request.dueDate(), request.message(), request.theme(), request.bgmEnabled(),
             ownerEmail, now, now.plus(RETENTION_DAYS, ChronoUnit.DAYS)
         );

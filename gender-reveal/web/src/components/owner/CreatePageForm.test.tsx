@@ -9,13 +9,19 @@ describe('CreatePageForm', () => {
     expect(screen.getByRole('link', { name: '← 내 페이지' })).toHaveAttribute('href', '/dashboard');
   });
 
+  it('does not ask for the actual gender', () => {
+    render(<CreatePageForm onSubmit={vi.fn()} submitting={false} error={null} />);
+
+    expect(screen.queryByRole('radio', { name: '남아' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: '여아' })).not.toBeInTheDocument();
+  });
+
   it('collects the required fields and calls onSubmit with a PageCreatePayload', async () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     render(<CreatePageForm onSubmit={onSubmit} submitting={false} error={null} />);
 
     await user.type(screen.getByLabelText('태명'), '뽀튼이');
-    await user.click(screen.getByRole('radio', { name: '남아' }));
     await user.type(screen.getByLabelText('공개 예정 일시'), '2026-10-01T09:00');
     await user.click(screen.getByRole('radio', { name: '케이크' }));
     await user.click(screen.getByRole('button', { name: '미리보기' }));
@@ -23,7 +29,7 @@ describe('CreatePageForm', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const payload = onSubmit.mock.calls[0][0];
     expect(payload.nickname).toBe('뽀튼이');
-    expect(payload.actualGender).toBe('boy');
+    expect(payload.actualGender).toBeUndefined();
     expect(payload.theme).toBe('cake');
     expect(payload.bgmEnabled).toBe(false);
     expect(payload.dueDate).toBeNull();
@@ -38,7 +44,6 @@ describe('CreatePageForm', () => {
     render(<CreatePageForm onSubmit={onSubmit} submitting={false} error={null} />);
 
     await user.type(screen.getByLabelText('태명'), '뽀튼이');
-    await user.click(screen.getByRole('radio', { name: '여아' }));
     await user.type(screen.getByLabelText('공개 예정 일시'), '2026-10-01T09:00');
     await user.type(screen.getByLabelText('출산 예정일 (선택)'), '2026-11-03');
     await user.type(screen.getByLabelText('축하 메시지 (선택)'), '건강하게 만나요');
@@ -60,7 +65,7 @@ describe('CreatePageForm', () => {
 
     await user.click(screen.getByRole('button', { name: '미리보기' }));
 
-    expect(screen.getByRole('alert')).toHaveTextContent('태명, 성별, 공개 예정 일시, 테마를 입력해 주세요');
+    expect(screen.getByRole('alert')).toHaveTextContent('태명, 공개 예정 일시, 테마를 입력해 주세요');
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -70,7 +75,6 @@ describe('CreatePageForm', () => {
     render(<CreatePageForm onSubmit={onSubmit} submitting={false} error={null} />);
 
     await user.type(screen.getByLabelText('태명'), '뽀튼이');
-    await user.click(screen.getByRole('radio', { name: '남아' }));
     await user.type(screen.getByLabelText('공개 예정 일시'), '2026-10-01T09:00');
     await user.click(screen.getByRole('radio', { name: '케이크' }));
     await user.type(screen.getByLabelText('커스텀 주소 (선택)'), 'AB');
@@ -89,7 +93,6 @@ describe('CreatePageForm', () => {
     const localValue = `${farFuture.getFullYear()}-${String(farFuture.getMonth() + 1).padStart(2, '0')}-${String(farFuture.getDate()).padStart(2, '0')}T09:00`;
 
     await user.type(screen.getByLabelText('태명'), '뽀튼이');
-    await user.click(screen.getByRole('radio', { name: '남아' }));
     await user.type(screen.getByLabelText('공개 예정 일시'), localValue);
     await user.click(screen.getByRole('radio', { name: '케이크' }));
     await user.click(screen.getByRole('button', { name: '미리보기' }));

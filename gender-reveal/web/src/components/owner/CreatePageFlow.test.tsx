@@ -12,7 +12,6 @@ const createPage = vi.mocked(api.createPage);
 
 async function fillMinimalForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText('태명'), '뽀튼이');
-  await user.click(screen.getByRole('radio', { name: '남아' }));
   await user.type(screen.getByLabelText('공개 예정 일시'), '2026-10-01T09:00');
   await user.click(screen.getByRole('radio', { name: '서프라이즈 박스' }));
 }

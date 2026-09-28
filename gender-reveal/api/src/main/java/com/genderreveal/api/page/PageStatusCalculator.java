@@ -8,11 +8,13 @@ import java.time.Instant;
 public class PageStatusCalculator {
 
     public PageStatus calculate(Page page, Instant now) {
-        if (now.isBefore(page.getRevealAt())) {
-            return PageStatus.SECRET;
-        }
         if (!now.isBefore(page.getExpiresAt())) {
             return PageStatus.EXPIRED;
+        }
+        // actualGender is set separately from creation (e.g. by the doctor) — stays SECRET
+        // regardless of revealAt until it's actually been set.
+        if (now.isBefore(page.getRevealAt()) || page.getActualGender() == null) {
+            return PageStatus.SECRET;
         }
         return PageStatus.OPEN;
     }

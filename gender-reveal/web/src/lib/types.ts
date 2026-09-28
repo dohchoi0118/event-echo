@@ -34,7 +34,8 @@ export type OwnerPageSummary = {
 export type OwnerPageDetail = {
   slug: string;
   nickname: string;
-  actualGender: Gender;
+  /** Null until set separately from creation (e.g. by the doctor) via setActualGender(). */
+  actualGender: Gender | null;
   dueDate: string | null;
   message: string | null;
   theme: Theme;
@@ -65,7 +66,6 @@ export type OwnerGuestbookEntry = {
 
 export type PageCreatePayload = {
   nickname: string;
-  actualGender: Gender;
   revealAt: string;
   dueDate: string | null;
   message: string | null;

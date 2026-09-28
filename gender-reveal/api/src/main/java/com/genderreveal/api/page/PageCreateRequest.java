@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 public record PageCreateRequest(
     @NotBlank String nickname,
-    @NotNull @Pattern(regexp = "boy|girl") String actualGender,
     @NotNull Instant revealAt,
     LocalDate dueDate,
     String message,

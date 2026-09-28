@@ -4,7 +4,6 @@ import type { PageCreatePayload } from '@/lib/types';
 
 const basePayload: PageCreatePayload = {
   nickname: '뽀튼이',
-  actualGender: 'boy',
   revealAt: '2026-10-01T09:00:00.000Z',
   dueDate: null,
   message: null,
@@ -14,24 +13,13 @@ const basePayload: PageCreatePayload = {
 };
 
 describe('CreatePagePreview', () => {
-  it('shows the gender as text for a boy', () => {
+  it('never shows the actual gender — it is not known at creation time', () => {
     render(
       <CreatePagePreview payload={basePayload} onEdit={() => {}} onPublish={() => {}} submitting={false} />,
     );
 
-    expect(screen.getByText('남아')).toBeInTheDocument();
-  });
-
-  it('shows the gender as text for a girl', () => {
-    render(
-      <CreatePagePreview
-        payload={{ ...basePayload, actualGender: 'girl' }}
-        onEdit={() => {}}
-        onPublish={() => {}}
-        submitting={false}
-      />,
-    );
-
-    expect(screen.getByText('여아')).toBeInTheDocument();
+    expect(screen.getByText('실제 성별은 발행 후 별도로 설정해요')).toBeInTheDocument();
+    expect(screen.queryByText('남아')).not.toBeInTheDocument();
+    expect(screen.queryByText('여아')).not.toBeInTheDocument();
   });
 });

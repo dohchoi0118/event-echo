@@ -1,11 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { extendPage, getOwnerPageDetail, getOwnerStats } from '@/lib/api';
 import { useOwnerSession } from '@/hooks/useOwnerSession';
 import type { OwnerPageDetail, PageStats } from '@/lib/types';
 import { genderKo } from '@/lib/result';
 import { GuestbookModerationTable } from './GuestbookModerationTable';
+import { ScratchReveal } from '../ScratchReveal';
 
 export function slugFromSearch(search: string): string | null {
   return new URLSearchParams(search).get('slug');
@@ -91,7 +93,16 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
 
           <section className="flex flex-col gap-space-2 rounded-radius-md border border-border bg-surface-100 p-space-3">
             <h2 className="font-display text-display-md">페이지 설정 / 보관주기</h2>
-            <Row label="실제 성별" value={genderKo(detail.actualGender)} />
+            <Row
+              label="실제 성별"
+              value={detail.actualGender === null ? (
+                <a href={`/gender-select?slug=${slug}`} className="text-label text-accent-primary underline">
+                  선택하기
+                </a>
+              ) : (
+                <ScratchReveal>{genderKo(detail.actualGender)}</ScratchReveal>
+              )}
+            />
             <Row label="공개 예정 일시" value={new Date(detail.revealAt).toLocaleString('ko-KR')} />
             <Row label="보관주기 만료일" value={new Date(detail.expiresAt).toLocaleDateString('ko-KR')} />
             <Row label="연장 사용 여부" value={detail.extended ? '사용함' : '미사용 (1회 가능)'} />
@@ -123,7 +134,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex items-center justify-between text-body">
       <span className="text-ink-muted">{label}</span>

@@ -1,5 +1,7 @@
 package com.genderreveal.api.page;
 
+import com.genderreveal.api.page.slug.SlugAllocationExhaustedException;
+import com.genderreveal.api.page.slug.SlugAlreadyTakenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

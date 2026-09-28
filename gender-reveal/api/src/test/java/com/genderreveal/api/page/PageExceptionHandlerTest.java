@@ -1,5 +1,6 @@
 package com.genderreveal.api.page;
 
+import com.genderreveal.api.page.slug.SlugAllocationExhaustedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

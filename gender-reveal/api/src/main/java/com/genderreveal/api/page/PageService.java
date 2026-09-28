@@ -3,6 +3,8 @@ package com.genderreveal.api.page;
 import com.genderreveal.api.config.AppProperties;
 import com.genderreveal.api.email.EmailSender;
 import com.genderreveal.api.email.EmailTemplate;
+import com.genderreveal.api.page.slug.SlugAlreadyTakenException;
+import com.genderreveal.api.page.slug.UniqueSlugAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;

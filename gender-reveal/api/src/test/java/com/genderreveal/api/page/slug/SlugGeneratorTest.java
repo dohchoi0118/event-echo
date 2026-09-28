@@ -1,4 +1,4 @@
-package com.genderreveal.api.page;
+package com.genderreveal.api.page.slug;
 
 import org.junit.jupiter.api.Test;
 

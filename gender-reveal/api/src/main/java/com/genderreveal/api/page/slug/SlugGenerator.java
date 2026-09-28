@@ -1,4 +1,4 @@
-package com.genderreveal.api.page;
+package com.genderreveal.api.page.slug;
 
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;

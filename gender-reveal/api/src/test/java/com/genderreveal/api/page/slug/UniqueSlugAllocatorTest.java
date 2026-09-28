@@ -1,5 +1,6 @@
-package com.genderreveal.api.page;
+package com.genderreveal.api.page.slug;
 
+import com.genderreveal.api.page.PageRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

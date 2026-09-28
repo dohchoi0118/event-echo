@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,9 +52,14 @@ class MagicLinkCallbackTest {
     @Autowired
     private MagicLinkTokenRepository magicLinkTokenRepository;
 
+    private String clientIp;
+
     @BeforeEach
     void resetEmails() {
         emails.clear();
+        // Unique per test so the shared (context-cached) RateLimiter bean doesn't let one test's
+        // hits count against another's IP-based quota.
+        clientIp = UUID.randomUUID().toString();
     }
 
     @Test
@@ -112,6 +118,7 @@ class MagicLinkCallbackTest {
 
     private String requestTokenFor(String email) throws Exception {
         mockMvc.perform(post("/api/auth/magic-link")
+                .header("X-Forwarded-For", clientIp)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(Map.of("email", email))))
             .andExpect(status().isAccepted());

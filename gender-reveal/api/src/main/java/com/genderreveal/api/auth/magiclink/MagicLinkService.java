@@ -2,6 +2,8 @@ package com.genderreveal.api.auth.magiclink;
 
 import com.genderreveal.api.auth.TokenGenerator;
 import com.genderreveal.api.auth.TokenHasher;
+import com.genderreveal.api.common.RateLimitExceededException;
+import com.genderreveal.api.common.RateLimiter;
 import com.genderreveal.api.config.AppProperties;
 import com.genderreveal.api.email.EmailSender;
 import com.genderreveal.api.email.EmailTemplate;
@@ -21,26 +23,38 @@ public class MagicLinkService {
     private static final Logger log = LoggerFactory.getLogger(MagicLinkService.class);
     private static final Duration TOKEN_TTL = Duration.ofMinutes(15);
     private static final Duration COOLDOWN = Duration.ofSeconds(60);
+    private static final int MAX_REQUESTS_PER_MINUTE_PER_IP = 5;
 
     private final MagicLinkTokenRepository tokenRepository;
     private final EmailSender emailSender;
     private final AppProperties appProperties;
     private final Clock clock;
+    private final RateLimiter rateLimiter;
 
     public MagicLinkService(MagicLinkTokenRepository tokenRepository, EmailSender emailSender,
-                             AppProperties appProperties, Clock clock) {
+                             AppProperties appProperties, Clock clock, RateLimiter rateLimiter) {
         this.tokenRepository = tokenRepository;
         this.emailSender = emailSender;
         this.appProperties = appProperties;
         this.clock = clock;
+        this.rateLimiter = rateLimiter;
     }
 
     public static String normalize(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }
 
-    /** Always returns normally so callers can answer 202 regardless of outcome (no account enumeration). */
-    public void request(String email) {
+    /**
+     * Always returns normally (once past the IP rate limit) so callers can answer 202 regardless
+     * of outcome (no account enumeration). {@code clientIp} bounds how many *distinct* emails a
+     * single source can target per minute — the per-email cooldown below only slows down repeats
+     * of the *same* email, so without this a caller could mail-bomb many different inboxes.
+     */
+    public void request(String email, String clientIp) {
+        if (!rateLimiter.allow("magic-link-ip:" + clientIp, MAX_REQUESTS_PER_MINUTE_PER_IP, Duration.ofMinutes(1))) {
+            throw new RateLimitExceededException("Too many login requests — try again in a minute");
+        }
+
         String normalized = normalize(email);
         Instant now = Instant.now(clock);
 

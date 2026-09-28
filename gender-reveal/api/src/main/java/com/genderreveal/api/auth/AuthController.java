@@ -6,6 +6,7 @@ import com.genderreveal.api.auth.session.OwnerPrincipal;
 import com.genderreveal.api.auth.session.OwnerSessionCookie;
 import com.genderreveal.api.auth.session.OwnerSessionService;
 import com.genderreveal.api.config.AppProperties;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -41,8 +42,17 @@ public class AuthController {
 
     @PostMapping("/magic-link")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void requestMagicLink(@Valid @RequestBody MagicLinkRequest request) {
-        magicLinkService.request(request.email());
+    public void requestMagicLink(@Valid @RequestBody MagicLinkRequest request, HttpServletRequest httpRequest) {
+        magicLinkService.request(request.email(), clientIp(httpRequest));
+    }
+
+    /** Prefers the proxy-set header (nginx forwards it) over the raw socket address. */
+    private static String clientIp(HttpServletRequest request) {
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            return forwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     @GetMapping("/callback")

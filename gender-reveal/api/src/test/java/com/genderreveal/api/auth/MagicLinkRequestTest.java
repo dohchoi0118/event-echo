@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,9 +42,14 @@ class MagicLinkRequestTest {
     @Autowired
     private Clock clock;
 
+    private String clientIp;
+
     @BeforeEach
     void resetEmails() {
         emails.clear();
+        // Unique per test so the shared (context-cached) RateLimiter bean doesn't let one test's
+        // hits count against another's IP-based quota.
+        clientIp = UUID.randomUUID().toString();
     }
 
     @Test
@@ -83,8 +89,20 @@ class MagicLinkRequestTest {
         assertThat(emails.sent()).hasSize(2);
     }
 
+    @Test
+    void sixthRequestFromTheSameIpWithinAMinuteIsRateLimited() throws Exception {
+        for (int i = 0; i < 5; i++) {
+            requestLink("owner-ip-" + i + "@example.com").andExpect(status().isAccepted());
+        }
+
+        requestLink("owner-ip-5@example.com").andExpect(status().isTooManyRequests());
+
+        assertThat(emails.sent()).hasSize(5);
+    }
+
     private org.springframework.test.web.servlet.ResultActions requestLink(String email) throws Exception {
         return mockMvc.perform(post("/api/auth/magic-link")
+            .header("X-Forwarded-For", clientIp)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(Map.of("email", email))));
     }

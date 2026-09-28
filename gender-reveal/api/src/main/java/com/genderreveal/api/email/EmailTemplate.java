@@ -32,9 +32,16 @@ public final class EmailTemplate {
             + escape(text) + "</p>";
     }
 
+    /**
+     * Renders as an image when the client can load {@code src}, or as a colored block showing
+     * {@code alt} when it can't (e.g. a local/dev {@code src} that isn't reachable from the
+     * recipient's mail client) — the background/height/text styles only become visible on failure.
+     */
     public static String image(String src, String alt) {
         return "<img src=\"" + escapeAttribute(src) + "\" alt=\"" + escapeAttribute(alt) + "\" "
-            + "style=\"display:block;width:100%;max-width:416px;margin:0 auto 16px;border-radius:12px;\">";
+            + "style=\"display:block;width:100%;max-width:416px;min-height:120px;margin:0 auto 16px;"
+            + "border-radius:12px;background-color:#FDEAD9;color:#F2793A;font-size:14px;font-weight:600;"
+            + "text-align:center;line-height:120px;\">";
     }
 
     public static String button(String href, String label) {

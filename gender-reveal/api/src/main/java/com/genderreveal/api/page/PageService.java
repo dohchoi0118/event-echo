@@ -106,7 +106,7 @@ public class PageService {
         String text = "페이지가 만들어졌어요. 아래 링크를 복사해 가족과 친구들에게 공유해 보세요.\n\n" + link;
         String html = EmailTemplate.render("페이지가 발행됐어요",
             EmailTemplate.paragraph("페이지가 만들어졌어요. 아래 버튼으로 열어서 링크를 복사해 가족과 친구들에게 공유해 보세요.")
-                + EmailTemplate.image(appProperties.baseUrl() + "/og.png", "젠더리빌")
+                + EmailTemplate.image(appProperties.baseUrl() + "/og.png", "젠더리빌 — 우리 아기는 딸일까요, 아들일까요?")
                 + EmailTemplate.button(link, "페이지 열기"));
         try {
             emailSender.send(page.getOwnerEmail(), "젠더리빌 페이지가 발행됐어요", text, html);

@@ -12,6 +12,7 @@ vi.mock('@/lib/api', async (importOriginal) => {
     getOwnerStats: vi.fn(),
     extendPage: vi.fn(),
     getOwnerGuestbook: vi.fn(),
+    deletePage: vi.fn(),
   };
 });
 
@@ -20,6 +21,7 @@ const getOwnerPageDetail = vi.mocked(api.getOwnerPageDetail);
 const getOwnerStats = vi.mocked(api.getOwnerStats);
 const extendPage = vi.mocked(api.extendPage);
 const getOwnerGuestbook = vi.mocked(api.getOwnerGuestbook);
+const deletePage = vi.mocked(api.deletePage);
 
 let assignedHref = '';
 
@@ -38,6 +40,7 @@ beforeEach(() => {
   extendPage.mockReset();
   getOwnerGuestbook.mockReset();
   getOwnerGuestbook.mockResolvedValue([]);
+  deletePage.mockReset();
   getMe.mockResolvedValue({ email: 'owner@example.com' });
   assignedHref = '';
   vi.spyOn(window, 'location', 'get').mockReturnValue({
@@ -164,5 +167,48 @@ describe('OwnerPageDetailScreen', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('페이지를 불러오지 못했어요');
     expect(screen.getByRole('link', { name: '← 내 페이지' })).toHaveAttribute('href', '/dashboard');
+  });
+
+  it('deletes the page after confirming and returns to the dashboard', async () => {
+    getOwnerPageDetail.mockResolvedValue(detail);
+    getOwnerStats.mockResolvedValue(stats);
+    deletePage.mockResolvedValue(undefined);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    await user.click(await screen.findByRole('button', { name: '페이지 삭제' }));
+
+    expect(window.confirm).toHaveBeenCalledWith(
+      '이 페이지와 모든 데이터(방문자·맞추기·방명록 기록)를 영구 삭제할까요? 되돌릴 수 없어요.',
+    );
+    await waitFor(() => expect(deletePage).toHaveBeenCalledWith('my-slug'));
+    await waitFor(() => expect(assignedHref).toBe('/dashboard'));
+  });
+
+  it('does not delete when the confirmation is declined', async () => {
+    getOwnerPageDetail.mockResolvedValue(detail);
+    getOwnerStats.mockResolvedValue(stats);
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const user = userEvent.setup();
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    await user.click(await screen.findByRole('button', { name: '페이지 삭제' }));
+
+    expect(deletePage).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when deletion fails', async () => {
+    getOwnerPageDetail.mockResolvedValue(detail);
+    getOwnerStats.mockResolvedValue(stats);
+    deletePage.mockRejectedValue(new api.ApiError(500, null));
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<OwnerPageDetailScreen slug="my-slug" />);
+
+    await user.click(await screen.findByRole('button', { name: '페이지 삭제' }));
+
+    expect(await screen.findByText('잠시 후 다시 시도해 주세요')).toBeInTheDocument();
+    expect(assignedHref).toBe('');
   });
 });

@@ -1,12 +1,14 @@
 package com.genderreveal.api.owner;
 
 import com.genderreveal.api.guess.GuessRepository;
+import com.genderreveal.api.guestbook.GuestbookEntryRepository;
 import com.genderreveal.api.page.Page;
 import com.genderreveal.api.page.PageNotFoundException;
 import com.genderreveal.api.page.PageRepository;
 import com.genderreveal.api.page.PageStatusCalculator;
 import com.genderreveal.api.visit.PageVisitRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -21,14 +23,17 @@ public class OwnerPageService {
     private final PageRepository pageRepository;
     private final PageVisitRepository visitRepository;
     private final GuessRepository guessRepository;
+    private final GuestbookEntryRepository guestbookEntryRepository;
     private final PageStatusCalculator statusCalculator;
     private final Clock clock;
 
     public OwnerPageService(PageRepository pageRepository, PageVisitRepository visitRepository,
-                             GuessRepository guessRepository, PageStatusCalculator statusCalculator, Clock clock) {
+                             GuessRepository guessRepository, GuestbookEntryRepository guestbookEntryRepository,
+                             PageStatusCalculator statusCalculator, Clock clock) {
         this.pageRepository = pageRepository;
         this.visitRepository = visitRepository;
         this.guessRepository = guessRepository;
+        this.guestbookEntryRepository = guestbookEntryRepository;
         this.statusCalculator = statusCalculator;
         this.clock = clock;
     }
@@ -82,5 +87,18 @@ public class OwnerPageService {
         page.setActualGender(actualGender);
         Page saved = pageRepository.save(page);
         return OwnerPageDetail.of(saved, statusCalculator.calculate(saved, Instant.now(clock)));
+    }
+
+    /** Permanent, irreversible delete of the page and all its data (guesses, guestbook entries,
+     *  visit records) — distinct from the 30-day retention/expiry lifecycle, which never deletes
+     *  data. An explicit owner action, not something that happens automatically. */
+    @Transactional
+    public void delete(String slug, String ownerEmail) {
+        Page page = requireOwned(slug, ownerEmail);
+        Long pageId = page.getId();
+        guessRepository.deleteByPageId(pageId);
+        guestbookEntryRepository.deleteByPageId(pageId);
+        visitRepository.deleteByPageId(pageId);
+        pageRepository.delete(page);
     }
 }

@@ -125,6 +125,11 @@ export function setActualGender(slug: string, actualGender: Gender): Promise<Own
   return postJson<OwnerPageDetail>(`/api/owner/pages/${encodeURIComponent(slug)}/actual-gender`, { actualGender });
 }
 
+/** Permanent, irreversible delete — distinct from the 30-day retention/expiry lifecycle. */
+export function deletePage(slug: string): Promise<void> {
+  return request<void>(`/api/owner/pages/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+}
+
 export function createPage(payload: PageCreatePayload): Promise<{ slug: string }> {
   return postJson<{ slug: string }>('/api/pages', payload);
 }

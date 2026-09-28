@@ -8,4 +8,6 @@ public interface GuestbookEntryRepository extends JpaRepository<GuestbookEntry, 
     List<GuestbookEntry> findByPageIdAndHiddenFalseOrderByCreatedAtDesc(Long pageId);
 
     List<GuestbookEntry> findByPageIdOrderByCreatedAtDesc(Long pageId);
+
+    void deleteByPageId(Long pageId);
 }

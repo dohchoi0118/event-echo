@@ -15,4 +15,6 @@ public interface GuessRepository extends JpaRepository<Guess, Long> {
     long countByPageIdAndGuessedGender(Long pageId, String guessedGender);
 
     List<Guess> findByPageId(Long pageId);
+
+    void deleteByPageId(Long pageId);
 }

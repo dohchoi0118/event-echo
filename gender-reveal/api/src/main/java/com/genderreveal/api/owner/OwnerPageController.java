@@ -4,6 +4,7 @@ import com.genderreveal.api.auth.OwnerPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,5 +52,11 @@ public class OwnerPageController {
             OwnerPrincipal owner, @PathVariable String slug, @Valid @RequestBody ActualGenderRequest request) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
             .body(ownerPageService.setActualGender(slug, owner.email(), request.actualGender()));
+    }
+
+    @DeleteMapping("/{slug}")
+    public ResponseEntity<Void> delete(OwnerPrincipal owner, @PathVariable String slug) {
+        ownerPageService.delete(slug, owner.email());
+        return ResponseEntity.noContent().build();
     }
 }

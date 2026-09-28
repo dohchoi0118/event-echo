@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { extendPage, getOwnerPageDetail, getOwnerStats } from '@/lib/api';
+import { deletePage, extendPage, getOwnerPageDetail, getOwnerStats } from '@/lib/api';
 import { useOwnerSession } from '@/hooks/useOwnerSession';
 import type { OwnerPageDetail, PageStats } from '@/lib/types';
 import { genderKo } from '@/lib/result';
@@ -19,6 +19,8 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
   const [stats, setStats] = useState<PageStats | null>(null);
   const [extending, setExtending] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (session.status === 'unauthenticated') {
@@ -54,6 +56,21 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
         : prev));
     } finally {
       setExtending(false);
+    }
+  };
+
+  const onDelete = async () => {
+    if (!window.confirm('이 페이지와 모든 데이터(방문자·맞추기·방명록 기록)를 영구 삭제할까요? 되돌릴 수 없어요.')) {
+      return;
+    }
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deletePage(slug);
+      window.location.href = '/dashboard';
+    } catch {
+      setDeleteError('잠시 후 다시 시도해 주세요');
+      setDeleting(false);
     }
   };
 
@@ -124,6 +141,24 @@ export function OwnerPageDetailScreen({ slug }: { slug: string }) {
           </section>
 
           <GuestbookModerationTable slug={slug} />
+
+          <section className="flex flex-col gap-space-2 rounded-radius-md border border-danger p-space-3">
+            <h2 className="font-display text-display-md text-danger">페이지 삭제</h2>
+            <p className="text-body-sm text-ink-muted">
+              페이지와 방문자·맞추기·방명록 기록을 모두 영구 삭제해요. 되돌릴 수 없어요.
+            </p>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={onDelete}
+              className="self-start rounded-radius-full border border-danger px-space-3 py-space-1 text-label text-danger disabled:opacity-50"
+            >
+              페이지 삭제
+            </button>
+            {deleteError && (
+              <p role="alert" className="text-body-sm text-danger">{deleteError}</p>
+            )}
+          </section>
         </>
       )}
     </main>

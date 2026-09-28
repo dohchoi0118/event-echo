@@ -6,4 +6,6 @@ public interface PageVisitRepository extends JpaRepository<PageVisit, Long> {
     boolean existsByPageIdAndGuestCookieId(Long pageId, String guestCookieId);
 
     long countByPageId(Long pageId);
+
+    void deleteByPageId(Long pageId);
 }

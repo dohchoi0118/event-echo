@@ -3,6 +3,8 @@ package com.genderreveal.api.owner;
 import com.genderreveal.api.auth.OwnerTestSupport;
 import com.genderreveal.api.guess.Guess;
 import com.genderreveal.api.guess.GuessRepository;
+import com.genderreveal.api.guestbook.GuestbookEntry;
+import com.genderreveal.api.guestbook.GuestbookEntryRepository;
 import com.genderreveal.api.page.Page;
 import com.genderreveal.api.page.PageRepository;
 import com.genderreveal.api.visit.PageVisit;
@@ -21,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -47,6 +50,9 @@ class OwnerPageControllerTest {
 
     @Autowired
     private PageVisitRepository visitRepository;
+
+    @Autowired
+    private GuestbookEntryRepository guestbookEntryRepository;
 
     @Test
     void listRequiresSession() throws Exception {
@@ -274,6 +280,49 @@ class OwnerPageControllerTest {
                 .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
             .andExpect(status().isNotFound());
         mockMvc.perform(get("/api/owner/pages/detail-private-slug"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void ownerPermanentlyDeletesAPageAndAllItsData() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Page page = pageRepository.save(new Page(
+            "delete-slug", "뽀튼이", "boy", now.minus(1, ChronoUnit.HOURS),
+            null, "메시지", "box", false, "delete-owner@example.com", now, now.plus(30, ChronoUnit.DAYS)));
+        guessRepository.save(new Guess(page.getId(), "guest-1", "boy", now));
+        guestbookEntryRepository.save(new GuestbookEntry(page.getId(), "이모", "축하해요", now));
+        visitRepository.save(new PageVisit(page.getId(), "guest-1", now));
+
+        mockMvc.perform(delete("/api/owner/pages/delete-slug")
+                .cookie(ownerTestSupport.cookieFor("delete-owner@example.com")))
+            .andExpect(status().isNoContent());
+
+        assertThat(pageRepository.findBySlug("delete-slug")).isEmpty();
+        assertThat(guessRepository.countByPageId(page.getId())).isZero();
+        assertThat(guestbookEntryRepository.findByPageIdOrderByCreatedAtDesc(page.getId())).isEmpty();
+        assertThat(visitRepository.countByPageId(page.getId())).isZero();
+
+        mockMvc.perform(get("/api/pages/delete-slug"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deletingSomeoneElsesPageIs404AndLeavesItIntact() throws Exception {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        pageRepository.save(new Page(
+            "delete-private-slug", "뽀튼이", "boy", now.minus(1, ChronoUnit.HOURS),
+            null, null, "box", false, "victim@example.com", now, now.plus(30, ChronoUnit.DAYS)));
+
+        mockMvc.perform(delete("/api/owner/pages/delete-private-slug")
+                .cookie(ownerTestSupport.cookieFor("intruder@example.com")))
+            .andExpect(status().isNotFound());
+
+        assertThat(pageRepository.findBySlug("delete-private-slug")).isPresent();
+    }
+
+    @Test
+    void deletingWithoutSessionIs401() throws Exception {
+        mockMvc.perform(delete("/api/owner/pages/any-slug"))
             .andExpect(status().isUnauthorized());
     }
 

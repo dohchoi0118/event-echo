@@ -38,7 +38,7 @@ export function QuestionScreen({
         ))}
       </div>
       {zodiac && (
-        <img src={zodiacSrc(zodiac)} alt={zodiacLabelKo(zodiac)} className="h-40 w-40" />
+        <img src={zodiacSrc(zodiac)} alt={zodiacLabelKo(zodiac)} className="h-auto w-72" />
       )}
       <p data-testid="intro-text" className="min-h-[120px] whitespace-pre-line font-display text-display-lg">
         {shown}

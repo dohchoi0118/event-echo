@@ -422,3 +422,38 @@
   `alreadyGuessed` state 및 `ResultScreen`에 넘기던 `guess`/`alreadyGuessed` prop 제거
 - Docker 스택에서 실제 페이지를 새로 만들어 성별 선택 → 방문자 플로우로 결과 화면까지
   브라우저로 직접 확인(아기 중앙 대형, 선물상자 소품 우측 하단에 작게)
+
+### 46. `auth` 패키지를 `magiclink`/`session` 하위 패키지로 분리
+- `auth/`가 16개 파일로 가장 큰 도메인 패키지가 됨 — 매직링크 로그인(`auth/magiclink`)과
+  소유자 세션·인터셉터(`auth/session`)로 나누고, 둘 다 쓰는 `AuthController`·
+  `ExpiredCredentialCleanupService`·토큰 유틸은 `auth/` 루트에 유지
+
+### 47. 발송 이메일을 HTML 템플릿으로 전환, 발행 메일에 OG 이미지 추가
+- 로그인 링크·페이지 발행 알림 메일을 순수 텍스트에서 웹 디자인 토큰을 재사용한 카드형
+  HTML 템플릿으로 전환(텍스트도 함께 보내는 멀티파트 — HTML 못 그리는 클라이언트 대비)
+- 페이지 발행 메일의 안내 문구와 버튼 사이에 OG 공유 이미지(`og.png`) 추가. 로컬처럼
+  수신자가 이미지 URL에 접근할 수 없는 환경에서는 브랜드색 배경 박스 + 설명 alt 텍스트로
+  자연스럽게 대체되도록 스타일 처리(로딩 성공 시엔 그대로 이미지가 덮음)
+- 실제 `RESEND_API_KEY`를 받아 로컬 `.env`로 반영(`.gitignore`에 `.env` 추가), Resend
+  샌드박스 발송 제한(도메인 인증 전엔 가입 이메일로만 테스트 발송 가능)을 실제로 확인
+
+### 48. `page` 패키지에서 슬러그 발급 로직을 `page/slug`로 분리
+- `page/`가 16개 파일로 가장 큰 도메인 패키지가 됨 — `page/` 밖에서 전혀 참조되지 않는
+  슬러그 생성/할당 4개(`SlugGenerator`, `UniqueSlugAllocator`,
+  `SlugAllocationExhaustedException`, `SlugAlreadyTakenException`)만 `page/slug/`로 분리
+
+### 49. `api/README.md` 신규 작성 — 도메인 패키지 맵 + Mermaid 다이어그램
+- 백엔드 도메인이 13개로 늘었는데 구조를 설명하는 문서가 없었음 — 패키지별 역할 표,
+  패키지 의존 관계 mermaid flowchart, JPA 엔티티 관계 mermaid classDiagram을 추가하고
+  루트 `README.md`에서 연결. 두 다이어그램 모두 실제 렌더링해 문법 오류 없음을 확인
+
+### 50. 방문자 플로우 맨 앞에 '초대장' 화면 추가 (`컨셉.png` 1번 반영)
+- `planning/컨셉.png`의 1번 "진짜 청첩장처럼" 컨셉을 기존 타이핑 인트로 화면 앞의 새
+  화면으로 추가(기존 인트로는 그대로 유지, 탭하면 넘어감)
+- 이미지는 5번 "가족 이야기" 컨셉의 뒷모습 부모+아이 라인아트와 동일한 분위기로 새로
+  제작(`family.svg`) — 사용자 업로드 사진이 아닌 고정 일러스트. SVG는 실제 렌더링하며
+  검증(팔이 아이 손을 향해 반대로 그려진 첫 버전 오류를 수정)
+- 문구 "우리 가족에게 새로운 사랑이 찾아옵니다"는 컨셉과 동일하게 고정 문구로, 날짜는
+  실제 출산 예정일 데이터로 채움 — 공개 예정 일시는 방문자 API 응답(`open` 상태)에
+  포함돼 있지 않아 대신 출산 예정일만 사용
+- `planning/Requirements.md`의 화면 프로세스 번호를 초대장(1)~축하글 남기기(5)로 재정렬

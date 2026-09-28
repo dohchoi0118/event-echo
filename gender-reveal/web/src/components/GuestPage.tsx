@@ -5,6 +5,7 @@ import { Button } from './Button';
 import { Screen } from './Screen';
 import { ExpiredScreen } from './screens/ExpiredScreen';
 import { IntroScreen } from './screens/IntroScreen';
+import { InvitationScreen } from './screens/InvitationScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { SecretScreen } from './screens/SecretScreen';
 import { SelectScreen } from './screens/SelectScreen';
@@ -14,7 +15,7 @@ import type { Gender, PageView } from '@/lib/types';
 import { zodiacFromDueDate } from '@/lib/zodiac';
 
 type Load = { kind: 'loading' } | { kind: 'notfound' } | { kind: 'error' } | { kind: 'ready'; view: PageView };
-type Stage = 'intro' | 'select' | 'result' | 'thanks';
+type Stage = 'invitation' | 'intro' | 'select' | 'result' | 'thanks';
 
 /** The static shell is served for every /g/<slug>; the slug only exists in the browser URL. */
 export function slugFromPathname(pathname: string): string | null {
@@ -25,7 +26,7 @@ export function slugFromPathname(pathname: string): string | null {
 export function GuestPage() {
   const [slug, setSlug] = useState<string | null | undefined>(undefined);
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
-  const [stage, setStage] = useState<Stage>('intro');
+  const [stage, setStage] = useState<Stage>('invitation');
   const [guess, setGuess] = useState<Gender | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
@@ -48,6 +49,7 @@ export function GuestPage() {
     if (slug) void loadPage(slug);
   }, [slug, loadPage]);
 
+  const goToIntro = useCallback(() => setStage('intro'), []);
   const goToSelect = useCallback(() => setStage('select'), []);
 
   const onSelect = async (gender: Gender) => {
@@ -87,6 +89,9 @@ export function GuestPage() {
   if (view.status === 'secret') return <SecretScreen nickname={view.nickname} />;
   if (view.status === 'expired') return <ExpiredScreen />;
 
+  if (stage === 'invitation') {
+    return <InvitationScreen dueDate={view.dueDate} onNext={goToIntro} />;
+  }
   if (stage === 'intro') {
     return <IntroScreen nickname={view.nickname} zodiac={zodiacFromDueDate(view.dueDate)} onNext={goToSelect} />;
   }

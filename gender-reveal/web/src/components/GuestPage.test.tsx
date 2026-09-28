@@ -77,13 +77,29 @@ describe('GuestPage', () => {
     expect(await screen.findByText('Coming Soon')).toBeInTheDocument();
   });
 
-  it('walks intro → select → result → thanks (message + closing merged)', async () => {
+  it('shows the invitation screen first, with the due date, before the typing intro', async () => {
+    const user = userEvent.setup();
+    getPage.mockResolvedValue(openPage);
+
+    render(<GuestPage />);
+
+    expect(await screen.findByText('우리 가족에게 새로운 사랑이 찾아옵니다')).toBeInTheDocument();
+    expect(screen.getByText('2026년 11월 3일')).toBeInTheDocument();
+    expect(screen.queryByTestId('intro-text')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '탭해서 계속하기' }));
+
+    expect(await screen.findByTestId('intro-text')).toBeInTheDocument();
+  });
+
+  it('walks invitation → intro → select → result → thanks (message + closing merged)', async () => {
     const user = userEvent.setup();
     getPage.mockResolvedValue(openPage);
     submitGuess.mockResolvedValue({ guessedGender: 'girl', alreadyGuessed: false });
 
     render(<GuestPage />);
 
+    await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
     await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
     await user.click(await screen.findByRole('button', { name: '여자 아기' }));
     expect(submitGuess).toHaveBeenCalledWith('my-slug', 'girl');
@@ -104,6 +120,7 @@ describe('GuestPage', () => {
 
     render(<GuestPage />);
     await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
+    await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
     await user.click(await screen.findByRole('button', { name: '여자 아기' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('잠시 후 다시 시도해 주세요');
@@ -117,6 +134,7 @@ describe('GuestPage', () => {
     submitGuess.mockRejectedValue(new api.ApiError(409, { error: 'Page is not open' }));
 
     render(<GuestPage />);
+    await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
     await user.click(await screen.findByRole('button', { name: '탭해서 계속하기' }));
     await user.click(await screen.findByRole('button', { name: '여자 아기' }));
 

@@ -1,0 +1,26 @@
+<svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#A0826D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- dad: left, tallest -->
+    <circle cx="98" cy="66" r="26" />
+    <path d="M84,44 Q90,34 98,38" />
+    <path d="M112,44 Q108,34 100,38" />
+    <path d="M66,138 Q64,96 98,92 Q132,96 130,138 L128,224 Q98,236 68,224 Z" />
+    <path d="M78,224 L74,272" />
+    <path d="M118,224 L122,272" />
+    <path d="M126,160 Q148,172 146,202" />
+
+    <!-- mom: right, medium -->
+    <circle cx="224" cy="76" r="24" />
+    <path d="M212,52 Q206,40 214,36 Q224,34 226,44 Q220,46 212,52 Z" />
+    <path d="M200,148 Q198,110 224,104 Q250,110 248,148 L246,222 Q224,232 202,222 Z" />
+    <path d="M210,222 L206,268" />
+    <path d="M236,222 L240,268" />
+    <path d="M204,160 Q182,172 178,202" />
+
+    <!-- child: center, shortest -->
+    <circle cx="160" cy="150" r="17" />
+    <path d="M144,196 Q142,170 160,166 Q178,170 176,196 L175,232 Q160,240 145,232 Z" />
+    <path d="M150,232 L148,262" />
+    <path d="M170,232 L172,262" />
+  </g>
+</svg>

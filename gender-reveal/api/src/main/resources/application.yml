@@ -21,6 +21,12 @@ spring:
     # enforcement around a SQLite table-recreation migration.
     mixed: true
 
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+
 app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
   session-cookie-secure: ${APP_SESSION_COOKIE_SECURE:false}

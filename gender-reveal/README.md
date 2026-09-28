@@ -113,6 +113,7 @@
 | `RESEND_API_KEY` | (없음) | 비워두면 매직링크 로그인 메일이 실제 발송되지 않고 애플리케이션 로그에만 링크가 출력된다(개발용 폴백). |
 | `APP_BASE_URL` | `http://localhost:8080` | 매직링크·리다이렉트에 쓰이는 백엔드 자신의 base URL. |
 | `GENDER_REVEAL_DB_PATH` | `./data/gender-reveal.db` | SQLite 파일 경로(`api/` 기준 상대경로). |
+| `SWAGGER_ENABLED` | `true` | Swagger UI(`/swagger-ui/index.html`)·OpenAPI 문서(`/v3/api-docs`) 노출 여부. 실제 운영 배포 시에는 `false`로 꺼서 API 문서가 외부에 노출되지 않게 한다. |
 
 ## 2) 프론트엔드 — VS Code로 `web/` 실행
 

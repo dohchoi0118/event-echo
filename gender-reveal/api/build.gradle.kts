@@ -23,6 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.hibernate.orm:hibernate-community-dialects")
     implementation("org.flywaydb:flyway-core")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     runtimeOnly("org.xerial:sqlite-jdbc:3.46.1.3")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

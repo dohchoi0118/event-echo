@@ -54,6 +54,7 @@ class MagicLinkRequestTest {
         RecordingEmailSender.SentEmail mail = emails.sent().get(0);
         assertThat(mail.to()).isEqualTo("owner-a@example.com");
         assertThat(mail.body()).contains("/api/auth/callback?token=");
+        assertThat(mail.html()).contains("/api/auth/callback?token=");
     }
 
     @Test

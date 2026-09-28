@@ -9,7 +9,7 @@ public class LoggingEmailSender implements EmailSender {
     private static final Logger log = LoggerFactory.getLogger(LoggingEmailSender.class);
 
     @Override
-    public void send(String to, String subject, String textBody) {
+    public void send(String to, String subject, String textBody, String htmlBody) {
         log.info("[email not sent — no RESEND_API_KEY] to={} subject={}\n{}", to, subject, textBody);
     }
 }

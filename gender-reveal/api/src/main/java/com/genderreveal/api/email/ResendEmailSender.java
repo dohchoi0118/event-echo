@@ -28,11 +28,11 @@ public class ResendEmailSender implements EmailSender {
     }
 
     @Override
-    public void send(String to, String subject, String textBody) {
+    public void send(String to, String subject, String textBody, String htmlBody) {
         String json;
         try {
-            json = objectMapper.writeValueAsString(
-                Map.of("from", from, "to", List.of(to), "subject", subject, "text", textBody));
+            json = objectMapper.writeValueAsString(Map.of(
+                "from", from, "to", List.of(to), "subject", subject, "text", textBody, "html", htmlBody));
         } catch (JsonProcessingException ex) {
             throw new EmailSendException("Failed to serialize email payload", ex);
         }

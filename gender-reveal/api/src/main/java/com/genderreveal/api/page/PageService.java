@@ -2,6 +2,7 @@ package com.genderreveal.api.page;
 
 import com.genderreveal.api.config.AppProperties;
 import com.genderreveal.api.email.EmailSender;
+import com.genderreveal.api.email.EmailTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -102,9 +103,12 @@ public class PageService {
 
     private void sendPublishedLink(Page page) {
         String link = appProperties.baseUrl() + "/g/" + page.getSlug();
-        String body = "페이지가 만들어졌어요. 아래 링크를 복사해 가족과 친구들에게 공유해 보세요.\n\n" + link;
+        String text = "페이지가 만들어졌어요. 아래 링크를 복사해 가족과 친구들에게 공유해 보세요.\n\n" + link;
+        String html = EmailTemplate.render("페이지가 발행됐어요",
+            EmailTemplate.paragraph("페이지가 만들어졌어요. 아래 버튼으로 열어서 링크를 복사해 가족과 친구들에게 공유해 보세요.")
+                + EmailTemplate.button(link, "페이지 열기"));
         try {
-            emailSender.send(page.getOwnerEmail(), "젠더리빌 페이지가 발행됐어요", body);
+            emailSender.send(page.getOwnerEmail(), "젠더리빌 페이지가 발행됐어요", text, html);
         } catch (RuntimeException ex) {
             log.error("Failed to send published-link email for slug {}", page.getSlug(), ex);
         }

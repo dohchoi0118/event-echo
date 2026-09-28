@@ -225,12 +225,13 @@ class PageControllerCreateTest {
         RecordingEmailSender.SentEmail mail = emails.sent().get(0);
         assertThat(mail.to()).isEqualTo("mail-owner@example.com");
         assertThat(mail.body()).contains("http://localhost:8080/g/publish-mail-slug");
+        assertThat(mail.html()).contains("http://localhost:8080/g/publish-mail-slug");
     }
 
     @Test
     void emailFailureDoesNotFailPageCreation() throws Exception {
         org.mockito.Mockito.doThrow(new com.genderreveal.api.email.EmailSendException("boom"))
-            .when(emails).send(anyString(), anyString(), anyString());
+            .when(emails).send(anyString(), anyString(), anyString(), anyString());
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",
             "revealAt", Instant.now().plus(1, ChronoUnit.DAYS).toString(),
@@ -246,6 +247,6 @@ class PageControllerCreateTest {
             .andExpect(status().isCreated());
 
         assertThat(pageRepository.findBySlug("mail-fails-slug")).isPresent();
-        verify(emails).send(eq("owner@example.com"), anyString(), anyString());
+        verify(emails).send(eq("owner@example.com"), anyString(), anyString(), anyString());
     }
 }

@@ -12,13 +12,13 @@ import java.util.List;
 @Primary
 public class RecordingEmailSender implements EmailSender {
 
-    public record SentEmail(String to, String subject, String body) {}
+    public record SentEmail(String to, String subject, String body, String html) {}
 
     private final List<SentEmail> sent = Collections.synchronizedList(new ArrayList<>());
 
     @Override
-    public void send(String to, String subject, String textBody) {
-        sent.add(new SentEmail(to, subject, textBody));
+    public void send(String to, String subject, String textBody, String htmlBody) {
+        sent.add(new SentEmail(to, subject, textBody, htmlBody));
     }
 
     public List<SentEmail> sent() {

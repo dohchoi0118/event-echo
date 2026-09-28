@@ -33,7 +33,7 @@ class ResendEmailSenderTest {
         String url = startServer(200, authorization, body);
 
         new ResendEmailSender(url, "re_test_key", "젠더리빌 <noreply@example.com>", objectMapper)
-            .send("owner@example.com", "제목", "본문");
+            .send("owner@example.com", "제목", "본문", "<p>본문</p>");
 
         assertThat(authorization.get()).isEqualTo("Bearer re_test_key");
         JsonNode json = objectMapper.readTree(body.get());
@@ -41,6 +41,7 @@ class ResendEmailSenderTest {
         assertThat(json.get("to").get(0).asText()).isEqualTo("owner@example.com");
         assertThat(json.get("subject").asText()).isEqualTo("제목");
         assertThat(json.get("text").asText()).isEqualTo("본문");
+        assertThat(json.get("html").asText()).isEqualTo("<p>본문</p>");
     }
 
     @Test
@@ -49,7 +50,7 @@ class ResendEmailSenderTest {
 
         ResendEmailSender sender = new ResendEmailSender(url, "k", "f@example.com", objectMapper);
 
-        assertThatThrownBy(() -> sender.send("owner@example.com", "s", "b"))
+        assertThatThrownBy(() -> sender.send("owner@example.com", "s", "b", "<p>b</p>"))
             .isInstanceOf(EmailSendException.class);
     }
 

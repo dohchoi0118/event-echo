@@ -4,6 +4,7 @@ import com.genderreveal.api.auth.TokenGenerator;
 import com.genderreveal.api.auth.TokenHasher;
 import com.genderreveal.api.config.AppProperties;
 import com.genderreveal.api.email.EmailSender;
+import com.genderreveal.api.email.EmailTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,10 +52,14 @@ public class MagicLinkService {
         tokenRepository.save(new MagicLinkToken(normalized, TokenHasher.sha256(rawToken), now.plus(TOKEN_TTL), now));
 
         String link = appProperties.baseUrl() + "/api/auth/callback?token=" + rawToken;
-        String body = "아래 링크를 누르면 로그인돼요. 링크는 15분 동안, 한 번만 쓸 수 있어요.\n\n" + link
+        String text = "아래 링크를 누르면 로그인돼요. 링크는 15분 동안, 한 번만 쓸 수 있어요.\n\n" + link
             + "\n\n본인이 요청하지 않았다면 이 메일을 무시해 주세요.";
+        String html = EmailTemplate.render("로그인 링크",
+            EmailTemplate.paragraph("아래 버튼을 누르면 로그인돼요. 링크는 15분 동안, 한 번만 쓸 수 있어요.")
+                + EmailTemplate.button(link, "로그인하기")
+                + EmailTemplate.mutedParagraph("본인이 요청하지 않았다면 이 메일을 무시해 주세요."));
         try {
-            emailSender.send(normalized, "젠더리빌 로그인 링크", body);
+            emailSender.send(normalized, "젠더리빌 로그인 링크", text, html);
         } catch (RuntimeException ex) {
             log.error("Failed to send magic link email", ex);
         }

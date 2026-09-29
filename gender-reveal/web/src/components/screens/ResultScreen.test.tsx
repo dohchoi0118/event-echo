@@ -13,7 +13,8 @@ afterEach(() => vi.useRealTimers());
 async function reveal(theme: string) {
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
   await user.click(screen.getByRole('button', { name: theme }));
-  act(() => { vi.advanceTimersByTime(1000); });
+  // Longer than every theme's REVEAL_DELAY_MS (box, the slowest, is 1400ms).
+  act(() => { vi.advanceTimersByTime(1500); });
 }
 
 describe('ResultScreen', () => {

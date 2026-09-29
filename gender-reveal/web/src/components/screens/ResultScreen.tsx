@@ -14,10 +14,18 @@ type Stage = 'ready' | 'revealing' | 'revealed';
 
 const HEARTS = [10, 24, 38, 52, 66, 80];
 
+/** Each theme's reveal choreography (box lid+balloon+topper, cake split, balloon pop+confetti)
+ *  runs at a different pace, so the swap into the final scene waits on a per-theme delay. */
+const REVEAL_DELAY_MS: Record<OpenPageView['theme'], number> = {
+  box: 1400,
+  cake: 1100,
+  balloon: 1000,
+};
+
 export function ResultScreen({
   page,
   onNext,
-  revealDelayMs = 900,
+  revealDelayMs,
 }: {
   page: OpenPageView;
   onNext: () => void;
@@ -36,19 +44,14 @@ export function ResultScreen({
       return;
     }
     setStage('revealing');
-    timer.current = setTimeout(() => setStage('revealed'), revealDelayMs);
+    timer.current = setTimeout(() => setStage('revealed'), revealDelayMs ?? REVEAL_DELAY_MS[page.theme]);
   };
 
   if (stage !== 'revealed') {
     return (
       <Screen>
-        <button
-          type="button"
-          onClick={startReveal}
-          disabled={stage === 'revealing'}
-          className={`flex flex-col items-center gap-space-3 ${stage === 'revealing' ? 'animate-shake' : ''}`}
-        >
-          <PreReveal theme={page.theme} />
+        <button type="button" onClick={startReveal} disabled={stage === 'revealing'} className="flex flex-col items-center gap-space-3">
+          <PreReveal theme={page.theme} gender={page.actualGender} stage={stage} />
           <span className="rounded-radius-full bg-accent-primary px-space-4 py-space-2 text-label text-surface-100">
             {REVEAL_PROMPT[page.theme]}
           </span>

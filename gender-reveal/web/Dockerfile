@@ -16,10 +16,3 @@ COPY nginx/gender-reveal.conf.template /etc/nginx/templates/default.conf.templat
 ENV API_HOST=api
 ENV API_PORT=8080
 EXPOSE 80
-# TEMP DEBUG: /docker-entrypoint.d/*.sh scripts run automatically (in numeric order) as part of
-# nginx's normal startup — unlike overriding CMD, this doesn't skip the entrypoint's own
-# envsubst step. Remove once the Railway upstream issue is diagnosed.
-RUN printf '#!/bin/sh\necho "DEBUG API_HOST=[$API_HOST] API_PORT=[$API_PORT]"\n' > /docker-entrypoint.d/05-debug-env.sh && \
-    chmod +x /docker-entrypoint.d/05-debug-env.sh
-RUN printf '#!/bin/sh\necho "DEBUG generated default.conf:"; cat /etc/nginx/conf.d/default.conf\n' > /docker-entrypoint.d/25-debug-conf.sh && \
-    chmod +x /docker-entrypoint.d/25-debug-conf.sh

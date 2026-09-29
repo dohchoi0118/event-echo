@@ -80,6 +80,19 @@ class PageControllerGetTest {
             .andExpect(status().isNotFound());
     }
 
+    @Test
+    void reportsSlugAvailability() throws Exception {
+        String slug = createPage("availability-taken-slug", Instant.now().plus(1, ChronoUnit.DAYS));
+
+        mockMvc.perform(get("/api/pages/" + slug + "/availability"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.available").value(false));
+
+        mockMvc.perform(get("/api/pages/availability-free-slug/availability"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.available").value(true));
+    }
+
     private String createPage(String slug, Instant revealAt) throws Exception {
         Map<String, Object> body = Map.of(
             "nickname", "뽀튼이",

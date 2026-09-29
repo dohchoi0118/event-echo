@@ -39,6 +39,12 @@ public class PageController {
         return ResponseEntity.created(URI.create("/api/pages/" + page.getSlug())).body(response);
     }
 
+    @GetMapping("/{slug}/availability")
+    public ResponseEntity<SlugAvailabilityResponse> checkSlugAvailability(@PathVariable String slug) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+            .body(new SlugAvailabilityResponse(pageService.isSlugAvailable(slug)));
+    }
+
     @GetMapping("/{slug}")
     public ResponseEntity<PagePublicResponse> getBySlug(
             @PathVariable String slug,

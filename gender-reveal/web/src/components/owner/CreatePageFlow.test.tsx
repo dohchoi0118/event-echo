@@ -5,10 +5,11 @@ import * as api from '@/lib/api';
 
 vi.mock('@/lib/api', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/api')>();
-  return { ...actual, createPage: vi.fn() };
+  return { ...actual, createPage: vi.fn(), checkSlugAvailability: vi.fn() };
 });
 
 const createPage = vi.mocked(api.createPage);
+const checkSlugAvailability = vi.mocked(api.checkSlugAvailability);
 
 async function fillMinimalForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText('태명'), '뽀튼이');
@@ -18,6 +19,7 @@ async function fillMinimalForm(user: ReturnType<typeof userEvent.setup>) {
 
 beforeEach(() => {
   createPage.mockReset();
+  checkSlugAvailability.mockReset();
 });
 
 describe('CreatePageFlow', () => {
@@ -37,6 +39,44 @@ describe('CreatePageFlow', () => {
     expect(await screen.findByText('페이지가 발행됐어요!')).toBeInTheDocument();
     expect(screen.getByText('이메일로도 링크를 보내드렸어요')).toBeInTheDocument();
     expect(screen.getByText(/ppo-2026/)).toBeInTheDocument();
+  });
+
+  it('checks a custom slug before advancing to preview, and proceeds when it is free', async () => {
+    checkSlugAvailability.mockResolvedValue(true);
+    const user = userEvent.setup();
+    render(<CreatePageFlow />);
+
+    await fillMinimalForm(user);
+    await user.type(screen.getByLabelText('커스텀 주소 (선택)'), 'our-baby');
+    await user.click(screen.getByRole('button', { name: '미리보기' }));
+
+    expect(checkSlugAvailability).toHaveBeenCalledWith('our-baby');
+    expect(await screen.findByText('이렇게 만들어져요')).toBeInTheDocument();
+  });
+
+  it('blocks advancing to preview when the custom slug is already taken', async () => {
+    checkSlugAvailability.mockResolvedValue(false);
+    const user = userEvent.setup();
+    render(<CreatePageFlow />);
+
+    await fillMinimalForm(user);
+    await user.type(screen.getByLabelText('커스텀 주소 (선택)'), 'taken-slug');
+    await user.click(screen.getByRole('button', { name: '미리보기' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('이미 사용 중인 주소예요');
+    expect(screen.queryByText('이렇게 만들어져요')).not.toBeInTheDocument();
+    expect(createPage).not.toHaveBeenCalled();
+  });
+
+  it('does not check availability when no custom slug was entered', async () => {
+    const user = userEvent.setup();
+    render(<CreatePageFlow />);
+
+    await fillMinimalForm(user);
+    await user.click(screen.getByRole('button', { name: '미리보기' }));
+
+    expect(checkSlugAvailability).not.toHaveBeenCalled();
+    expect(await screen.findByText('이렇게 만들어져요')).toBeInTheDocument();
   });
 
   it('lets the owner go back from preview to edit the form', async () => {

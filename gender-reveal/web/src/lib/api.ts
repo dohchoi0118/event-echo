@@ -134,6 +134,12 @@ export function createPage(payload: PageCreatePayload): Promise<{ slug: string }
   return postJson<{ slug: string }>('/api/pages', payload);
 }
 
+/** Lets the create form check a custom slug before the owner reaches the preview step. */
+export async function checkSlugAvailability(slug: string): Promise<boolean> {
+  const { available } = await request<{ available: boolean }>(`${pagePath(slug)}/availability`, { cache: 'no-store' });
+  return available;
+}
+
 export function getOwnerGuestbook(slug: string): Promise<OwnerGuestbookEntry[]> {
   return request<OwnerGuestbookEntry[]>(`/api/owner/pages/${encodeURIComponent(slug)}/guestbook`, { cache: 'no-store' });
 }

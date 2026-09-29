@@ -71,6 +71,11 @@ public class PageService {
         return saved;
     }
 
+    /** Lets the create form check a custom slug before the owner ever reaches the preview step. */
+    public boolean isSlugAvailable(String slug) {
+        return !pageRepository.existsBySlug(slug);
+    }
+
     public PagePublicResponse getPublicView(String slug) {
         Page page = pageRepository.findBySlug(slug)
             .orElseThrow(() -> new PageNotFoundException(slug));

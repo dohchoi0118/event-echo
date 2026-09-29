@@ -110,11 +110,15 @@ export function PreReveal({
             stroke={STROKE}
             strokeWidth="3"
             strokeLinejoin="round"
+            fill={FILL}
             className={revealing ? 'motion-safe:animate-balloon-pop' : ''}
-            style={{ transformOrigin: '100px 100px' }}
+            style={{ transformOrigin: '100px 100px', '--reveal-accent': accent } as CSSProperties}
           >
-            <ellipse cx="100" cy="88" rx="52" ry="62" fill={revealing ? accent : FILL} />
-            <path d="M92 150l8 10 8-10z" fill={revealing ? accent : FILL} />
+            {/* No fill on these two — they inherit it from the group above, so the CSS
+                keyframe animating the group's fill (gray → --reveal-accent, timed to the pop)
+                colors both at once instead of snapping to accent the instant the tap fires. */}
+            <ellipse cx="100" cy="88" rx="52" ry="62" />
+            <path d="M92 150l8 10 8-10z" />
             <path d="M100 160c-10 14 10 20 0 34" fill="none" />
           </g>
         </>

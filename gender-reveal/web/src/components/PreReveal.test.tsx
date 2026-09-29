@@ -47,14 +47,20 @@ describe('PreReveal', () => {
       expect(screen.queryAllByTestId('confetti-piece')).toHaveLength(0);
       expect(screen.getByTestId('balloon-body')).not.toHaveClass('motion-safe:animate-balloon-pop');
       // Not the gendered accent color yet — the balloon must not leak the answer before reveal.
-      expect(screen.getByTestId('balloon-body').querySelector('ellipse')).toHaveAttribute('fill', '#F3EEE7');
+      // No fill on the ellipse/knot itself — they inherit the group's, asserted below.
+      expect(screen.getByTestId('balloon-body')).toHaveAttribute('fill', '#F3EEE7');
+      expect(screen.getByTestId('balloon-body').querySelector('ellipse')).not.toHaveAttribute('fill');
     });
 
     it('pops the balloon and bursts confetti outward while revealing', () => {
       render(<PreReveal theme="balloon" gender="girl" stage="revealing" />);
 
       expect(screen.getByTestId('balloon-body')).toHaveClass('motion-safe:animate-balloon-pop');
-      expect(screen.getByTestId('balloon-body').querySelector('ellipse')).toHaveAttribute('fill', '#E37AA6');
+      // The plain attribute stays gray — the keyframe (not this attribute) swaps it to
+      // --reveal-accent right at the pop beat, which jsdom doesn't run, so we assert the var
+      // that drives it instead.
+      expect(screen.getByTestId('balloon-body')).toHaveAttribute('fill', '#F3EEE7');
+      expect(screen.getByTestId('balloon-body').style.getPropertyValue('--reveal-accent')).toBe('#E37AA6');
       const confetti = screen.getAllByTestId('confetti-piece');
       expect(confetti.length).toBeGreaterThan(0);
       for (const piece of confetti) {

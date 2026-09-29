@@ -90,12 +90,16 @@ const config: Config = {
           '60%': { opacity: '1' },
           '100%': { opacity: '0' },
         },
+        // fill stays the neutral gray (must match PreReveal's FILL constant) until 70% — the
+        // peak of the inflate — then snaps to --reveal-accent right as it pops, so the color
+        // reveal lands on the pop beat instead of the instant the guest taps.
         'balloon-pop': {
-          '0%': { transform: 'scale(1)', opacity: '1' },
-          '55%': { transform: 'scale(1.18)', opacity: '1' },
-          '70%': { transform: 'scale(1.3)', opacity: '1' },
-          '72%': { transform: 'scale(0.15)', opacity: '0' },
-          '100%': { transform: 'scale(0.15)', opacity: '0' },
+          '0%': { fill: '#F3EEE7', transform: 'scale(1)', opacity: '1' },
+          '55%': { fill: '#F3EEE7', transform: 'scale(1.18)', opacity: '1' },
+          '69%': { fill: '#F3EEE7' },
+          '70%': { fill: 'var(--reveal-accent)', transform: 'scale(1.3)', opacity: '1' },
+          '72%': { fill: 'var(--reveal-accent)', transform: 'scale(0.15)', opacity: '0' },
+          '100%': { fill: 'var(--reveal-accent)', transform: 'scale(0.15)', opacity: '0' },
         },
         'confetti-burst': {
           '0%': { transform: 'translate(0, 0) scale(0)', opacity: '0' },

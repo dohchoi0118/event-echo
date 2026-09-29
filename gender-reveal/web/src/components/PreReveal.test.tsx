@@ -27,7 +27,8 @@ describe('PreReveal', () => {
 
       expect(screen.getByTestId('cake-left')).not.toHaveClass('motion-safe:animate-cake-slide-left');
       expect(screen.getByTestId('cake-right')).not.toHaveClass('motion-safe:animate-cake-slide-right');
-      expect(screen.getByTestId('cake-filling')).toHaveAttribute('fill', '#6F86E6');
+      // Not the gendered accent color yet — the filling must not leak the answer before reveal.
+      expect(screen.getByTestId('cake-filling')).toHaveAttribute('fill', '#F3EEE7');
     });
 
     it('slides the two halves apart to reveal the gendered filling while revealing', () => {
@@ -40,21 +41,43 @@ describe('PreReveal', () => {
   });
 
   describe('balloon theme', () => {
-    it('renders no confetti and a still balloon while ready', () => {
+    it('renders no confetti and a still, ungendered balloon while ready', () => {
       render(<PreReveal theme="balloon" gender="boy" stage="ready" />);
 
       expect(screen.queryAllByTestId('confetti-piece')).toHaveLength(0);
       expect(screen.getByTestId('balloon-body')).not.toHaveClass('motion-safe:animate-balloon-pop');
+      // Not the gendered accent color yet — the balloon must not leak the answer before reveal.
+      expect(screen.getByTestId('balloon-body').querySelector('ellipse')).toHaveAttribute('fill', '#F3EEE7');
     });
 
     it('pops the balloon and bursts confetti outward while revealing', () => {
-      render(<PreReveal theme="balloon" gender="boy" stage="revealing" />);
+      render(<PreReveal theme="balloon" gender="girl" stage="revealing" />);
 
       expect(screen.getByTestId('balloon-body')).toHaveClass('motion-safe:animate-balloon-pop');
+      expect(screen.getByTestId('balloon-body').querySelector('ellipse')).toHaveAttribute('fill', '#E37AA6');
       const confetti = screen.getAllByTestId('confetti-piece');
       expect(confetti.length).toBeGreaterThan(0);
       for (const piece of confetti) {
         expect(piece).toHaveClass('motion-safe:animate-confetti-burst');
+      }
+    });
+  });
+
+  describe('gender secrecy', () => {
+    const ACCENT_COLORS = ['#6F86E6', '#E37AA6'];
+    const CASES = [
+      ['box', 'boy'], ['box', 'girl'],
+      ['cake', 'boy'], ['cake', 'girl'],
+      ['balloon', 'boy'], ['balloon', 'girl'],
+    ] as const;
+
+    it.each(CASES)('paints nothing in the gendered accent color while ready (%s, %s)', (theme, gender) => {
+      const { container } = render(<PreReveal theme={theme} gender={gender} stage="ready" />);
+
+      const paintedElements = container.querySelectorAll('[fill], [stroke]');
+      for (const el of paintedElements) {
+        expect(ACCENT_COLORS).not.toContain(el.getAttribute('fill'));
+        expect(ACCENT_COLORS).not.toContain(el.getAttribute('stroke'));
       }
     });
   });

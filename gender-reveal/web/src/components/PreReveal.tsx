@@ -40,7 +40,7 @@ export function PreReveal({
             cy="118"
             rx="16"
             ry="20"
-            fill={accent}
+            fill={revealing ? accent : FILL}
             style={{ transformOrigin: '100px 118px' }}
             className={revealing ? 'motion-safe:animate-balloon-rise' : 'opacity-0'}
           />
@@ -69,7 +69,7 @@ export function PreReveal({
       {theme === 'cake' && (
         <g stroke={STROKE} strokeWidth="3" strokeLinejoin="round">
           <rect x="30" y="110" width="140" height="50" rx="10" fill={FILL} />
-          <rect data-testid="cake-filling" x="44" y="76" width="112" height="38" rx="10" fill={accent} />
+          <rect data-testid="cake-filling" x="44" y="76" width="112" height="38" rx="10" fill={revealing ? accent : FILL} />
           <g
             data-testid="cake-left"
             className={revealing ? 'motion-safe:animate-cake-slide-left' : ''}
@@ -113,8 +113,8 @@ export function PreReveal({
             className={revealing ? 'motion-safe:animate-balloon-pop' : ''}
             style={{ transformOrigin: '100px 100px' }}
           >
-            <ellipse cx="100" cy="88" rx="52" ry="62" fill={accent} />
-            <path d="M92 150l8 10 8-10z" fill={accent} />
+            <ellipse cx="100" cy="88" rx="52" ry="62" fill={revealing ? accent : FILL} />
+            <path d="M92 150l8 10 8-10z" fill={revealing ? accent : FILL} />
             <path d="M100 160c-10 14 10 20 0 34" fill="none" />
           </g>
         </>

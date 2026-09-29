@@ -162,6 +162,37 @@ docker compose up -d
 `docker-compose.yml`의 `web.build.args.NEXT_PUBLIC_SITE_URL`과 `api.environment`의
 `APP_BASE_URL`을 같은 값으로 맞춰야 한다(둘 다 같은 오리진이어야 쿠키가 CORS 없이 동작함).
 
+## 5) Railway에 배포하기
+
+이 저장소는 모노레포(`event-echo/gender-reveal/api`, `.../web`)라, Railway 프로젝트 하나에
+**서비스 2개**(`api`, `web`)를 만들어 각각의 Root Directory를 `gender-reveal/api` /
+`gender-reveal/web`로 지정한다. 두 서비스는 Railway의
+[private networking](https://docs.railway.com/networking/private-networking)으로
+붙는다(`<서비스이름>.railway.internal`) — `web`의 nginx가 이 주소로 `/api/*`를 그대로
+프록시하므로, 사용자에겐 `web` 서비스 도메인 하나만 공개하면 된다(같은 오리진 유지,
+쿠키가 CORS 문제 없이 동작).
+
+1. **`api` 서비스**
+   - Root Directory: `gender-reveal/api` (Dockerfile 자동 인식)
+   - Volume 추가, mount path `/app/data` (SQLite 파일이 컨테이너 재시작에도 유지되게)
+   - 환경변수: `RESEND_API_KEY`(실제 메일 발송용), `APP_BASE_URL`(=`web` 서비스의 공개
+     도메인, 예: `https://<web-서비스>.up.railway.app`), `APP_SESSION_COOKIE_SECURE=true`
+     (Railway는 기본 HTTPS라 켜야 함), `SWAGGER_ENABLED=false`(공개 배포에서는 API 문서
+     노출 차단 권장)
+2. **`web` 서비스**
+   - Root Directory: `gender-reveal/web` (Dockerfile 자동 인식)
+   - 빌드 시점 환경변수: `NEXT_PUBLIC_SITE_URL`(=`web` 서비스의 공개 도메인, 위 `APP_BASE_URL`과
+     동일한 값)
+   - 런타임 환경변수: `API_HOST=<api-서비스이름>.railway.internal`, `API_PORT=8080` —
+     `api` 서비스를 만들 때 지정한 이름을 그대로 쓴다(Railway 대시보드에서 정확한 내부
+     호스트명을 확인할 수 있음). 안 넣으면 Dockerfile 기본값(`api`/`8080`, docker-compose용)이
+     쓰여서 Railway에서는 연결이 안 된다.
+   - `web`에만 퍼블릭 도메인을 연결한다(`api`는 비공개로 둬도 됨 — private networking으로만
+     접근).
+
+`nginx/gender-reveal.conf.template`은 컨테이너 시작 시 `API_HOST`/`API_PORT`를 실제 값으로
+채워 넣는 envsubst 템플릿이라, 코드 변경 없이 docker-compose와 Railway 둘 다 지원한다.
+
 ## 테스트
 
 ```bash

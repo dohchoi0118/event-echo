@@ -12,7 +12,10 @@ backend and frontend (visitor flow + owner dashboard/create form) are implemente
   view, guess (one per guest), guestbook, owner email magic-link auth + owner API.
 - **Frontend — [web/](web/)**: Next.js 15 (App Router) with **static export** (`npm run build` →
   `out/`, no Node server) served by nginx, same-origin reverse proxy to the API
-  (`web/nginx/gender-reveal.conf`). Implemented: the full visitor flow at `/g/<slug>` (one static
+  (`web/nginx/gender-reveal.conf.template` — an envsubst template so `API_HOST`/`API_PORT` can
+  point at a platform's own service-discovery hostname, e.g. Railway's `*.railway.internal`,
+  without a rebuild; defaults to docker-compose's `api:8080`). Implemented: the full visitor flow
+  at `/g/<slug>` (one static
   shell for every slug, slug read client-side from `window.location.pathname`) — intro, secret,
   expired, guess selection, 3-theme result reveal, guestbook — and the owner-facing flow
   (`/login`, `/dashboard`, `/create`) — magic-link login, page list/detail with stats and guestbook

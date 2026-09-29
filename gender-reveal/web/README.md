@@ -43,5 +43,8 @@ npm run og        # public/og.png 재생성 (일러스트 변경 시)
 
 ## 배포
 
-`out/`을 nginx 루트(`/usr/share/nginx/html`)에 두고 `nginx/gender-reveal.conf`를 사용한다.
+`out/`을 nginx 루트(`/usr/share/nginx/html`)에 두고 `nginx/gender-reveal.conf.template`을
+사용한다(`API_HOST`/`API_PORT` 환경변수로 API 업스트림을 채워 넣는 envsubst 템플릿 —
+docker-compose 기본값은 `api`/`8080`, Railway 등 다른 플랫폼에서는 override; 자세한 내용은
+[../README.md의 "Railway에 배포하기"](../README.md#5-railway에-배포하기) 참고).
 공유 카드는 모든 링크가 동일한 제목·이미지다(정적 export 제약, 성별/공개 여부 비노출).

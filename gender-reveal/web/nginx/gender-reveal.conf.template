@@ -1,6 +1,10 @@
 # Serves the static export (`npm run build` → web/out) and proxies /api to Spring.
-# Mount web/out at /usr/share/nginx/html. In docker-compose the API service is `api`;
-# for a bare-metal setup change the upstream to 127.0.0.1:8080.
+# Mount web/out at /usr/share/nginx/html. This file is an envsubst template (nginx's official
+# image runs envsubst on every /etc/nginx/templates/*.template at container start) so the API
+# upstream can differ per platform without a rebuild: docker-compose's API_HOST/API_PORT
+# defaults (set in the Dockerfile) resolve to the `api` service; on a platform without
+# docker-compose's DNS (e.g. Railway, where services are reached at
+# `<service>.railway.internal`), override API_HOST/API_PORT via that platform's env vars.
 server {
     listen 80;
     server_name _;
@@ -16,7 +20,7 @@ server {
 
     # Same-origin API: cookies (guest_id, owner_session) work without CORS.
     location /api/ {
-        proxy_pass http://api:8080;
+        proxy_pass http://${API_HOST}:${API_PORT};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

@@ -193,6 +193,21 @@ docker compose up -d
 `nginx/gender-reveal.conf.template`은 컨테이너 시작 시 `API_HOST`/`API_PORT`를 실제 값으로
 채워 넣는 envsubst 템플릿이라, 코드 변경 없이 docker-compose와 Railway 둘 다 지원한다.
 
+**GitHub push 자동배포 안 됨(알려진 상태)**: 이 프로젝트에서는 Railway의 GitHub App이
+`dohchoi0118` 계정에 설치되지 않은 상태라(github.com/settings/installations에 Railway
+자체가 없음 — Connect Repo에서도 리포 검색이 항상 "No repositories found"), `git push`가
+Railway 배포를 트리거하지 않는다. 대신 매번 아래 명령으로 수동 트리거해야 한다(Railway
+CLI 필요, `railway link`로 프로젝트 연결 후):
+
+```bash
+railway service source connect --repo dohchoi0118/event-echo --branch main --service gender-reveal-web
+railway service source connect --repo dohchoi0118/event-echo --branch main --service gender-reveal-api
+```
+
+GitHub App을 https://github.com/apps/railway/installations/new 에서 설치하면 근본 해결이
+되겠지만, 현재는 이 방법을 시도하지 않기로 함(우선순위 낮음, 필요할 때만 배포하는 용도라
+수동 트리거로 충분).
+
 ## 테스트
 
 ```bash

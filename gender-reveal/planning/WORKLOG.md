@@ -500,3 +500,52 @@
   넘어감). 발행하기 시점의 409 처리(레이스 컨디션 최종 방어선)는 그대로 유지
 - Docker에서 실제 로그인 세션으로 이미 쓰이는 주소/새 주소 둘 다 미리보기 진입 여부로
   직접 확인
+
+## 2026-09-29
+
+### 55. 리빌 테마 성별색 노출/타이밍 리뷰 반영
+- 코드 리뷰 피드백 4건 반영: 풍선 테마가 `ready` 상태에서도 이미 성별 accent 색으로
+  그려지던 것을 회색(`FILL`)으로 고정하고 `revealing`에서만 accent를 쓰도록 수정; 케이크
+  필링도 동일한 문제(둥근 모서리 틈으로 색이 비침)라 같은 방식으로 고침; 박스 테마 내부의
+  장식용 풍선도 리뷰엔 없었지만 같은 패턴의 누출이 있어 함께 수정; `box`/`confetti`
+  키프레임 애니메이션의 `fill-mode`를 `forwards`→`both`로 바꿔 `animation-delay` 동안
+  0% 키프레임이 적용되게 함; "`ready` 상태에선 성별색이 칠해진 요소가 없어야 한다" 회귀
+  테스트를 테마×성별 6개 조합에 대해 추가(`PreReveal.test.tsx`)
+- 후속 질문("애니메이션 되면서 젠더색 채워지는 게 의도한 거냐")에 답하며, 박스/케이크는
+  색 전환이 다른 조각에 가려져 문제없지만 풍선은 클릭 즉시 색이 스냅되는 게 "터지는" 시각
+  타이밍보다 먼저 노출되는 진짜 불일치임을 확인 → 풍선 그룹 `fill`을 CSS 키프레임
+  (`balloon-pop`)의 70% 지점(최대 팽창 시점)에서만 `var(--reveal-accent)`로 전환하도록
+  재작성, 그 전엔 정적 속성과 키프레임 모두 회색 유지. jsdom이 CSS 애니메이션을 실행하지
+  않아 테스트는 `--reveal-accent` CSS 변수 값으로 대체 검증. 로컬에서 166개 테스트 통과 +
+  Docker에 임시 테스트 페이지 삽입해 실제 렌더링으로 확인 후 삭제
+
+### 56. Railway 배포 및 GitHub 자동배포(webhook) 미해결 상태로 보류
+- Railway 프로젝트에 `gender-reveal-api`/`gender-reveal-web` 2개 서비스로 배포(모노레포
+  Root Directory 방식, 리포 분리 불필요). `web`의 nginx가 docker-compose와 Railway 양쪽을
+  코드 변경 없이 지원하도록 `gender-reveal.conf`를 envsubst 템플릿(`.conf.template`)으로
+  전환하고 `API_HOST`/`API_PORT`를 런타임 환경변수로 분리(커밋 `198af36`)
+- 배포 중 겪은 문제들: (1) `NEXT_PUBLIC_SITE_URL` 없이 빌드 실패 → 퍼블릭 도메인 먼저
+  생성 후 빌드 변수로 지정해서 해결. (2) 빌드 성공 후 10초 만에
+  `nginx: [emerg] host not found in upstream "api"`로 크래시 → 원인 추적 중
+  `railway service source connect --repo owner/repo --branch main --service <name>`으로
+  GitHub 연결을 재설정하면 즉시 새 빌드가 트리거된다는 걸 발견했고, 그 새 빌드에서야
+  `API_HOST`가 제대로 주입돼 정상화됨 — 즉 그 이전의 모든 "재배포"가 실제로는 새로
+  빌드되지 않고 기존(구) 이미지를 재사용하고 있었던 것으로 확인(로그 타임스탬프와 디버그용
+  임시 스크립트 출력 부재로 검증)
+- 근본 원인 조사: GitHub 계정(`dohchoi0118`)의 Installed GitHub Apps/OAuth Apps 어디에도
+  Railway가 없고, 리포(`event-echo`)의 Webhooks 설정에도 아무것도 없음 — Railway GitHub
+  App이 이 계정에 애초에 설치된 적이 없어서 `git push`가 Railway 배포를 전혀 트리거하지
+  못하는 상태. Railway 쪽 서비스 Settings에도 "Auto deploy unavailable" / "Could not load
+  branches" 에러로 동일하게 드러남. Disconnect 후 재연결(Connect Repo) 시도도 리포 검색
+  자체가 안 됨(GitHub App 미설치라 목록을 못 가져옴)
+- GitHub App 설치(`github.com/apps/railway/installations/new`)로 근본 해결이 가능해
+  보이지만, 지금은 "필요할 때만 올리는 테스트용 배포"라는 사용 목적상 우선순위가 낮다고
+  판단해 보류하기로 함. 대신 코드 변경을 배포에 반영할 때마다 아래 명령으로 수동
+  트리거(`README.md` §5에 기록):
+  ```bash
+  railway service source connect --repo dohchoi0118/event-echo --branch main --service gender-reveal-web
+  railway service source connect --repo dohchoi0118/event-echo --branch main --service gender-reveal-api
+  ```
+- 이 세션에서 실제로 위 방식으로 애니메이션 수정 커밋과 OG 이미지 교체 커밋을 각각 수동
+  배포까지 반영 완료. 진단용으로 넣었던 `web/Dockerfile`의 임시 디버그 스크립트
+  (`docker-entrypoint.d/05-debug-env.sh`, `25-debug-conf.sh`)는 문제 해결 확인 후 제거
